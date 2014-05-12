@@ -2,16 +2,14 @@
 #include<stdio.h>
 #include<cstdio>
 #include <fstream>
+#include "FileOperations.h"
 using namespace std;
 
 int main(int argc, char **argv) {
-	ofstream file("out.txt");
-	freopen("in.txt", "r", stdin);
-//	freopen("out.txt","w",stdout);
-	string s;
-//	cin >>s;
-	getline(cin, s);
-	cout << s;
-	file << s;
+	FileOperations file;
+	file.enableDebug();
+	file.writeLine("hiiiiiiiiiiiii");
+	string s = file.readLine();
+	file.writeLine(s);
 	file.close();
 }

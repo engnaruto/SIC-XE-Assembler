@@ -9,7 +9,7 @@
 #define FILEOPERATIONS_H_
 
 #include<iostream>
-
+#include <fstream>
 //#include <string>
 //using namespace std;
 
@@ -26,16 +26,18 @@ public:
 	std::string readComment(std::string line);
 	//Writing Methods
 	void writeLine(std::string line);
-	void writeLabel();
-	void writeOperation();
-	void writeOperand();
-	void writeComment();
+	void writeLabel(std::string label);
+	void writeOperation(std::string operation);
+	void writeOperand(std::string operand);
+	void writeComment(std::string comment);
+	void writeEnter();
 	// Other Methods
 	void enableDebug();
 	void disableDebug();
 	void close();
 private:
 	bool debug;
+	std::ofstream file;
 };
 
 #endif /* FILEOPERATIONS_H_ */
