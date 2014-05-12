@@ -24,7 +24,7 @@ string FileOperations::readLine() {
 	return s;
 }
 string FileOperations::readLabel(string line) {
-	return line.substr(0, 8);
+	return line.substr(0, 9);
 
 }
 string FileOperations::readOperation(string line) {
