@@ -1,10 +1,19 @@
 #include <iostream>
-#include<stdio.h>
-#include<cstdio>
-#include <fstream>
+#include <map>
 #include "FileOperations.h"
-#include <h>
+#include "OpInfo.h"
 using namespace std;
+
+map<string, OpInfo> OpTable ;
+map<string, string> symTable;
+
+bool checkHashTabeles(string label) {
+	OpInfo o = OpTable[label];
+	string s = symTable[label];
+//	if (o == nullptr && s == nullptr) {
+//
+//	}
+}
 
 int main(int argc, char **argv) {
 	FileOperations file;
@@ -13,6 +22,5 @@ int main(int argc, char **argv) {
 	string s = file.readLine();
 	file.writeLine(s);
 	file.close();
-
 
 }
