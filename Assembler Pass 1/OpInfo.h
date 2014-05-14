@@ -8,7 +8,7 @@
 #ifndef OPINFO_H_
 #define OPINFO_H_
 #include <iostream>
-
+#include "debug.cpp"
 class OpInfo {
 public:
 	OpInfo();

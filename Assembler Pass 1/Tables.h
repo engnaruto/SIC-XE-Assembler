@@ -9,27 +9,28 @@
 #define PASS1_H_
 #include <iostream>
 #include <map>
-#include <vector>
 #include <fstream>
+#include <vector>
 #include <sstream>
 #include<string>
 #include <exception>
+#include <stdlib.h>
 #include "FileOperations.h"
 #include "OpInfo.h"
+#include "debug.cpp"
 
-class pass1 {
+class Tables {
 public:
-	 std::map<std::string, OpInfo> opTable;
-	 std::map<std::string, std::string> symTable;
+	Tables();
+	~Tables();
+	std::map<std::string, OpInfo> opTable;
+	std::map<std::string, std::string> symTable;
+	void loadHash();
+	int getLength(std::string operation, std::string operand);
+	std::string toLowerCase(std::string input);
 private:
 	std::vector<std::string> &split(const std::string &s, char delim,
 			std::vector<std::string> &elems);
 	std::vector<std::string> split(const std::string &s, char delim);
-	int main(int argc, char **argv);
-	void loadHash();
-
 };
-
-//std::map<std::string, OpInfo> pass1::opTable;
-//std::map<std::string, std::string> pass1::symTable;
 #endif /* PASS1_H_ */

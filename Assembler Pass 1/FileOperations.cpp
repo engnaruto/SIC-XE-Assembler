@@ -12,7 +12,6 @@ using namespace std;
 FileOperations::FileOperations() {
 	freopen("in.txt", "r", stdin);
 	file.open("out.txt");
-	debug = false;
 }
 FileOperations::~FileOperations() {
 
@@ -39,68 +38,63 @@ string FileOperations::readComment(string line) {
 void FileOperations::writeLine(string line) {
 
 	file << line << endl;
-	if (debug) {
-		cout << line << endl;
-	}
+#ifdef debug
+	cout << line << endl;
+#endif
 }
+
 void FileOperations::writeLabel(string label) {
 	file << label;
-	if (debug) {
-		cout << label;
-	}
+#ifdef debug
+	cout << label;
+#endif
 	for (unsigned int i = 0; i < 9 - label.length(); i++) {
 		file << " ";
-		if (debug) {
-			cout << " ";
-		}
+#ifdef debug
+		cout << " ";
+#endif
 	}
 }
 void FileOperations::writeOperation(string operation) {
 	file << operation;
-	if (debug) {
-		cout << operation;
-	}
+#ifdef debug
+	cout << operation;
+#endif
 	for (unsigned int i = 0; i < 8 - operation.length(); i++) {
 		file << " ";
-		if (debug) {
-			cout << " ";
-		}
+#ifdef debug
+		cout << " ";
+#endif
 	}
 }
 void FileOperations::writeOperand(string operand) {
 	file << operand;
-	if (debug) {
-		cout << operand;
-	}
+#ifdef debug
+	cout << operand;
+#endif
 	for (unsigned int i = 0; i < 18 - operand.length(); i++) {
 		file << " ";
-		if (debug) {
-			cout << " ";
-		}
+#ifdef debug
+		cout << " ";
+#endif
 	}
 }
 void FileOperations::writeComment(string comment) {
 	file << comment;
-	if (debug) {
-		cout << comment;
-	}
+#ifdef debug
+	cout << comment;
+#endif
 }
 
 void FileOperations::writeEnter() {
 	file << "\n";
-	if (debug) {
-		cout << "\n";
-	}
+#ifdef debug
+	cout << "\n";
+#endif
 }
 // Other Methods
 bool FileOperations::eof() {
 	return file.eof();
-}
-void FileOperations::enableDebug() {
-	debug = true;
-}
-void FileOperations::disableDebug() {
-	debug = false;
 }
 void FileOperations::close() {
 	file.close();

@@ -10,6 +10,7 @@
 
 #include<iostream>
 #include <fstream>
+#include "debug.cpp"
 //#include <string>
 //using namespace std;
 
@@ -37,7 +38,7 @@ public:
 	void disableDebug();
 	void close();
 private:
-	bool debug;
+
 	std::ofstream file;
 };
 
