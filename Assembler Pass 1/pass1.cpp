@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
 		if (strexc.size() == 0) {
 //			cout << "hiiiiiiiiiiiiiiiii" << endl;
-			strexc = check.checkAll(&label, &operand, &operation);
+			strexc = check.checkAll(&label, &operation, &operand);
 			cout <<"@@@@@@ "<< label << "\t" << operation << "\t" << operand << "\t"
 					<< comment << endl;
 			if (strexc.length() != 0) {

@@ -30,11 +30,11 @@ string FileOperations::readLine() {
 	return s;
 }
 string FileOperations::readLabel(string line) {
-	return line.substr(0, 8);
+	return line.substr(0, 9);
 
 }
 string FileOperations::readOperation(string line) {
-	return line.substr(9, 7);
+	return line.substr(9, 8);
 }
 string FileOperations::readOperand(string line) {
 	return line.substr(17, 18);

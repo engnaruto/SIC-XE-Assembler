@@ -16,20 +16,27 @@ Check::~Check() {
 
 }
 string Check::checkAll(string *label, string *operation, string *operand) {
+
 	bool ok;
 	string exception = "";
 	ok = checkLabel(&(*label));
 	if (!ok) {
 		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
-	ok = checkOperation(&*operation);
+	cout << "Label = " << *label << " Size = " << (*label).size() << endl;
+	ok = checkOperation(&(*operation));
 	if (!ok) {
 		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
-	ok = checkOperand(&*operand);
+	cout << "Operation = " << *operation << " Size = " << (*operation).size()
+			<< endl;
+	ok = checkOperand(&(*operand));
 	if (!ok) {
 		exception += "\t***Error: Unavailable Operand\n";
 	}
+	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
+	cout << "Operand = " << *operand << " Size = " << (*operand).size() << endl;
+	cout << "OOOOOOOOO Operand => " << *operand << "  " << ok << endl;
 
 	return exception;
 }
@@ -60,7 +67,12 @@ bool Check::checkLabel(string *label) {
 }
 bool Check::checkOperation(string *operation) {
 	bool ok = checkSpaces((*operation), 2);
+//	cout << "MMMMMMMMMMMM Operation => " << *operation << "    "
+//			<< (*operation).length() << endl;
 	(*operation) = trim((*operation));
+//	cout << "NNNNNNNNNNNN Operation => " << *operation << endl;
+	string x = toLowerCase(*operation);
+//	cout << "XXXXXXXX Operation => " << x << "  OK => " << ok << endl;
 	if (ok == true) {
 		string dir[6];
 		dir[0] = "word";
@@ -70,24 +82,25 @@ bool Check::checkOperation(string *operation) {
 		dir[4] = "start";
 		dir[5] = "end";
 //		map<string, string> big;
-		if ((*operation).empty() == true) {
+		if (x.empty() == true) {
 			return false;
 		}
-		if (isalpha((*operation)[0]) == false && (*operation)[0] != '+') {
+		cout << ":P :P :P" << endl;
+		if (isalpha(x[0]) == false && x[0] != '+') {
 			return false;
 		}
-		if ((*operation)[0] == '+') {
+		if (x[0] == '+') {
 			string tmp = "";
-			tmp.assign((*operation).begin() + 1, (*operation).end());
-			(*operation).assign(tmp);
+			tmp.assign(x.begin() + 1, x.end());
+			x.assign(tmp);
 		}
-		int found = tables.opTable.count((*operation));
+		int found = tables.opTable.count(x);
 		if (found > 0) {
 			return true;
 		}
 		int i;
 		for (i = 0; i < 6; i++) {
-			if ((*operation) == dir[i]) {
+			if (x == dir[i]) {
 				return true;
 			}
 		}
@@ -103,31 +116,40 @@ bool Check::checkOperand(string *operand) {
 		if ((*operand).at(0) == '\0') {
 			return true;
 		} else {
+			cout << "ASASASASASASAS  " <<(*operand).at(0)<< endl;
 			if ((*operand).at(0) == '#') {
+				cout << "DFDFDFDFDFDFDF" << endl;
 				return checkLabelAndNubmers((*operand).substr(1));
 			} else if ((*operand).at(0) == '@') {
+				cout << "ZXZXZXZXZXZXZX" << endl;
 				return true; //checkLabel(operand.substr(1),labels);
 			} else if ((*operand).find(",") < 100 && (*operand).find(",") > 0) {
+				cout << "CVCVCVCVCVCVCVCV" << endl;
 				int pos = (*operand).find(",");
 				string str1 = (*operand).substr(0, pos);
 				string str2 = (*operand).substr(pos + 1);
 				return checkRegister(str1, str2);
 
-			}
-			//one register
-			else if ((*operand).at(1) == ' ' || (*operand).at(1) == '\0') {
+			} else if ((*operand).at(1) == ' ' || (*operand).at(1) == '\0') {
+				cout << "RERERERERERERERERE" << endl;
 				if ((*operand).at(0) == 'a' || (*operand).at(0) == 'b'
 						|| (*operand).at(0) == 'x' || (*operand).at(0) == 't'
 						|| (*operand).at(0) == 's' || (*operand).at(0) == 'l') {
+					cout << "TYTYTYTYTYTYTYT" << endl;
 					return true;
 				} else {
+					cout << "GHGHGHGHGHGHGHG" << endl;
 					return false;
 				}
 			} else {
+				cout << "QWQWQWQWQWQW" << endl;
 				return checkLabelAndNubmers((*operand));
 			}
+			cout << "XCXCXCXCXCXCXC" << endl;
 		}
+		cout << "YUYUYUYUYUYUYUYU" << endl;
 	}
+		cout << "ZDZDZDZDZDZDZDDZ" << endl;
 	return false;
 }
 
