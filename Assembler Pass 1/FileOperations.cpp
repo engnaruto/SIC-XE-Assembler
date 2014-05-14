@@ -9,17 +9,24 @@
 //#include<cstdio>
 using namespace std;
 
-FileOperations::FileOperations() {
-	freopen("in.txt", "r", stdin);
-	file.open("out.txt");
+FileOperations::FileOperations(string fileName) {
+	in.open("in.txt");
+//	in.open(fileName.c_str());
+	out.open("out.txt");
 }
 FileOperations::~FileOperations() {
 
 }
+void FileOperations::use(string fileName) {
+//	in.open(fileName.c_str());
+	in.open("in.txt");
+	cout << "IN FILE" << endl;
+//	freopen(fileName.c_str(), "r", stdin);
+}
 
 string FileOperations::readLine() {
 	string s;
-	getline(cin, s);
+	getline(in, s);
 	return s;
 }
 string FileOperations::readLabel(string line) {
@@ -35,68 +42,91 @@ string FileOperations::readOperand(string line) {
 string FileOperations::readComment(string line) {
 	return line.substr(36, 31);
 }
+
+void FileOperations::writeFirst() {
+	out << "Line No.\t\tAddress\t\tLabel\t\tMnemonic\t\tOperand\t\tComment\t\t"
+			<< endl;
+#ifdef debug
+	cout << "Line No.\t\tAddress\t\tLabel\t\tMnemonic\t\tOperand\t\tComment\t\t"
+			<< endl;
+#endif
+
+}
+void FileOperations::writeAll(int lineNo, string address, string label,
+		string operation, string operand, string comment) {
+	out << lineNo << "\t\t" << address << "\t\t" << label << "\t\t" << operation
+			<< "\t\t" << operand << "\t\t" << comment << "\t\t" << endl;
+#ifdef debug
+	cout << lineNo << "\t\t" << address << "\t\t" << label << "\t\t"
+			<< operation << "\t\t" << operand << "\t\t" << comment << "\t\t"
+			<< endl;
+#endif
+
+}
+
 void FileOperations::writeLine(string line) {
 
-	file << line << endl;
+	out << line << endl;
 #ifdef debug
 	cout << line << endl;
 #endif
 }
 
 void FileOperations::writeLabel(string label) {
-	file << label;
+	out << label;
 #ifdef debug
 	cout << label;
 #endif
 	for (unsigned int i = 0; i < 9 - label.length(); i++) {
-		file << " ";
+		out << " ";
 #ifdef debug
 		cout << " ";
 #endif
 	}
 }
 void FileOperations::writeOperation(string operation) {
-	file << operation;
+	out << operation;
 #ifdef debug
 	cout << operation;
 #endif
 	for (unsigned int i = 0; i < 8 - operation.length(); i++) {
-		file << " ";
+		out << " ";
 #ifdef debug
 		cout << " ";
 #endif
 	}
 }
 void FileOperations::writeOperand(string operand) {
-	file << operand;
+	out << operand;
 #ifdef debug
 	cout << operand;
 #endif
 	for (unsigned int i = 0; i < 18 - operand.length(); i++) {
-		file << " ";
+		out << " ";
 #ifdef debug
 		cout << " ";
 #endif
 	}
 }
 void FileOperations::writeComment(string comment) {
-	file << comment;
+	out << comment;
 #ifdef debug
 	cout << comment;
 #endif
 }
 
 void FileOperations::writeEnter() {
-	file << "\n";
+	out << "\n";
 #ifdef debug
 	cout << "\n";
 #endif
 }
 // Other Methods
 bool FileOperations::eof() {
-	return file.eof();
+	return out.eof();
 }
 void FileOperations::close() {
-	file.close();
+	in.close();
+	out.close();
 }
 

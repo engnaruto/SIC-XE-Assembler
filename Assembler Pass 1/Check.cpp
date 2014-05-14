@@ -8,6 +8,31 @@
 #include "Check.h"
 
 using namespace std;
+Check::Check(Tables tables) {
+	this->tables = tables;
+
+}
+Check::~Check() {
+
+}
+string Check::checkAll(string label, string operation, string operand) {
+	bool ok;
+	string exception = "";
+	ok = checkLabel(label);
+	if (!ok) {
+		exception += "\t\t\t***Error: Unavailable or duplicate Symbol\n";
+	}
+	ok = checkOperation(operation);
+	if (!ok) {
+		exception += "\t\t\t***Error: Unavailable Mnemonic\n";
+	}
+	ok = checkOperand(operand);
+	if (!ok) {
+		exception += "\t\t\t***Error: Unavailable Operand\n";
+	}
+
+	return exception;
+}
 
 bool Check::checkSpaces(string str, int type) {
 	bool valid = true;
@@ -28,33 +53,6 @@ bool Check::checkSpaces(string str, int type) {
 			valid = false;
 	}
 	return valid;
-}
-
-bool Check::checkLabel(string label) {
-	bool accep = false;
-	int check = checkAtHash(label);
-
-	if (check != 3) {
-		if (checkSpaces(label, 1) && isalpha(label[0])) {
-			accep = true;
-		}
-
-		for (unsigned int i = 1; i < label.length(); i++) {
-			if (isalpha(label[i]) && i != label.length() - 1 && accep == true) {
-				accep = true;
-			} else if (!isalpha(label[i])
-					&& ((int) label[i] >= 48 && (int) label[i] <= 57)
-					&& i != label.length() - 1 && accep == true) {
-				accep = true;
-
-			} else if (label[i] != ' ' && checkSpaces(label, 1)) {
-				accep = false;
-			}
-		}
-	} else {
-		accep = false;
-	}
-	return accep;
 }
 
 int Check::checkAtHash(string searchable) {
@@ -83,7 +81,7 @@ int Check::checkAtHash(string searchable) {
 	return check;
 }
 
-bool Check::check(string operation) {
+bool Check::checkOperation(string operation) {
 	string dir[6];
 	dir[0] = "word";
 	dir[1] = "byte";
@@ -118,6 +116,9 @@ bool Check::check(string operation) {
 }
 
 bool Check::checkHexaNumber(string st) {
+	if (st.length() % 2 == 1) {
+		return false;
+	}
 	for (unsigned int i = 0; i < st.length(); i++) {
 		if ((st.at(i) >= '0' && st.at(i) <= '9')
 				|| (st.at(i) >= 'a' && st.at(i) <= 'f')) {
@@ -128,15 +129,42 @@ bool Check::checkHexaNumber(string st) {
 	}
 	return true;
 }
-bool Check::checkLabel(string label, map<string, string> labels) {
-	if (labels.count(label) > 0) {
+bool Check::isatSymTable(string label) {
+	if (tables.symTable.count(label) > 0) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-bool Check::checkLabelAndNubmers(string label, map<string, string> labels) {
+bool Check::checkLabel(string label) {
+	bool accep = false;
+	int check = checkAtHash(label);
+
+	if (check != 3) {
+		if (checkSpaces(label, 1) && isalpha(label[0])) {
+			accep = true;
+		}
+
+		for (unsigned int i = 1; i < label.length(); i++) {
+			if (isalpha(label[i]) && i != label.length() - 1 && accep == true) {
+				accep = true;
+			} else if (!isalpha(label[i])
+					&& ((int) label[i] >= 48 && (int) label[i] <= 57)
+					&& i != label.length() - 1 && accep == true) {
+				accep = true;
+
+			} else if (label[i] != ' ' && checkSpaces(label, 1)) {
+				accep = false;
+			}
+		}
+	} else {
+		accep = false;
+	}
+	return accep;
+}
+
+bool Check::checkLabelAndNubmers(string label) {
 	if (label.at(0) >= '0' && label.at(0) <= '9') {
 		for (unsigned int i = 1; i < label.length(); i++) {
 			if (label.at(i) >= '0' && label.at(i) <= '9') {
@@ -165,8 +193,7 @@ bool Check::checkLabelAndNubmers(string label, map<string, string> labels) {
 	return true;
 }
 
-bool Check::checkRegister(string str1, string str2,
-		map<string, string> labels) {
+bool Check::checkRegister(string str1, string str2) {
 	if (str1 == "a" || str1 == "b" || str1 == "x" || str1 == "t" || str1 == "s"
 			|| str1 == "l") {
 		if (str2 == "a" || str2 == "b" || str2 == "x" || str2 == "t"
@@ -191,19 +218,19 @@ bool Check::checkRegister(string str1) {
 	return false;
 }
 
-bool Check::checkOperand(string operand, map<string, string> labels) {
+bool Check::checkOperand(string operand) {
 	if (operand.at(0) == '\0') {
 		return true;
 	} else {
 		if (operand.at(0) == '#') {
-			return checkLabelAndNubmers(operand.substr(1), labels);
+			return checkLabelAndNubmers(operand.substr(1));
 		} else if (operand.at(0) == '@') {
 			return true; //checkLabel(operand.substr(1),labels);
 		} else if (operand.find(",") < 100 && operand.find(",") > 0) {
 			int pos = operand.find(",");
 			string str1 = operand.substr(0, pos);
 			string str2 = operand.substr(pos + 1);
-			return checkRegister(str1, str2, labels);
+			return checkRegister(str1, str2);
 
 		}
 		//one register
@@ -216,7 +243,7 @@ bool Check::checkOperand(string operand, map<string, string> labels) {
 				return false;
 			}
 		} else {
-			return checkLabelAndNubmers(operand, labels);
+			return checkLabelAndNubmers(operand);
 		}
 	}
 }

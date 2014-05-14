@@ -4,21 +4,30 @@
  *  Created on: May 13, 2014
  *      Author: Naruto
  */
-#include <sstream>
+
 #include "LocCounter.h"
 using namespace std;
 LocCounter::LocCounter(int start) {
 	decCounter = start;
 	hexCounter = dectoHex();
+	lineCounter = 0;
 }
 LocCounter::~LocCounter() {
 
 }
+int LocCounter::getLineCounter() {
+	return lineCounter++;
+}
+void LocCounter::setCounter(std::string strNum) {
+	decCounter = atoi(strNum.c_str());
+	hexCounter = dectoHex();
+}
 void LocCounter::AddtoCounter(int addresssize) {
 	decCounter += addresssize;
 	hexCounter = dectoHex();
+	lineCounter++;
 }
-string LocCounter::getHex() {
+string LocCounter::getAddress() {
 	return hexCounter;
 }
 

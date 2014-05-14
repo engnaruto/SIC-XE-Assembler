@@ -1,1 +1,29 @@
-   tarek Hello World :)     
+.SIC/XE Instruction Set – Lab 1
+.Due date: Sunday, March 30th, 2014
+.Write a sequence of instructions for SIC/XE machine that does the following:
+.a. Set ALPHA equal to the integer portion of BETA / GAMMA.
+.b. Set ALPHA equal to 4 * BETA + 3 * GAMMA.
+.c. Clear a 100-byte string to all blanks.
+.d. SET elements of a 100-word array to 0.
+.
+.
+.        10      18                36
+.23456789012345678901234567890123456789
+         START   0
+.
+.                                  PROGRAM D SET elements of a 100-word array to 0.
+.
+         LDX     #0
+         LDS     #3
+         LDT     #300
+LOOP1    LDA     #0
+         STA     STR2,X
+         ADDR    S,X
+         COMPR   X,T
+         JLT     LOOP1
+         J       *
+.
+.
+.
+STR2     RESW    100
+         END

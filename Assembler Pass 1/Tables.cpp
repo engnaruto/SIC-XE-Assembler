@@ -49,11 +49,11 @@ void Tables::loadHash() {
 #ifdef debug
 //	cout << "hiiiiiiiiiii"<<endl;
 
-	for (map<string, OpInfo>::iterator it = opTable.begin();
-			it != opTable.end(); ++it) {
-		cout << it->first << " => " << it->second.format << " => "
-		<< it->second.opcode << " => " << it->second.operand << '\n';
-	}
+//	for (map<string, OpInfo>::iterator it = opTable.begin();
+//			it != opTable.end(); ++it) {
+//		cout << it->first << " => " << it->second.format << " => "
+//		<< it->second.opcode << " => " << it->second.operand << '\n';
+//	}
 #endif
 
 	cout << "";

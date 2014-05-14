@@ -17,8 +17,9 @@
 class FileOperations {
 public:
 	// Constructor/Destructor
-	FileOperations();
+	FileOperations(std::string fileName);
 	~FileOperations();
+	void use(std::string filename);
 	//Reading Methods
 	std::string readLine();
 	std::string readLabel(std::string line);
@@ -26,6 +27,9 @@ public:
 	std::string readOperand(std::string line);
 	std::string readComment(std::string line);
 	//Writing Methods
+	void writeFirst();
+	void writeAll(int lineNo, std::string address, std::string label,
+			std::string operation, std::string operand, std::string comment);
 	void writeLine(std::string line);
 	void writeLabel(std::string label);
 	void writeOperation(std::string operation);
@@ -39,7 +43,8 @@ public:
 	void close();
 private:
 
-	std::ofstream file;
+	std::ifstream in;
+	std::ofstream out;
 };
 
 #endif /* FILEOPERATIONS_H_ */

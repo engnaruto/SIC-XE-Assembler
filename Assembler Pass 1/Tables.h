@@ -28,9 +28,9 @@ public:
 	void loadHash();
 	int getLength(std::string operation, std::string operand);
 	std::string toLowerCase(std::string input);
+	std::vector<std::string> split(const std::string &s, char delim);
 private:
 	std::vector<std::string> &split(const std::string &s, char delim,
 			std::vector<std::string> &elems);
-	std::vector<std::string> split(const std::string &s, char delim);
 };
 #endif /* PASS1_H_ */
