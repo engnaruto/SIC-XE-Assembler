@@ -28,13 +28,13 @@ string FileOperations::readLabel(string line) {
 
 }
 string FileOperations::readOperation(string line) {
-	return line.substr(10, 15);
+	return line.substr(10, 7);
 }
 string FileOperations::readOperand(string line) {
-	return line.substr(18, 35);
+	return line.substr(18, 18);
 }
 string FileOperations::readComment(string line) {
-	return line.substr(36, 66);
+	return line.substr(36, 31);
 }
 void FileOperations::writeLine(string line) {
 
@@ -93,6 +93,9 @@ void FileOperations::writeEnter() {
 	}
 }
 // Other Methods
+bool FileOperations::eof() {
+	return file.eof();
+}
 void FileOperations::enableDebug() {
 	debug = true;
 }

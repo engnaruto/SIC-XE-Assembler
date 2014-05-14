@@ -16,8 +16,11 @@ public:
 	std::string getHex();
 	int decCounter;
 	std::string hexCounter;
+
 private:
-	std::string convDectoHex();
+	std::string convDectoHex(int decNum, int r[]);
+	std::string dectoHex();
+	int i;
 };
 
 #endif /* LOCCOUNTER_H_ */

@@ -32,6 +32,7 @@ public:
 	void writeComment(std::string comment);
 	void writeEnter();
 	// Other Methods
+	bool eof();
 	void enableDebug();
 	void disableDebug();
 	void close();
