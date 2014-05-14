@@ -60,17 +60,7 @@ void Tables::loadHash() {
 
 }
 
-string Tables::toLowerCase(string input) {
-	unsigned int i;
-	string tmp = "";
-	for (i = 0; i < input.length(); i++) {
-		char c = input[i];
-		int n = tolower(c);
-		char d = char(n);
-		tmp = tmp + d;
-	}
-	return tmp;
-}
+
 int Tables::getLength(string operation, string operand) {
 	if (operation == "word") {
 		return 3;

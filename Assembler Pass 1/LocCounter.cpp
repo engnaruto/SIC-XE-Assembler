@@ -21,6 +21,7 @@ int LocCounter::getLineCounter() {
 void LocCounter::setCounter(std::string strNum) {
 	decCounter = atoi(strNum.c_str());
 	hexCounter = dectoHex();
+	cout << "HEX = " << hexCounter << endl;
 }
 void LocCounter::AddtoCounter(int addresssize) {
 	decCounter += addresssize;

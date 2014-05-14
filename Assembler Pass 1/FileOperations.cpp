@@ -30,36 +30,34 @@ string FileOperations::readLine() {
 	return s;
 }
 string FileOperations::readLabel(string line) {
-	return line.substr(0, 9);
+	return line.substr(0, 8);
 
 }
 string FileOperations::readOperation(string line) {
-	return line.substr(10, 7);
+	return line.substr(9, 7);
 }
 string FileOperations::readOperand(string line) {
-	return line.substr(18, 18);
+	return line.substr(17, 18);
 }
 string FileOperations::readComment(string line) {
-	return line.substr(36, 31);
+	return line.substr(35, 31);
 }
 
 void FileOperations::writeFirst() {
-	out << "Line No.\t\tAddress\t\tLabel\t\tMnemonic\t\tOperand\t\tComment\t\t"
-			<< endl;
+//	cout<<"WRITEEEEEEEEEEEEEEEEEEEEEE"<<endl;
+	out << "Line No.\tAddress\tLabel\tMnemonic\tOperand\tComment" << endl;
 #ifdef debug
-	cout << "Line No.\t\tAddress\t\tLabel\t\tMnemonic\t\tOperand\t\tComment\t\t"
-			<< endl;
+	cout << "Line No.\tAddress\t\tLabel\tMnemonic\tOperand\tComment" << endl;
 #endif
 
 }
 void FileOperations::writeAll(int lineNo, string address, string label,
 		string operation, string operand, string comment) {
-	out << lineNo << "\t\t" << address << "\t\t" << label << "\t\t" << operation
-			<< "\t\t" << operand << "\t\t" << comment << "\t\t" << endl;
+	out << lineNo << "\t" << address << "\t" << label << "\t" << operation
+			<< "\t" << operand << "\t" << comment << endl;
 #ifdef debug
-	cout << lineNo << "\t\t" << address << "\t\t" << label << "\t\t"
-			<< operation << "\t\t" << operand << "\t\t" << comment << "\t\t"
-			<< endl;
+	cout << lineNo << "\t" << address << "\t" << label << "\t" << operation
+			<< "\t" << operand << "\t" << comment << endl;
 #endif
 
 }
@@ -123,7 +121,7 @@ void FileOperations::writeEnter() {
 }
 // Other Methods
 bool FileOperations::eof() {
-	return out.eof();
+	return in.eof();
 }
 void FileOperations::close() {
 	in.close();

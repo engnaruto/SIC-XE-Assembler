@@ -6,13 +6,17 @@
 
 using namespace std;
 
-string line, label, operand, operation, comment, lowerCaseLine;
+string line, label, operand, operation, comment, lowerCaseLine, strexc, t;
 int length;
-void readSplitLine(FileOperations &file) {
+string readSplitLine(FileOperations &file) {
 	line = file.readLine();
+
+//	cout << line << endl;
+	string s = "";
 	if (line[0] != '.') {
 		if (line.size() < 15) {
-			throw;
+//			throw;
+			s = "Error: Line is too short !!!\n";
 		} else if (line.size() > 35) {
 			label = file.readLabel(line);
 			operand = file.readOperand(line);
@@ -30,18 +34,11 @@ void readSplitLine(FileOperations &file) {
 			operation = "";
 			comment = "";
 		}
+	} else {
+		s = "Comment";
 	}
-}
-
-string trim(string input) {
-	string output = "";
-
-	for (unsigned int i = 0; i < input.length(); i++) {
-		if (input[i] != ' ' && input[i] != '\t') {
-			output = output + input[i];
-		}
-	}
-	return output;
+//	cout << "INNNNNNNNNNNNNNNNNN" << endl;
+	return s;
 }
 
 int main(int argc, char **argv) {
@@ -71,59 +68,74 @@ int main(int argc, char **argv) {
 //		}
 //	}
 
-	Check check(tables);
-	try {
-		readSplitLine(file);
-	} catch (exception& e) {
-		file.writeLine("Error: Line is too short !!!");
-	}
-
-				cout << "hiiiiiiiiiiiiiiiii" << endl;
-	string s = check.checkAll(label, operand, operation);
-	if (s.length() != 0) {
-		file.writeLine(s);
-		s = "";
-	}
 	file.writeFirst();
-	string t = trim(operand);
-	if (t == "start") {
-		counter.setCounter(operation);
-		file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
-				operation, operand, comment);
+	Check check(tables);
+	strexc = "";
+	while (!file.eof()) {
+		strexc = readSplitLine(file);
 
-	} else {
-		counter.setCounter(0);
-		length = tables.getLength(operand, operation);
-		counter.AddtoCounter(length);
-		file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
-				operation, operand, comment);
+		if (strexc.size() == 0) {
+//			cout << "hiiiiiiiiiiiiiiiii" << endl;
+			strexc = check.checkAll(&label, &operand, &operation);
+			cout <<"@@@@@@ "<< label << "\t" << operation << "\t" << operand << "\t"
+					<< comment << endl;
+			if (strexc.length() != 0) {
+				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+						label, operation, operand, comment);
+				file.writeLine(strexc);
+				strexc = "";
+				continue;
+			}
+//			t = trim(operand);
+			if (operand == "start") {
+				counter.setCounter(operation);
+				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+						label, operation, operand, comment);
+
+			} else {
+				counter.setCounter(0);
+				length = tables.getLength(operand, operation);
+				counter.AddtoCounter(length);
+				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+						label, operation, operand, comment);
+			}
+			break;
+		} else {
+			if (strexc == "Comment") {
+				file.writeLine(line);
+			} else {
+				file.writeLine(strexc);
+			}
+		}
 	}
 
 	while (!file.eof()) {
-		try {
 
-			try {
-				readSplitLine(file);
-			} catch (exception& e) {
-				file.writeLine("Error: Line is too short !!!");
-			}
+		strexc = readSplitLine(file);
 
-			string s = check.checkAll(label, operand, operation);
+		if (strexc.size() == 0) {
+			strexc = check.checkAll(&label, &operand, &operation);
+//			string s = check.checkAll(label, operand, operation);
 			length = tables.getLength(operand, operation);
 			counter.AddtoCounter(length);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
-			if (s.length() != 0) {
-				file.writeLine(s);
-				s = "";
+			if (strexc.length() != 0) {
+				file.writeLine(strexc);
+				strexc = "";
 			}
-		} catch (exception & e) {
-			file.writeLine("**error occurred in the previous line");
+		} else {
+			if (strexc == "Comment") {
+				file.writeLine(line);
+			} else {
+				file.writeLine(strexc);
+			}
 		}
+
 	}
 
-	t = trim(operand);
-	if (t != "end") {
+//	t = trim(operand);
+	if (operand != "end") {
 		file.writeLine("Error: No End Mnemonic");
 	}
 
