@@ -21,20 +21,20 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 	string exception = "";
 	ok = checkLabel(&(*label));
 	if (!ok) {
-//		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
+		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
 //	cout << ">>>>>>Label = " << *label << " Size = " << (*label).size() << endl;
 	ok = checkOperation(&(*operation));
 	if (!ok) {
-//		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
+		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
 //	cout << ">>>>>Operation = " << *operation << " Size = "
 //			<< (*operation).size() << endl;
 	ok = checkOperand(&(*operand));
 	if (!ok) {
-//		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
+		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Operand\n";
 	}
 //	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
@@ -49,25 +49,29 @@ bool Check::checkLabel(string *label) {
 	accep = checkSpaces(*label, 1);
 //	cout << " LABEL SPACES  " << accep << endl;
 	(*label) = trim(*label);
-	if (accep && (*label).size() != 0 && !(*label).empty()) {
+	string x = toLowerCase(*label);
+	if (accep && (x).size() != 0 && !(x).empty()) {
 //		cout << "-------------------NOT EMPTY" << endl;
-		int check = checkAtHash(*label);
-		if (check != 3) {
-			accep = isalpha((*label)[0]);
-			for (unsigned int i = 1; i < (*label).length(); i++) {
-				if (isalpha((*label)[i]) && i != (*label).length() - 1
-						&& accep == true) {
+		int check = checkAtHash(x);
+		if (check == 0) {
+			accep = isalpha((x)[0]);
+			for (unsigned int i = 0; i < (x).length(); i++) {
+				if (isalpha((x)[i]) && i != (x).length() - 1 && accep == true) {
 					accep = true;
-				} else if (!isalpha((*label)[i])
-						&& ((int) (*label)[i] >= 48 && (int) (*label)[i] <= 57)
-						&& i != (*label).length() - 1 && accep == true) {
+				} else if (!isalpha((x)[i])
+						&& ((int) (x)[i] >= 48 && (int) (x)[i] <= 57)
+						&& i != (x).length() - 1 && accep == true) {
 					accep = true;
 
-				} else if ((*label)[i] != ' ' && checkSpaces((*label), 1)) {
+				} else if (x[i] == ' ') {
 					accep = false;
+					break;
 				}
 			}
+		} else {
+			accep = false;
 		}
+//		cout << "LABELLLLLLLL " << x  << endl;
 	} else {
 		accep = true;
 	}
@@ -81,7 +85,7 @@ bool Check::checkOperation(string *operation) {
 //	cout << "NNNNNNNNNNNN Operation => " << *operation << endl;
 	string x = toLowerCase(*operation);
 //	cout << "XXXXXXXX Operation => " << x << "  OK => " << ok << endl;
-//	cout << "-----------OPERATION " << x << endl;
+	cout << "-----------OPERATION " << *operation << "      " << ok << endl;
 	if (ok == true) {
 		string dir[6];
 		dir[0] = "word";
@@ -121,14 +125,14 @@ bool Check::checkOperation(string *operation) {
 bool Check::checkOperand(string *operand) {
 	bool ok = checkSpaces((*operand), 0);
 	(*operand) = trim((*operand));
-	if (ok == true) {
+
+	if (ok == true && !(*operand).empty()) {
 		if ((*operand).at(0) == '\0') {
 			return true;
 		} else {
-//			cout << "ASASASASASASAS  " << (*operand).at(0) << endl;
 			if ((*operand).at(0) == '#') {
 //				cout << "DFDFDFDFDFDFDF" << endl;
-				return checkLabelAndNubmers((*operand).substr(1));
+				return checkLabelAndNubmers((*operand).at(0),(*operand).substr(1));
 			} else if ((*operand).at(0) == '@') {
 //				cout << "ZXZXZXZXZXZXZX" << endl;
 				return true; //checkLabel(operand.substr(1),labels);
@@ -151,20 +155,28 @@ bool Check::checkOperand(string *operand) {
 //					cout << "GHGHGHGHGHGHGHG" << endl;
 					return false;
 				}
+			}else if((*operand).at(0) == '='){
+				return checkLabelAndNubmers((*operand).at(0),(*operand).substr(1));
+			} else if ((*operand).at(0) == '*') {
+				return true;
 			} else {
 //				cout << "QWQWQWQWQWQW" << endl;
-				return checkLabelAndNubmers((*operand));
+				return checkLabelAndNubmers('=',(*operand));
 			}
 //			cout << "XCXCXCXCXCXCXC" << endl;
 		}
 //		cout << "YUYUYUYUYUYUYUYU" << endl;
+	}
+	if ((*operand).empty()) {
+		cout << "ASASASASASASAS  " << (*operand) << "     " << ok << endl;
+		return true;
 	}
 //	cout << "ZDZDZDZDZDZDZDDZ" << endl;
 	return false;
 }
 
 bool Check::checkOperationOperandMathcing(string operand, string operation) {
-	string mapOperand = ""; // opTable[operation].operand;
+	string mapOperand = tables.opTable[operation].operand;
 	bool ok = false;
 	if (operand == "-") {
 		if (operand.length() == 0) {
@@ -222,7 +234,9 @@ bool Check::checkSpaces(string str, int type) {
 			valid = true;
 		}
 	}
-	if (type == 2) {
+	string x = trim(str);
+	x = toLowerCase(x);
+	if (type == 2 && (tables.opTable[x].operand != "-" || x == "end")) {
 		if (str[6] != ' ' || str[7] != ' ')
 			valid = false;
 	}
@@ -257,9 +271,9 @@ bool Check::checkHexaNumber(string st) {
 	if (x.length() % 2 == 1) {
 		return false;
 	}
-	for (unsigned int i = 0; i < x.length(); i++) {
+	for (unsigned int i = 0; i < x.length() && x.at(i) != ' '; i++) {
 		if ((x.at(i) >= '0' && x.at(i) <= '9')
-				|| (x.at(i) >= 'a' && x.at(i) <= 'f')) {
+				|| (x.at(i) >= 'a' && x.at(i) <= 'f') || (int) x.at(i) == 39) {
 			continue;
 		} else {
 			return false;
@@ -275,7 +289,7 @@ bool Check::isatSymTable(string label) {
 	}
 }
 
-bool Check::checkLabelAndNubmers(string label) {
+bool Check::checkLabelAndNubmers(char c,string label) {
 
 	if (label.at(0) >= '0' && label.at(0) <= '9') {
 		for (unsigned int i = 1; i < label.length(); i++) {
@@ -285,20 +299,24 @@ bool Check::checkLabelAndNubmers(string label) {
 				return false;
 			}
 		}
-	} else if (label.at(0) == 'x' && (int) label.at(1) == 39) {
-		if ((int) label.at(8) == 39) {
-			return checkHexaNumber(label.substr(2, 6));
+	} else if (label.at(0) == 'x' && (int) label.at(1) == 39&&c=='=') {
+		if (label.length() - 3 % 2 == 0) {
+			return checkHexaNumber(label.substr(2));
+
 		} else {
 			return false;
 		}
 
-	} else if (label.at(0) == 'c' && (int) label.at(1) == 39) {
+	} else if (label.at(0) == 'c' && (int) label.at(1) == 39&&c=='=') {
 		if ((int) label.at(label.length() - 1) == 39) {
 			return true;
 		} else {
 			return false;
 		}
-	} else {
+	} else if((label.at(0) == 'x' && (int) label.at(1) == 39&&c!='=')
+			||(label.at(0) == 'c' && (int) label.at(1) == 39&&c!='=')){
+		return false;
+	}else {
 		return true; //checkLabel(label,labels);
 	}
 

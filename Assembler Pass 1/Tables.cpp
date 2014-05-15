@@ -61,32 +61,41 @@ void Tables::loadHash() {
 }
 
 int Tables::getLength(string operation, string operand) {
-	if (operation == "word") {
-		return 3;
-	} else if (operation == "byte") {
-		if (operand.at(0) == 'x')
-			return 1;
+			cout << "--------HEREEEEEEEEEEE " << operation <<"   "<<operand<< endl;
+	string x = toLowerCase(operation);
+	operand = toLowerCase(operand);
+	if (x == "start") {
+		return 0;
+	} else if (x == "end") {
+		return 0;
+	} else if (x == "byte") {
+		if (operand.at(0) == 'x'){
+			int len = operand.length() - 3;
+			cout<<"length "<<len/2<<endl;
+			return len/2;
+		}
 		else if (operand.at(0) == 'c') {
 			int len = operand.length() - 3;
 			return len;
 		}
 
-	} else if (operation == "resw") {
+	} else if (x == "resw") {
 		int counter = atoi(operand.c_str()) * 3;
 		return counter;
-	} else if (operation == "resb") {
+	} else if (x == "resb") {
 		int counter = atoi(operand.c_str());
 		return counter;
+	}else if(x=="word"){
+		return 3;
 	} else {
-		if (operation.at(0) == '+')
+		if (x.at(0) == '+')
 			return 4;
 		else {
-			string s = toLowerCase(operation);
-			string x = opTable[s].format;
-//			cout << "--------HEREEEEEEEEEEE " << s << endl;
-			if (x.at(0) == '1')
+			string s = toLowerCase(x);
+			string c = opTable[s].format;
+			if (c.at(0) == '1')
 				return 1;
-			else if (x.at(0) == '2')
+			else if (c.at(0) == '2')
 				return 2;
 			else
 				return 3;

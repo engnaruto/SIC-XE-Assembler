@@ -31,8 +31,8 @@ void LocCounter::AddtoCounter(int addresssize) {
 	lineCounter++;
 }
 string LocCounter::getAddress() {
-	return "HHHHHHHH";
-//	return hexCounter;
+//	return "HHHHHHHH";
+	return hexCounter;
 }
 
 string LocCounter::dectoHex() {

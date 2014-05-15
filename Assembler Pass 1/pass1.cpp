@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
 			if (t == "start") {
 //				cout << "~~~~~~~~~~~~~~~~~~~~~~~IN START" << "    " << t
 //						<< endl;
-				counter.setCounter(operation);
+				counter.setCounter(operand);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 
@@ -126,14 +126,14 @@ int main(int argc, char **argv) {
 	while (!file.eof()) {
 
 		strexc = readSplitLine(file);
-		cout << "@@@@@@ " << label << "\t" << operation << "\t" << operand
-				<< "\t" << comment << endl;
+//		cout << "@@@@@@ " << label << "\t" << operation << "\t" << operand
+//				<< "\t" << comment << endl;
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(&label, &operation, &operand);
 //			string s = check.checkAll(label, operand, operation);
-//			cout << "INNNNNNNNNNNNNNNNNNNNNNNNNN" << endl;
+			cout << "INNNNNNNNNNNNNNNNNNNNNNNNNN" << endl;
 			length = tables.getLength(operation, operand);
-//			cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
+			cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
 			counter.AddtoCounter(length);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);

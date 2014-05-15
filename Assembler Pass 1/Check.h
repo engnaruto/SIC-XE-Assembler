@@ -25,7 +25,7 @@ private:
 	int checkAtHash(std::string searchable);
 	bool checkHexaNumber(std::string st);
 	bool isatSymTable(std::string label);
-	bool checkLabelAndNubmers(std::string label);
+	bool checkLabelAndNubmers(char c, std::string label);
 	bool checkRegister(std::string str1, std::string str2);
 	bool checkRegister(std::string str1);
 	bool checkOperationOperandMathcing(std::string operand,
