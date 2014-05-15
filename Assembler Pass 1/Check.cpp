@@ -19,24 +19,25 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 
 	bool ok;
 	string exception = "";
-	ok = checkLabel(&(*label));
+	ok = checkLabel(&(*label), &exception);
 	if (!ok) {
 		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
 //	cout << ">>>>>>Label = " << *label << " Size = " << (*label).size() << endl;
-	ok = checkOperation(&(*operation));
+	ok = checkOperation(&(*operation), &exception);
 	if (!ok) {
 		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
 //	cout << ">>>>>Operation = " << *operation << " Size = "
 //			<< (*operation).size() << endl;
-	ok = checkOperand(&(*operand));
+	ok = checkOperand(&(*operand), &exception);
 	if (!ok) {
 		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Operand\n";
 	}
+	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
 //	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
 //	cout << ">>>>>>>Operand = " << *operand << " Size = " << (*operand).size()
 //			<< endl;
@@ -44,7 +45,7 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 
 	return exception;
 }
-bool Check::checkLabel(string *label) {
+bool Check::checkLabel(string *label, string *exception) {
 	bool accep = false;
 	accep = checkSpaces(*label, 1);
 //	cout << " LABEL SPACES  " << accep << endl;
@@ -77,7 +78,7 @@ bool Check::checkLabel(string *label) {
 	}
 	return accep;
 }
-bool Check::checkOperation(string *operation) {
+bool Check::checkOperation(string *operation, string *exception) {
 	bool ok = checkSpaces((*operation), 2);
 //	cout << "MMMMMMMMMMMM Operation => " << *operation << "    "
 //			<< (*operation).length() << endl;
@@ -122,7 +123,7 @@ bool Check::checkOperation(string *operation) {
 	return false;
 }
 
-bool Check::checkOperand(string *operand) {
+bool Check::checkOperand(string *operand, string *exception) {
 	bool ok = checkSpaces((*operand), 0);
 	(*operand) = trim((*operand));
 
@@ -132,7 +133,8 @@ bool Check::checkOperand(string *operand) {
 		} else {
 			if ((*operand).at(0) == '#') {
 //				cout << "DFDFDFDFDFDFDF" << endl;
-				return checkLabelAndNubmers((*operand).at(0),(*operand).substr(1));
+				return checkLabelAndNubmers((*operand).at(0),
+						(*operand).substr(1));
 			} else if ((*operand).at(0) == '@') {
 //				cout << "ZXZXZXZXZXZXZX" << endl;
 				return true; //checkLabel(operand.substr(1),labels);
@@ -155,13 +157,14 @@ bool Check::checkOperand(string *operand) {
 //					cout << "GHGHGHGHGHGHGHG" << endl;
 					return false;
 				}
-			}else if((*operand).at(0) == '='){
-				return checkLabelAndNubmers((*operand).at(0),(*operand).substr(1));
+			} else if ((*operand).at(0) == '=') {
+				return checkLabelAndNubmers((*operand).at(0),
+						(*operand).substr(1));
 			} else if ((*operand).at(0) == '*') {
 				return true;
 			} else {
 //				cout << "QWQWQWQWQWQW" << endl;
-				return checkLabelAndNubmers('=',(*operand));
+				return checkLabelAndNubmers('=', (*operand));
 			}
 //			cout << "XCXCXCXCXCXCXC" << endl;
 		}
@@ -175,7 +178,8 @@ bool Check::checkOperand(string *operand) {
 	return false;
 }
 
-bool Check::checkOperationOperandMathcing(string operand, string operation) {
+bool Check::checkOperationOperandMathcing(string operation, string operand,
+		string *exception) {
 	string mapOperand = tables.opTable[operation].operand;
 	bool ok = false;
 	if (operand == "-") {
@@ -289,7 +293,7 @@ bool Check::isatSymTable(string label) {
 	}
 }
 
-bool Check::checkLabelAndNubmers(char c,string label) {
+bool Check::checkLabelAndNubmers(char c, string label) {
 
 	if (label.at(0) >= '0' && label.at(0) <= '9') {
 		for (unsigned int i = 1; i < label.length(); i++) {
@@ -299,7 +303,7 @@ bool Check::checkLabelAndNubmers(char c,string label) {
 				return false;
 			}
 		}
-	} else if (label.at(0) == 'x' && (int) label.at(1) == 39&&c=='=') {
+	} else if (label.at(0) == 'x' && (int) label.at(1) == 39 && c == '=') {
 		if (label.length() - 3 % 2 == 0) {
 			return checkHexaNumber(label.substr(2));
 
@@ -307,16 +311,16 @@ bool Check::checkLabelAndNubmers(char c,string label) {
 			return false;
 		}
 
-	} else if (label.at(0) == 'c' && (int) label.at(1) == 39&&c=='=') {
+	} else if (label.at(0) == 'c' && (int) label.at(1) == 39 && c == '=') {
 		if ((int) label.at(label.length() - 1) == 39) {
 			return true;
 		} else {
 			return false;
 		}
-	} else if((label.at(0) == 'x' && (int) label.at(1) == 39&&c!='=')
-			||(label.at(0) == 'c' && (int) label.at(1) == 39&&c!='=')){
+	} else if ((label.at(0) == 'x' && (int) label.at(1) == 39 && c != '=')
+			|| (label.at(0) == 'c' && (int) label.at(1) == 39 && c != '=')) {
 		return false;
-	}else {
+	} else {
 		return true; //checkLabel(label,labels);
 	}
 
