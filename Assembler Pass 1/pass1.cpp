@@ -1,7 +1,7 @@
 #include <vector>
 #include "Tables.h"
 #include "debug.cpp"
-#include "check.h"
+#include "Check.h"
 #include "LocCounter.h"
 
 using namespace std;
@@ -75,24 +75,30 @@ int main(int argc, char **argv) {
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
+
 //			cout << "hiiiiiiiiiiiiiiiii" << endl;
 			strexc = check.checkAll(&label, &operation, &operand);
-			cout <<"@@@@@@ "<< label << "\t" << operation << "\t" << operand << "\t"
-					<< comment << endl;
-			if (strexc.length() != 0) {
-				file.writeAll(counter.getLineCounter(), counter.getAddress(),
-						label, operation, operand, comment);
-				file.writeLine(strexc);
-				strexc = "";
-				continue;
-			}
-//			t = trim(operand);
-			if (operand == "start") {
+			cout << "@@@@@@ " << label << "\t" << operation << "\t" << operand
+					<< "\t" << comment << endl;
+//			if (strexc.length() != 0) {
+//				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+//						label, operation, operand, comment);
+//				file.writeLine(strexc);
+//				strexc = "";
+//				continue;
+//			}
+			t = check.toLowerCase(operation);
+			cout << "#################" << "    " << t << endl;
+			if (t == "start") {
+				cout << "~~~~~~~~~~~~~~~~~~~~~~~IN START" << "    " << t
+						<< endl;
 				counter.setCounter(operation);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 
 			} else {
+				cout << "~~~~~~~~~~~~~~~~~~~~~~~NOT START" << "    " << t
+						<< endl;
 				counter.setCounter(0);
 				length = tables.getLength(operand, operation);
 				counter.AddtoCounter(length);
@@ -102,19 +108,23 @@ int main(int argc, char **argv) {
 			break;
 		} else {
 			if (strexc == "Comment") {
+				cout << "*******comment" << endl;
 				file.writeLine(line);
 			} else {
+				cout << "*******error" << endl;
 				file.writeLine(strexc);
 			}
 		}
 	}
 
+	cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT START" << endl;
 	while (!file.eof()) {
 
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(&label, &operand, &operation);
+			cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
 //			string s = check.checkAll(label, operand, operation);
 			length = tables.getLength(operand, operation);
 			counter.AddtoCounter(length);

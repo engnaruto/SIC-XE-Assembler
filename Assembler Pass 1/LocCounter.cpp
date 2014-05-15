@@ -9,6 +9,7 @@
 using namespace std;
 LocCounter::LocCounter(int start) {
 	decCounter = start;
+//	hexCounter = "HHHHHH";
 	hexCounter = dectoHex();
 	lineCounter = 0;
 }
@@ -18,6 +19,7 @@ LocCounter::~LocCounter() {
 int LocCounter::getLineCounter() {
 	return lineCounter++;
 }
+int	i = 0;
 void LocCounter::setCounter(std::string strNum) {
 	decCounter = atoi(strNum.c_str());
 	hexCounter = dectoHex();
@@ -29,7 +31,8 @@ void LocCounter::AddtoCounter(int addresssize) {
 	lineCounter++;
 }
 string LocCounter::getAddress() {
-	return hexCounter;
+	return "HHHHHHHH";
+//	return hexCounter;
 }
 
 string LocCounter::dectoHex() {

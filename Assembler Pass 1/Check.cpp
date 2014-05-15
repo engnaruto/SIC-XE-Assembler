@@ -21,22 +21,25 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 	string exception = "";
 	ok = checkLabel(&(*label));
 	if (!ok) {
+		cout<<"LABEL ERRORRRRRRRRRRRRRRRR"<<endl;
 		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
-	cout << "Label = " << *label << " Size = " << (*label).size() << endl;
+	cout << ">>>>>>Label = " << *label << " Size = " << (*label).size() << endl;
 	ok = checkOperation(&(*operation));
 	if (!ok) {
+		cout<<"OPERATION ERRORRRRRRRRRRRRRRRR"<<endl;
 		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
-	cout << "Operation = " << *operation << " Size = " << (*operation).size()
+	cout << ">>>>>Operation = " << *operation << " Size = " << (*operation).size()
 			<< endl;
 	ok = checkOperand(&(*operand));
 	if (!ok) {
+		cout<<"OPERAND ERRORRRRRRRRRRRRRRRR"<<endl;
 		exception += "\t***Error: Unavailable Operand\n";
 	}
-	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
-	cout << "Operand = " << *operand << " Size = " << (*operand).size() << endl;
-	cout << "OOOOOOOOO Operand => " << *operand << "  " << ok << endl;
+//	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
+	cout << ">>>>>>>Operand = " << *operand << " Size = " << (*operand).size() << endl;
+//	cout << "OOOOOOOOO Operand => " << *operand << "  " << ok << endl;
 
 	return exception;
 }
@@ -85,7 +88,7 @@ bool Check::checkOperation(string *operation) {
 		if (x.empty() == true) {
 			return false;
 		}
-		cout << ":P :P :P" << endl;
+//		cout << ":P :P :P" << endl;
 		if (isalpha(x[0]) == false && x[0] != '+') {
 			return false;
 		}
@@ -116,40 +119,41 @@ bool Check::checkOperand(string *operand) {
 		if ((*operand).at(0) == '\0') {
 			return true;
 		} else {
-			cout << "ASASASASASASAS  " <<(*operand).at(0)<< endl;
+//			cout << "ASASASASASASAS  " << (*operand).at(0) << endl;
 			if ((*operand).at(0) == '#') {
-				cout << "DFDFDFDFDFDFDF" << endl;
+//				cout << "DFDFDFDFDFDFDF" << endl;
 				return checkLabelAndNubmers((*operand).substr(1));
 			} else if ((*operand).at(0) == '@') {
-				cout << "ZXZXZXZXZXZXZX" << endl;
+//				cout << "ZXZXZXZXZXZXZX" << endl;
 				return true; //checkLabel(operand.substr(1),labels);
 			} else if ((*operand).find(",") < 100 && (*operand).find(",") > 0) {
-				cout << "CVCVCVCVCVCVCVCV" << endl;
+//				cout << "CVCVCVCVCVCVCVCV" << endl;
 				int pos = (*operand).find(",");
 				string str1 = (*operand).substr(0, pos);
 				string str2 = (*operand).substr(pos + 1);
 				return checkRegister(str1, str2);
 
-			} else if ((*operand).at(1) == ' ' || (*operand).at(1) == '\0') {
-				cout << "RERERERERERERERERE" << endl;
+			} else if ((*operand).size() > 1
+					&& ((*operand).at(1) == ' ' || (*operand).at(1) == '\0')) {
+//				cout << "RERERERERERERERERE" << endl;
 				if ((*operand).at(0) == 'a' || (*operand).at(0) == 'b'
 						|| (*operand).at(0) == 'x' || (*operand).at(0) == 't'
 						|| (*operand).at(0) == 's' || (*operand).at(0) == 'l') {
-					cout << "TYTYTYTYTYTYTYT" << endl;
+//					cout << "TYTYTYTYTYTYTYT" << endl;
 					return true;
 				} else {
-					cout << "GHGHGHGHGHGHGHG" << endl;
+//					cout << "GHGHGHGHGHGHGHG" << endl;
 					return false;
 				}
 			} else {
-				cout << "QWQWQWQWQWQW" << endl;
+//				cout << "QWQWQWQWQWQW" << endl;
 				return checkLabelAndNubmers((*operand));
 			}
-			cout << "XCXCXCXCXCXCXC" << endl;
+//			cout << "XCXCXCXCXCXCXC" << endl;
 		}
-		cout << "YUYUYUYUYUYUYUYU" << endl;
+//		cout << "YUYUYUYUYUYUYUYU" << endl;
 	}
-		cout << "ZDZDZDZDZDZDZDDZ" << endl;
+//	cout << "ZDZDZDZDZDZDZDDZ" << endl;
 	return false;
 }
 

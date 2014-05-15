@@ -15,6 +15,7 @@ public:
 	~Check();
 	std::string checkAll(std::string *label, std::string *operation,
 			std::string *operand);
+	std::string toLowerCase(std::string input);
 private:
 	Tables tables;
 	bool checkSpaces(std::string str, int type);
@@ -31,7 +32,6 @@ private:
 			std::string operation);
 	bool isNumber(std::string st);
 	std::string trim(std::string input);
-	std::string toLowerCase(std::string input) ;
 }
 ;
 

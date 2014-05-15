@@ -24,7 +24,7 @@ public:
 private:
 	std::string convDectoHex(int decNum, int r[]);
 	std::string dectoHex();
-	int i;
+//	int i;
 };
 
 #endif /* LOCCOUNTER_H_ */

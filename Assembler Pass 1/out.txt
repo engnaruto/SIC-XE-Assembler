@@ -1,12 +1,3 @@
 Line No.	Address	Label	Mnemonic	Operand	Comment
-.SIC/XE Instruction Set – Lab 1
-.Due date: Sunday, March 30th, 2014
-.Write a sequence of instructions for SIC/XE machine that does the following:
-.a. Set ALPHA equal to the integer portion of BETA / GAMMA.
-.b. Set ALPHA equal to 4 * BETA + 3 * GAMMA.
-.c. Clear a 100-byte string to all blanks.
-.d. SET elements of a 100-word array to 0.
-.
-.
-.        10      18                36
 .23456789012345678901234567890123456789
+0	HHHHHHHH		START	1110	
