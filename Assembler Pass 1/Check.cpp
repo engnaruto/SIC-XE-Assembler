@@ -24,35 +24,26 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
-//	cout << ">>>>>>Label = " << *label << " Size = " << (*label).size() << endl;
 	ok = checkOperation(&(*operation), &exception);
 	if (!ok) {
 		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
-//	cout << ">>>>>Operation = " << *operation << " Size = "
-//			<< (*operation).size() << endl;
 	ok = checkOperand(&(*operand), &exception);
 	if (!ok) {
 		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Operand\n";
 	}
 	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
-//	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
-//	cout << ">>>>>>>Operand = " << *operand << " Size = " << (*operand).size()
-//			<< endl;
-//	cout << "OOOOOOOOO Operand => " << *operand << "  " << ok << endl;
 
 	return exception;
 }
 bool Check::checkLabel(string *label, string *exception) {
 	bool accep = false;
 	accep = checkSpaces(*label, 1);
-//	cout << " LABEL SPACES  " << accep << endl;
 	(*label) = trim(*label);
 	string x = toLowerCase(*label);
 	if (accep && (x).size() != 0 && !(x).empty()) {
-//		cout << "-------------------NOT EMPTY" << endl;
 		int check = checkAtHash(x);
 		if (check == 0) {
 			accep = isalpha((x)[0]);
@@ -72,7 +63,6 @@ bool Check::checkLabel(string *label, string *exception) {
 		} else {
 			accep = false;
 		}
-//		cout << "LABELLLLLLLL " << x  << endl;
 	} else {
 		accep = true;
 	}
@@ -80,12 +70,8 @@ bool Check::checkLabel(string *label, string *exception) {
 }
 bool Check::checkOperation(string *operation, string *exception) {
 	bool ok = checkSpaces((*operation), 2);
-//	cout << "MMMMMMMMMMMM Operation => " << *operation << "    "
-//			<< (*operation).length() << endl;
 	(*operation) = trim((*operation));
-//	cout << "NNNNNNNNNNNN Operation => " << *operation << endl;
 	string x = toLowerCase(*operation);
-//	cout << "XXXXXXXX Operation => " << x << "  OK => " << ok << endl;
 	cout << "-----------OPERATION " << *operation << "      " << ok << endl;
 	if (ok == true) {
 		string dir[6];
@@ -95,11 +81,9 @@ bool Check::checkOperation(string *operation, string *exception) {
 		dir[3] = "resw";
 		dir[4] = "start";
 		dir[5] = "end";
-//		map<string, string> big;
 		if (x.empty() == true) {
 			return false;
 		}
-//		cout << ":P :P :P" << endl;
 		if (isalpha(x[0]) == false && x[0] != '+') {
 			return false;
 		}
@@ -132,29 +116,22 @@ bool Check::checkOperand(string *operand, string *exception) {
 			return true;
 		} else {
 			if ((*operand).at(0) == '#') {
-//				cout << "DFDFDFDFDFDFDF" << endl;
 				return checkLabelAndNubmers((*operand).at(0),
 						(*operand).substr(1));
 			} else if ((*operand).at(0) == '@') {
-//				cout << "ZXZXZXZXZXZXZX" << endl;
 				return true; //checkLabel(operand.substr(1),labels);
 			} else if ((*operand).find(",") < 100 && (*operand).find(",") > 0) {
-//				cout << "CVCVCVCVCVCVCVCV" << endl;
 				int pos = (*operand).find(",");
 				string str1 = (*operand).substr(0, pos);
 				string str2 = (*operand).substr(pos + 1);
 				return checkRegister(str1, str2);
-
 			} else if ((*operand).size() > 1
 					&& ((*operand).at(1) == ' ' || (*operand).at(1) == '\0')) {
-//				cout << "RERERERERERERERERE" << endl;
 				if ((*operand).at(0) == 'a' || (*operand).at(0) == 'b'
 						|| (*operand).at(0) == 'x' || (*operand).at(0) == 't'
 						|| (*operand).at(0) == 's' || (*operand).at(0) == 'l') {
-//					cout << "TYTYTYTYTYTYTYT" << endl;
 					return true;
 				} else {
-//					cout << "GHGHGHGHGHGHGHG" << endl;
 					return false;
 				}
 			} else if ((*operand).at(0) == '=') {
@@ -163,18 +140,14 @@ bool Check::checkOperand(string *operand, string *exception) {
 			} else if ((*operand).at(0) == '*') {
 				return true;
 			} else {
-//				cout << "QWQWQWQWQWQW" << endl;
 				return checkLabelAndNubmers('=', (*operand));
 			}
-//			cout << "XCXCXCXCXCXCXC" << endl;
 		}
-//		cout << "YUYUYUYUYUYUYUYU" << endl;
 	}
 	if ((*operand).empty()) {
 		cout << "ASASASASASASAS  " << (*operand) << "     " << ok << endl;
 		return true;
 	}
-//	cout << "ZDZDZDZDZDZDZDDZ" << endl;
 	return false;
 }
 
