@@ -21,24 +21,25 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 	string exception = "";
 	ok = checkLabel(&(*label));
 	if (!ok) {
-		cout<<"LABEL ERRORRRRRRRRRRRRRRRR"<<endl;
+//		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
-	cout << ">>>>>>Label = " << *label << " Size = " << (*label).size() << endl;
+//	cout << ">>>>>>Label = " << *label << " Size = " << (*label).size() << endl;
 	ok = checkOperation(&(*operation));
 	if (!ok) {
-		cout<<"OPERATION ERRORRRRRRRRRRRRRRRR"<<endl;
+//		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
-	cout << ">>>>>Operation = " << *operation << " Size = " << (*operation).size()
-			<< endl;
+//	cout << ">>>>>Operation = " << *operation << " Size = "
+//			<< (*operation).size() << endl;
 	ok = checkOperand(&(*operand));
 	if (!ok) {
-		cout<<"OPERAND ERRORRRRRRRRRRRRRRRR"<<endl;
+//		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
 		exception += "\t***Error: Unavailable Operand\n";
 	}
 //	cout << "XOXOXOXO  to Operand => " << *operand << "  " << ok << endl;
-	cout << ">>>>>>>Operand = " << *operand << " Size = " << (*operand).size() << endl;
+//	cout << ">>>>>>>Operand = " << *operand << " Size = " << (*operand).size()
+//			<< endl;
 //	cout << "OOOOOOOOO Operand => " << *operand << "  " << ok << endl;
 
 	return exception;
@@ -46,8 +47,10 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 bool Check::checkLabel(string *label) {
 	bool accep = false;
 	accep = checkSpaces(*label, 1);
+//	cout << " LABEL SPACES  " << accep << endl;
 	(*label) = trim(*label);
-	if (accep && (*label).size() != 0) {
+	if (accep && (*label).size() != 0 && !(*label).empty()) {
+//		cout << "-------------------NOT EMPTY" << endl;
 		int check = checkAtHash(*label);
 		if (check != 3) {
 			accep = isalpha((*label)[0]);
@@ -65,6 +68,8 @@ bool Check::checkLabel(string *label) {
 				}
 			}
 		}
+	} else {
+		accep = true;
 	}
 	return accep;
 }
@@ -76,6 +81,7 @@ bool Check::checkOperation(string *operation) {
 //	cout << "NNNNNNNNNNNN Operation => " << *operation << endl;
 	string x = toLowerCase(*operation);
 //	cout << "XXXXXXXX Operation => " << x << "  OK => " << ok << endl;
+//	cout << "-----------OPERATION " << x << endl;
 	if (ok == true) {
 		string dir[6];
 		dir[0] = "word";
@@ -208,9 +214,13 @@ bool Check::checkSpaces(string str, int type) {
 		if (str[i] == ' ' && str[i + 1] != ' ' && i != str.length() - 1)
 			valid = false;
 	}
+	string t = trim(str);
 	if (type == 1) {
 		if (str[8] != ' ')
 			valid = false;
+		if (t.empty()) {
+			valid = true;
+		}
 	}
 	if (type == 2) {
 		if (str[6] != ' ' || str[7] != ' ')

@@ -1,6 +1,6 @@
 .23456789012345678901234567890123456789
          START   1110
 LOOP1    LDA     #0
-LOOP1    LDA     #0
-LOOP1    LDA     #0
-         END
+LOOP2    LDX     #0
+LOOP3    LDS     #0
+EXIT     END

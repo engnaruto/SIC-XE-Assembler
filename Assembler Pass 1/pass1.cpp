@@ -11,10 +11,9 @@ int length;
 string readSplitLine(FileOperations &file) {
 	line = file.readLine();
 
-//	cout << line << endl;
 	string s = "";
 	if (line[0] != '.') {
-		if (line.size() < 15) {
+		if (line.size() < 12) {
 //			throw;
 			s = "Error: Line is too short !!!\n";
 		} else if (line.size() > 35) {
@@ -29,9 +28,14 @@ string readSplitLine(FileOperations &file) {
 			operation = file.readOperation(line);
 			comment = "";
 		} else {
+//			cout << "INNNNNNNNNNNNN SIZE = " << line.size() << endl;
+//	cout << "@@@@@@ " << label << "\t" << operation << "\t" << operand << "\t"
+//			<< comment << line.size() << endl;
 			label = file.readLabel(line);
-			operand = file.readOperand(line);
-			operation = "";
+//			cout << "LABELLLLLL>> " << label << endl;
+			operation = file.readOperation(line);
+//			cout << "OOPERANDDDDD>> " << operand << endl;
+			operand = "";
 			comment = "";
 		}
 	} else {
@@ -88,17 +92,17 @@ int main(int argc, char **argv) {
 //				continue;
 //			}
 			t = check.toLowerCase(operation);
-			cout << "#################" << "    " << t << endl;
+//			cout << "#################" << "    " << t << endl;
 			if (t == "start") {
-				cout << "~~~~~~~~~~~~~~~~~~~~~~~IN START" << "    " << t
-						<< endl;
+//				cout << "~~~~~~~~~~~~~~~~~~~~~~~IN START" << "    " << t
+//						<< endl;
 				counter.setCounter(operation);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 
 			} else {
-				cout << "~~~~~~~~~~~~~~~~~~~~~~~NOT START" << "    " << t
-						<< endl;
+//				cout << "~~~~~~~~~~~~~~~~~~~~~~~NOT START" << "    " << t
+//						<< endl;
 				counter.setCounter(0);
 				length = tables.getLength(operand, operation);
 				counter.AddtoCounter(length);
@@ -108,25 +112,28 @@ int main(int argc, char **argv) {
 			break;
 		} else {
 			if (strexc == "Comment") {
-				cout << "*******comment" << endl;
+//				cout << "*******comment" << endl;
 				file.writeLine(line);
 			} else {
-				cout << "*******error" << endl;
+//				cout << "*******error" << endl;
 				file.writeLine(strexc);
 			}
 		}
 	}
 
 	cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT START" << endl;
+	cout << "------------------------------------------------------" << endl;
 	while (!file.eof()) {
 
 		strexc = readSplitLine(file);
-
+		cout << "@@@@@@ " << label << "\t" << operation << "\t" << operand
+				<< "\t" << comment << endl;
 		if (strexc.size() == 0) {
-			strexc = check.checkAll(&label, &operand, &operation);
-			cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
+			strexc = check.checkAll(&label, &operation, &operand);
 //			string s = check.checkAll(label, operand, operation);
-			length = tables.getLength(operand, operation);
+//			cout << "INNNNNNNNNNNNNNNNNNNNNNNNNN" << endl;
+			length = tables.getLength(operation, operand);
+//			cout << "OUTTTTTTTTTTTTTTTTTTTTTTTT" << endl;
 			counter.AddtoCounter(length);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
@@ -143,9 +150,10 @@ int main(int argc, char **argv) {
 		}
 
 	}
-
-//	t = trim(operand);
-	if (operand != "end") {
+	cout << "ENDDDDDDDDDDDDDDDDD" << endl;
+	cout << "OPERATION " << operation << endl;
+	t = check.toLowerCase(operation);
+	if (t != "end") {
 		file.writeLine("Error: No End Mnemonic");
 	}
 

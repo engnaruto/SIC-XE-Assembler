@@ -60,7 +60,6 @@ void Tables::loadHash() {
 
 }
 
-
 int Tables::getLength(string operation, string operand) {
 	if (operation == "word") {
 		return 3;
@@ -82,15 +81,29 @@ int Tables::getLength(string operation, string operand) {
 		if (operation.at(0) == '+')
 			return 4;
 		else {
-			string s = ""; //opTable[operation].format;
-			if (s.at(0) == '1')
+			string s = toLowerCase(operation);
+			string x = opTable[s].format;
+//			cout << "--------HEREEEEEEEEEEE " << s << endl;
+			if (x.at(0) == '1')
 				return 1;
-			else if (s.at(0) == '2')
+			else if (x.at(0) == '2')
 				return 2;
 			else
 				return 3;
 		}
 	}
 	return 0;
+}
+
+string Tables::toLowerCase(string input) {
+	unsigned int i;
+	string tmp = "";
+	for (i = 0; i < input.length(); i++) {
+		char c = input[i];
+		int n = tolower(c);
+		char d = char(n);
+		tmp = tmp + d;
+	}
+	return tmp;
 }
 

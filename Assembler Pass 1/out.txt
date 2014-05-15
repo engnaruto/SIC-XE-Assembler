@@ -1,3 +1,10 @@
-Line No.	Address	Label	Mnemonic	Operand	Comment
+Line No.	Address	Label	Mnemonic	Operand	Commenthh
 .23456789012345678901234567890123456789
 0	HHHHHHHH		START	1110	
+2	HHHHHHHH	LOOP1	LDA	#0	
+4	HHHHHHHH	LOOP2	LDX	#0	
+	***Error: Unavailable or duplicate Symbol
+
+6	HHHHHHHH	LOOP3	LDS	#0	
+	***Error: Unavailable or duplicate Symbol
+

@@ -45,7 +45,7 @@ string FileOperations::readComment(string line) {
 
 void FileOperations::writeFirst() {
 //	cout<<"WRITEEEEEEEEEEEEEEEEEEEEEE"<<endl;
-	out << "Line No.\tAddress\tLabel\tMnemonic\tOperand\tComment" << endl;
+	out << "Line No.\tAddress\tLabel\tMnemonic\tOperand\tCommenthh" << endl;
 #ifdef debug
 	cout << "Line No.\tAddress\t\tLabel\tMnemonic\tOperand\tComment" << endl;
 #endif
