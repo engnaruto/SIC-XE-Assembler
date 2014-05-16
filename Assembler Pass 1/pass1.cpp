@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
 	} else {
 		file.writeLine("\n>>    I N C O M P L E T E    A S S E M b L Y");
 	}
-
+//	file.writeLine(tables.printSymTable());
 	file.close();
 	return 0;
 }

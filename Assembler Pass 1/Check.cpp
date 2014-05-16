@@ -48,6 +48,10 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 bool Check::checkLabel(string *label, string *exception) {
 	bool accep = false;
 	accep = checkSpaces(*label, 1);
+//	if (!accep) {
+//		*exception += "\t***Error: Invalid operand\n";
+//		return false;
+//	}
 	(*label) = trim(*label);
 	string x = toLowerCase(*label);
 	if (accep && (x).size() != 0 && !(x).empty()) {
@@ -118,19 +122,12 @@ bool Check::checkOperation(string *operation, string *exception) {
 	return false;
 }
 
-bool Check::checkByte(string oper, string *exception) {
-	if (oper.at(0) == 'c') {
-		return checkLabelAndNubmers('=', oper, &(*exception));
-	} else if (oper.at(0) == 'x') {
-		return checkLabelAndNubmers('=', oper, &(*exception));
-	} else if (oper.find("'") < 50 && oper.find("'") > 0) {
-		*exception += "\t***Error: Invalid symbol\n";
-		return false;
-	}
-	return true;
-}
 bool Check::checkOperand(string *operand, string *exception) {
 	bool ok = checkSpaces((*operand), 0);
+	if (!ok) {
+		*exception += "\t***Error: Invalid operand\n";
+		return false;
+	}
 	(*operand) = trim((*operand));
 
 	if (ok == true && !(*operand).empty()) {
@@ -314,6 +311,18 @@ bool Check::checkSpaces(string str, int type) {
 			valid = false;
 	}
 	return valid;
+}
+
+bool Check::checkByte(string oper, string *exception) {
+	if (oper.at(0) == 'c') {
+		return checkLabelAndNubmers('=', oper, &(*exception));
+	} else if (oper.at(0) == 'x') {
+		return checkLabelAndNubmers('=', oper, &(*exception));
+	} else if (oper.find("'") < 50 && oper.find("'") > 0) {
+		*exception += "\t***Error: Invalid symbol\n";
+		return false;
+	}
+	return true;
 }
 
 int Check::checkAtHash(string searchable) {

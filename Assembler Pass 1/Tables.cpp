@@ -113,3 +113,16 @@ string Tables::toLowerCase(string input) {
 	return tmp;
 }
 
+string Tables::printSymTable() {
+	string s;
+
+	s += "                 Symbol Table\n";
+	s += "************************************************\n";
+
+	for (map<string, string>::iterator it = symTable.begin();
+			it != symTable.end(); ++it) {
+		s += "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
+	}
+	s += "************************************************\n";
+	return s;
+}

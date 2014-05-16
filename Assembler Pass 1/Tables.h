@@ -30,6 +30,7 @@ public:
 	int getLength(std::string operation, std::string operand);
 	std::string toLowerCase(std::string input);
 	std::vector<std::string> split(const std::string &s, char delim);
+	std::string printSymTable() ;
 private:
 	std::vector<std::string> &split(const std::string &s, char delim,
 			std::vector<std::string> &elems);
