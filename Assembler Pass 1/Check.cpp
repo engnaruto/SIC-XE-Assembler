@@ -237,7 +237,7 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			string str1 = operand.substr(0, pos);
 			string str2 = operand.substr(pos + 1);
 			ok = true;
-			if (!checkRegister(str2) || !checkRegister(str2)) {
+			if (!checkRegister(str1) || !checkRegister(str2)) {
 				*exception += "\t***Error: Illegal address for register";
 				ok = false;
 			}
