@@ -21,7 +21,8 @@ Line No.	Address	Label	Mnemonic	Operand	Comments
 >>    I N C O M P L E T E    A S S E M b L Y
 
 
-            Symbol Table
+******************************************
+*              Symbol Table              *
 ******************************************
 *     gi         	*     	00019        *
 *     loop1        	*     	00006        *
