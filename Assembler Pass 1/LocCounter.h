@@ -18,6 +18,7 @@ public:
 	void setCounter(std::string counter);
 	int getLineCounter();
 	std::string getAddress();
+	std::string getAddressLabel();
 private:
 	std::string convDectoHex(int decNum, int r[]);
 	std::string dectoHex();

@@ -36,6 +36,9 @@ string LocCounter::getAddress() {
 	decCounter+=lastLength;
 	return hexCounter;
 }
+string LocCounter::getAddressLabel() {
+	return hexCounter;
+}
 
 string LocCounter::dectoHex() {
 	int r[50];

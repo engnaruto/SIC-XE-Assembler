@@ -8,18 +8,19 @@
 #include "Check.h"
 
 using namespace std;
-Check::Check(Tables &tables) {
-	this->tables = tables;
+Check::Check(Tables *tables) {
+	this->tables = (tables);
 
 }
 Check::~Check() {
 
 }
-string Check::checkAll(string *label, string *operation, string *operand) {
+string Check::checkAll(string address, string *label, string *operation,
+		string *operand) {
 
 	bool ok;
 	string exception = "";
-	ok = checkLabel(&(*label), &exception);
+	ok = checkLabel(address, &(*label), &exception);
 	if (!ok) {
 //		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
 //		exception += "\t***Error: Unavailable or duplicate Symbol\n";
@@ -36,7 +37,7 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 //		cout << "XXXXX   " << exception << endl;
 //		exception += "\t***Error: Unavailable Operand\n";
 	}
-//	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
+	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
 	if (!ok) {
 //		cout << "Matching ERRORRRRRRRRRRRRRRRR" << endl;
 //		cout << "XXXXX   " << exception << endl;
@@ -45,18 +46,20 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 
 	return exception;
 }
-bool Check::checkLabel(string *label, string *exception) {
+bool Check::checkLabel(string address, string *label, string *exception) {
+//	cout <<"_____________ "<< tables->symTable.size()<<"\t*\n";
 	bool accep = false;
 	accep = checkSpaces(*label, 1);
-//	if (!accep) {
-//		*exception += "\t***Error: Invalid operand\n";
-//		return false;
-//	}
+	if (!accep) {
+		*exception += "\t***Error: Invalid label name\n";
+		return false;
+	}
 	(*label) = trim(*label);
 	string x = toLowerCase(*label);
 	if (accep && (x).size() != 0 && !(x).empty()) {
 		int check = checkAtHash(x);
 		if (check == 0) {
+//			cout << "~~~~~~~~~ " << x << endl;
 			accep = isalpha((x)[0]);
 			for (unsigned int i = 0; i < (x).length(); i++) {
 				if (isalpha((x)[i]) && i != (x).length() - 1 && accep == true) {
@@ -71,7 +74,15 @@ bool Check::checkLabel(string *label, string *exception) {
 					break;
 				}
 			}
+			tables->symTable.insert(pair<string, string>(x, address));
 		} else {
+			if (check == 2) {
+				*exception += "\t***Error: Invalid label name\n";
+
+			} else {
+				*exception += "\t***Error: Duplicate label\n";
+
+			}
 			accep = false;
 		}
 	} else {
@@ -107,7 +118,7 @@ bool Check::checkOperation(string *operation, string *exception) {
 			tmp.assign(x.begin() + 1, x.end());
 			x.assign(tmp);
 		}
-		int found = tables.opTable.count(x);
+		int found = tables->opTable.count(x);
 		if (found > 0) {
 			return true;
 		}
@@ -178,18 +189,21 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 	bool ok = false;
 	operation = toLowerCase(operation);
 	operand = toLowerCase(operand);
-	string mapOperand = tables.opTable[operation].operand;
+	string mapOperand = tables->opTable[operation].operand;
 	if (operation == "start") {
 		if (isHexaNumber(operand, &(*exception))) {
 			ok = true;
 		}
 	} else if (operation == "word" || operation == "resb"
 			|| operation == "resw") {
+//		cout << "~~~~~~~~~~~   " <<operation<<"    "<< operand.size() << endl;
 		if (isNumber(operand)) {
 			ok = true;
 		} else {
 			if (operation == "start") {
 				*exception += "\t***Error: Invalid register in operand\n";
+			}else{
+				*exception += "\t***Error: Invalid number\n";
 			}
 		}
 	} else if (operation == "end") {
@@ -305,7 +319,7 @@ bool Check::checkSpaces(string str, int type) {
 	}
 	string x = trim(str);
 	x = toLowerCase(x);
-	if (type == 2 && (tables.opTable[x].operand != "-" && x != "end")) {
+	if (type == 2 && (tables->opTable[x].operand != "-" && x != "end")) {
 //cout <<"INNNNNNNN<<<<   "<<x<<endl;
 		if (str[6] != ' ' || str[7] != ' ')
 			valid = false;
@@ -330,14 +344,18 @@ int Check::checkAtHash(string searchable) {
 	int check1;
 	int check2;
 	int check = 0;
-	int found = 0;
-	tables.symTable.count(x);
+	int found = tables->symTable.count(x);
+//	for (map<string, string>::iterator it = tables.symTable.begin();
+//				it != tables.symTable.end(); ++it) {
+//			cout<< "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
+//		}
+//	cout<<"%%%%%%%%%%   "<<tables.symTable.size()<<endl;
+//	cout<<"$$$$$$$$$$   "<<found<<endl;
 	if (found > 0) {
 		check1 = 1;
 		check = 1;
 	}
-	int found2 = 0;
-	tables.opTable.count(x);
+	int found2 = tables->opTable.count(x);
 	if (found2 > 0) {
 		check2 = 2;
 		check = 2;
@@ -368,7 +386,7 @@ bool Check::isHexaNumber(string st, string * exception) {
 }
 
 bool Check::isatSymTable(string label) {
-	if (tables.symTable.count(label) > 0) {
+	if (tables->symTable.count(label) > 0) {
 		return true;
 	} else {
 		return false;

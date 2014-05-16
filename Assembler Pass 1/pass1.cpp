@@ -70,14 +70,15 @@ int main(int argc, char **argv) {
 //	}
 
 	file.writeFirst();
-	Check check(tables);
+	Check check(&tables);
 	strexc = "";
 	while (!file.eof()) {
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
 
-			strexc = check.checkAll(&label, &operation, &operand);
+			strexc = check.checkAll(counter.getAddressLabel(), &label,
+					&operation, &operand);
 			if (strexc.length() != 0) {
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
@@ -111,7 +112,8 @@ int main(int argc, char **argv) {
 
 		strexc = readSplitLine(file);
 		if (strexc.size() == 0) {
-			strexc = check.checkAll(&label, &operation, &operand);
+			strexc = check.checkAll(counter.getAddressLabel(), &label,
+					&operation, &operand);
 //			string s = check.checkAll(label, operand, operation);
 			if (strexc.length() != 0) {
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
@@ -140,6 +142,7 @@ int main(int argc, char **argv) {
 			}
 		}
 
+//		cout <<"~~~~~~~~~~~~~~ "<< tables.symTable.size()<<"\t*\n";
 	}
 	t = check.toLowerCase(operation);
 	if (t != "end") {
@@ -152,7 +155,12 @@ int main(int argc, char **argv) {
 	} else {
 		file.writeLine("\n>>    I N C O M P L E T E    A S S E M b L Y");
 	}
-//	file.writeLine(tables.printSymTable());
+//	for (map<string, string>::iterator it = tables.symTable.begin();
+//			it != tables.symTable.end(); ++it) {
+//		cout << "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
+////			s += "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
+//	}
+	file.writeLine(tables.printSymTable());
 	file.close();
 	return 0;
 }

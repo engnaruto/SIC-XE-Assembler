@@ -11,15 +11,15 @@
 #include "Tables.h"
 class Check {
 public:
-	Check(Tables &tables);
+	Check(Tables *tables);
 	~Check();
-	std::string checkAll(std::string *label, std::string *operation,
+	std::string checkAll(std::string address,std::string *label, std::string *operation,
 			std::string *operand);
 	std::string toLowerCase(std::string input);
 private:
-	Tables tables;
+	Tables *tables;
 	bool checkSpaces(std::string str, int type);
-	bool checkLabel(std::string *label, std::string *exception);
+	bool checkLabel(std::string address,std::string *label, std::string *exception);
 	bool checkOperation(std::string *operation, std::string *exception);
 	bool checkOperand(std::string *operand, std::string *exception);
 	bool checkOperationOperandMathcing(std::string operation,

@@ -116,13 +116,25 @@ string Tables::toLowerCase(string input) {
 string Tables::printSymTable() {
 	string s;
 
-	s += "                 Symbol Table\n";
-	s += "************************************************\n";
-
+	s += "\n\n            Symbol Table\n";
+	s += "******************************************\n";
+//cout<<"%%%%%%%%%%   "<< symTable.size()<<endl;
+	string z = "";
+	string x = "";
 	for (map<string, string>::iterator it = symTable.begin();
 			it != symTable.end(); ++it) {
-		s += "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
+		z = it->first;
+		x = it->second;
+
+		for (unsigned int i = 0; i < 20 - x.size(); i++) {
+			x  +=" ";
+		}
+		for (unsigned  int i = 0; i < 20 - z.size(); i++) {
+			z += " ";
+		}
+//		cout << "*\t" + z + "*" + x + "\t*\n";
+		s += "*     " + z + "\t*     \t" + x + "*\n";
 	}
-	s += "************************************************\n";
+	s += "******************************************\n";
 	return s;
 }
