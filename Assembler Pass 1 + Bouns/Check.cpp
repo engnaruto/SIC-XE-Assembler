@@ -17,19 +17,19 @@ Check::~Check() {
 }
 string Check::checkAll(string *label, string *operation, string *operand) {
 
-	bool ok;
+//	bool ok;
 	string exception = "";
-	ok = checkLabel(&(*label), &exception);
+//	ok = checkLabel(&(*label), &exception);
 //	if (!ok) {
 //		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
 //		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 //	}
-	ok = checkOperation(&(*operation), &exception);
+//	ok = checkOperation(&(*operation), &exception);
 //	if (!ok) {
 //		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
 //		exception += "\t***Error: Unavailable Mnemonic\n";
 //	}
-	ok = checkOperand(&(*operand), &exception);
+//	ok = checkOperand(&(*operand), &exception);
 //	if (!ok) {
 //		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
 //		exception += "\t***Error: Unavailable Operand\n";
