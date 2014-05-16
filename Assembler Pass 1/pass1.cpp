@@ -8,6 +8,7 @@ using namespace std;
 
 string line, label, operand, operation, comment, lowerCaseLine, strexc, t;
 int length;
+bool ok;
 string readSplitLine(FileOperations &file) {
 	line = file.readLine();
 
@@ -43,10 +44,12 @@ int main(int argc, char **argv) {
 	Tables tables;
 	FileOperations file("in.txt");
 	LocCounter counter(0);
+	ok = true;
 	try {
 		tables.loadHash();
 	} catch (exception &e) {
 		file.writeLine("Error: Can't load hashTable.txt");
+		ok = false;
 	}
 
 //	string c;
@@ -80,29 +83,27 @@ int main(int argc, char **argv) {
 						label, operation, operand, comment);
 				file.writeLine(strexc);
 				strexc = "";
+				ok = false;
 				continue;
 			}
 			t = check.toLowerCase(operation);
 			if (t == "start") {
 				counter.setCounter(operand);
-				length = tables.getLength(operation, operand);
-				counter.addtoCounter(length);
-				file.writeAll(counter.getLineCounter(), counter.getAddress(),
-						label, operation, operand, comment);
-
 			} else {
-				length = tables.getLength(operation, operand);
 				counter.setCounter("0");
-				counter.addtoCounter(length);
-				file.writeAll(counter.getLineCounter(), counter.getAddress(),
-						label, operation, operand, comment);
 			}
+			length = tables.getLength(operation, operand);
+			counter.addtoCounter(length);
+			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
+					operation, operand, comment);
+
 			break;
 		} else {
 			if (strexc == "Comment") {
 				file.writeLine(line);
 			} else {
 				file.writeLine(strexc);
+				ok = false;
 			}
 		}
 	}
@@ -116,30 +117,40 @@ int main(int argc, char **argv) {
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				file.writeLine(strexc);
-				strexc = "";
+//				strexc = "";
+				ok = false;
 				continue;
 			}
 			length = tables.getLength(operation, operand);
-//			cout << "OUTTTTTTTTTTT" << endl;
 			counter.addtoCounter(length);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			if (strexc.length() != 0) {
+//				cout<<"INNNNNNNNNN"<<endl;
 				file.writeLine(strexc);
 				strexc = "";
+				ok = false;
 			}
 		} else {
 			if (strexc == "Comment") {
 				file.writeLine(line);
 			} else {
 				file.writeLine(strexc);
+				ok = false;
 			}
 		}
 
 	}
 	t = check.toLowerCase(operation);
 	if (t != "end") {
-		file.writeLine("Error: No End Mnemonic");
+//		cout<<"^^^^^^^^^^^^^  "<<t<<endl;
+		file.writeLine("\t***Error: No End Mnemonic\n");
+	}
+
+	if (ok) {
+		file.writeLine("\n>>    S U C C E S S F U L    A S S E M B L Y");
+	} else {
+		file.writeLine("\n>>    I N C O M P L E T E    A S S E M b L Y");
 	}
 
 	file.close();

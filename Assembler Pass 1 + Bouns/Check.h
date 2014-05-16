@@ -32,7 +32,7 @@ private:
 	Tables tables;
 	bool checkSpaces(std::string str, int type);
 	int checkAtHash(std::string searchable);
-	bool checkHexaNumber(std::string st, std::string *exception);
+	bool isHexaNumber(std::string st, std::string *exception);
 	bool isatSymTable(std::string label);
 	bool checkLabelAndNubmers(char c, std::string label,
 			std::string *exception);

@@ -243,7 +243,7 @@ int Check::checkAtHash(string searchable) {
 	return check;
 }
 
-bool Check::checkHexaNumber(string st, string * exception) {
+bool Check::isHexaNumber(string st, string * exception) {
 	string x = toLowerCase(st);
 	if (x.length() % 2 == 1) {
 		*exception += "\t***Error: Invalid hex number\n";
@@ -284,7 +284,7 @@ bool Check::checkLabelAndNubmers(char c, string label, string * exception) {
 		}
 	} else if (label.at(0) == 'x' && (int) label.at(1) == 39 && c == '=') {
 		if (label.length() - 3 % 2 == 0) {
-			return checkHexaNumber(label.substr(2), exception);
+			return isHexaNumber(label.substr(2), exception);
 
 		} else {
 			*exception += "\t***Error: Invalid hex number";

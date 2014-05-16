@@ -1,28 +1,17 @@
 Line No.	Address	Label	Mnemonic	Operand	Comments
 .23456789012345678901234567890123456789
-1			STA	RT   0	
-	***Error: Invalid Operand
+1	00000		STA	RT0	
+2	00003		LDX	#0	
+3	00006		LDS	#3	
+4	00009		LDT	#300	
+5	0000C	LOOP1	LDA	#0	
+6	0000F		STA	STR2,X	
+7	00012		ADDR	S,X	
+8	00014		COMPR	X,T	
+9	00016		JLT	LOOP1	
+10	00019		J	*	
+11	0001C	TEST	BYTE	c'25'	
+12	0001E	GI	WORD	5	
+13	00021		END		
 
-2	00000		LDX	#0	
-3	00000		L DS    	 #3	
-	***Error: Invalid Operation
-	***Error: Unavailable Mnemonic
-	***Error: Invalid Operand
-
-4	00006		LDT	#300	
-5	00009	LOOP1	LDA	#0	
-6	00009		S  TA   	  STR2,X	
-	***Error: Invalid Operation
-	***Error: Unavailable Mnemonic
-	***Error: Invalid Operand
-
-7	0000F		ADDR	S,X	
-8	00011		COMPR	X,T	
-9	00013		JLT	LOOP1	
-10	00016		J	*	
-11	00019	TEST	BYTE	X'25'	
-12	0001A	GI	WORD	5	
-13	0001A		END		
-	***Error: Invalid Operation
-	***Error: Unavailable Mnemonic
-
+>>    S U C C E S S F U L    A S S E M B L Y

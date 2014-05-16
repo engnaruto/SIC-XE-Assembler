@@ -1,14 +1,14 @@
 .23456789012345678901234567890123456789
          STA     RT   0
          LDX     #0
-         L DS     #3
+         LDS     #3
          LDT     #300
 LOOP1    LDA     #0
-         S  TA     STR2,X
+         STA     STR2,X
          ADDR    S,X
          COMPR   X,T
          JLT     LOOP1
          J       *
-TEST     BYTE    X'25'
+TEST     BYTE    c'25'
 GI       WORD    5
          END

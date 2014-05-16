@@ -22,12 +22,13 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 	ok = checkLabel(&(*label), &exception);
 	if (!ok) {
 //		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
-		exception += "\t***Error: Unavailable or duplicate Symbol\n";
+//		exception += "\t***Error: Unavailable or duplicate Symbol\n";
 	}
 	ok = checkOperation(&(*operation), &exception);
 	if (!ok) {
 //		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
-		exception += "\t***Error: Unavailable Mnemonic\n";
+//		cout << "~~~~~~~~~~ " << *operation << endl;
+//		exception += "\t***Error: Unavailable Mnemonic\n";
 	}
 	ok = checkOperand(&(*operand), &exception);
 	if (!ok) {
@@ -36,6 +37,11 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 //		exception += "\t***Error: Unavailable Operand\n";
 	}
 //	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
+	if (!ok) {
+//		cout << "Matching ERRORRRRRRRRRRRRRRRR" << endl;
+//		cout << "XXXXX   " << exception << endl;
+//		exception += "\t***Error: Wrong Matching\n";
+	}
 
 	return exception;
 }
@@ -72,12 +78,12 @@ bool Check::checkLabel(string *label, string *exception) {
 bool Check::checkOperation(string *operation, string *exception) {
 	bool ok = checkSpaces((*operation), 2);
 	if (!ok) {
+//	cout << "-----------OPERATION " << *operation << "      " << ok << endl;
 		*exception += "\t***Error: Invalid Operation\n";
 		return false;
 	}
 	(*operation) = trim((*operation));
 	string x = toLowerCase(*operation);
-//	cout << "-----------OPERATION " << *operation << "      " << ok << endl;
 	if (ok == true) {
 		string dir[6];
 		dir[0] = "word";
@@ -112,16 +118,23 @@ bool Check::checkOperation(string *operation, string *exception) {
 	return false;
 }
 
-bool Check::checkOperand(string *operand, string *exception) {
-	bool ok = checkSpaces((*operand), 0);
-	if (!ok) {
-		*exception += "\t***Error: Invalid Operand\n";
+bool Check::checkByte(string oper, string *exception) {
+	if (oper.at(0) == 'c') {
+		return checkLabelAndNubmers('=', oper, &(*exception));
+	} else if (oper.at(0) == 'x') {
+		return checkLabelAndNubmers('=', oper, &(*exception));
+	} else if (oper.find("'") < 50 && oper.find("'") > 0) {
+		*exception += "\t***Error: Invalid symbol\n";
 		return false;
 	}
+	return true;
+}
+bool Check::checkOperand(string *operand, string *exception) {
+	bool ok = checkSpaces((*operand), 0);
 	(*operand) = trim((*operand));
+
 	if (ok == true && !(*operand).empty()) {
-//		cout << "---- << " << *operand << " << ----" << endl;
-		if ((*operand).at(0) == '\0') {
+		if ((*operand).length() == 0) {
 			return true;
 		} else {
 			if ((*operand).at(0) == '#') {
@@ -134,23 +147,26 @@ bool Check::checkOperand(string *operand, string *exception) {
 				string str1 = (*operand).substr(0, pos);
 				string str2 = (*operand).substr(pos + 1);
 				return checkRegister(str1, str2, &(*exception));
-			} else if ((*operand).size() > 1
-					&& ((*operand).at(1) == ' ' || (*operand).at(1) == '\0')) {
+			} else if ((*operand).size() == 1) {
 				if ((*operand).at(0) == 'a' || (*operand).at(0) == 'b'
 						|| (*operand).at(0) == 'x' || (*operand).at(0) == 't'
 						|| (*operand).at(0) == 's' || (*operand).at(0) == 'l') {
 					return true;
+				} else if ((*operand).at(0) != '*') {
+					return checkLabelAndNubmers('=', (*operand), &(*exception));
 				} else {
-					*exception += "\t***Error: Invalid Operand\n";
-					return false;
+					return true;
 				}
 			} else if ((*operand).at(0) == '=') {
 				return checkLabelAndNubmers((*operand).at(0),
 						(*operand).substr(1), &(*exception));
 			} else if ((*operand).at(0) == '*') {
 				return true;
+			} else if ((*operand).find("'") < 50 && (*operand).find("'") > 0) {
+				return checkByte((*operand), &(*exception));
 			} else {
 				return checkLabelAndNubmers('=', (*operand), &(*exception));
+
 			}
 		}
 	}
@@ -162,25 +178,48 @@ bool Check::checkOperand(string *operand, string *exception) {
 
 bool Check::checkOperationOperandMathcing(string operation, string operand,
 		string *exception) {
-	string mapOperand = tables.opTable[operation].operand;
 	bool ok = false;
-	if (operation == "start" || operation == "word" || operation == "resb"
+	operation = toLowerCase(operation);
+	operand = toLowerCase(operand);
+	string mapOperand = tables.opTable[operation].operand;
+	if (operation == "start") {
+		if (isHexaNumber(operand, &(*exception))) {
+			ok = true;
+		}
+	} else if (operation == "word" || operation == "resb"
 			|| operation == "resw") {
 		if (isNumber(operand)) {
 			ok = true;
+		} else {
+			if (operation == "start") {
+				*exception += "\t***Error: Invalid register in operand\n";
+			}
 		}
 	} else if (operation == "end") {
 		if (operand.empty()) {
 			ok = true;
+		} else {
+			*exception += "\t***Error: Extra Characters after END\n";
 		}
 	} else if (operation == "byte") {
 //CHECK ARRAY OR HEXA
+		string s = "";
+		if (checkByte(operand, &s)) {
+			ok = true;
+		}
 	} else if (operand == "-") {
 		if (operand.length() == 0) {
 			ok = true;
+		} else {
+
 		}
 	} else if (mapOperand == "r1") {
-		ok = checkRegister(operand);
+		if (operand[0] == 'x') {
+			ok = true;
+		} else {
+			*exception += "\t***Error: Invalid register in operand\n";
+		}
+
 	} else if (mapOperand == "r1,r2") {
 		if (operand.find(",") < 100 && operand.find(",") > 0) {
 			int pos = operand.find(",");
@@ -234,6 +273,10 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			} else {
 				*exception += "\t***Error: Missing comma in operand";
 			}
+		} else if (operand == "*") {
+			ok = true;
+//			cout << "MMMMMMMMMMMM   " << operation << "   " << operand
+//					<< "   ok =   " << ok << endl;
 		} else {
 			int x = checkAtHash(operand);
 			if (x == 0 || x == 1) {
@@ -241,7 +284,7 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			}
 		}
 	} else {
-		*exception += "\t***Error: Undefined symbol in operand";
+		*exception += "\t***Error: Undefined operand type\n";
 	}
 	return ok;
 }
@@ -265,7 +308,8 @@ bool Check::checkSpaces(string str, int type) {
 	}
 	string x = trim(str);
 	x = toLowerCase(x);
-	if (type == 2 && (tables.opTable[x].operand != "-" || x == "end")) {
+	if (type == 2 && (tables.opTable[x].operand != "-" && x != "end")) {
+//cout <<"INNNNNNNN<<<<   "<<x<<endl;
 		if (str[6] != ' ' || str[7] != ' ')
 			valid = false;
 	}
@@ -295,7 +339,7 @@ int Check::checkAtHash(string searchable) {
 	return check;
 }
 
-bool Check::checkHexaNumber(string st, string * exception) {
+bool Check::isHexaNumber(string st, string * exception) {
 	string x = toLowerCase(st);
 	if (x.length() % 2 == 1) {
 		*exception += "\t***Error: Invalid hex number\n";
@@ -336,7 +380,7 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 		}
 	} else if (label.at(0) == 'x' && (int) label.at(1) == 39 && c == '=') {
 		if (label.length() - 3 % 2 == 0) {
-			return checkHexaNumber(label.substr(2), exception);
+			return isHexaNumber(label.substr(2), exception);
 
 		} else {
 			*exception += "\t***Error: Invalid hex number";

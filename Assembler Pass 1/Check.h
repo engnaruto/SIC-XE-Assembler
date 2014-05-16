@@ -25,11 +25,14 @@ private:
 	bool checkOperationOperandMathcing(std::string operation,
 			std::string operand, std::string *exception);
 	int checkAtHash(std::string searchable);
-	bool checkHexaNumber(std::string st, std::string *exception);
+	bool isHexaNumber(std::string st, std::string *exception);
 	bool isatSymTable(std::string label);
-	bool checkLabelAndNubmers(char c, std::string label, std::string *exception);
-	bool checkRegister(std::string str1, std::string str2, std::string *exception);
+	bool checkLabelAndNubmers(char c, std::string label,
+			std::string *exception);
+	bool checkRegister(std::string str1, std::string str2,
+			std::string *exception);
 	bool checkRegister(std::string str1);
+	bool checkByte(std::string oper, std::string *exception);
 	bool isNumber(std::string st);
 	std::string trim(std::string input);
 }
