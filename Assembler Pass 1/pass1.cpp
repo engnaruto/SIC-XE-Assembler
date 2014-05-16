@@ -15,7 +15,7 @@ string readSplitLine(FileOperations &file) {
 	if (line[0] != '.') {
 		if (line.size() < 12) {
 //			throw;
-			s = "Error: Line is too short !!!\n";
+			s = "\t***Error: Line is too short !!!\n";
 		} else if (line.size() > 35) {
 			label = file.readLabel(line);
 			operand = file.readOperand(line);
@@ -75,23 +75,25 @@ int main(int argc, char **argv) {
 		if (strexc.size() == 0) {
 
 			strexc = check.checkAll(&label, &operation, &operand);
-//			if (strexc.length() != 0) {
-//				file.writeAll(counter.getLineCounter(), counter.getAddress(),
-//						label, operation, operand, comment);
-//				file.writeLine(strexc);
-//				strexc = "";
-//				continue;
-//			}
+			if (strexc.length() != 0) {
+				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+						label, operation, operand, comment);
+				file.writeLine(strexc);
+				strexc = "";
+				continue;
+			}
 			t = check.toLowerCase(operation);
 			if (t == "start") {
 				counter.setCounter(operand);
+				length = tables.getLength(operation, operand);
+				counter.addtoCounter(length);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 
 			} else {
-				counter.setCounter(0);
-				length = tables.getLength(operand, operation);
-				counter.AddtoCounter(length);
+				length = tables.getLength(operation, operand);
+				counter.setCounter("0");
+				counter.addtoCounter(length);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 			}
@@ -104,15 +106,22 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
-
 	while (!file.eof()) {
 
 		strexc = readSplitLine(file);
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(&label, &operation, &operand);
 //			string s = check.checkAll(label, operand, operation);
+			if (strexc.length() != 0) {
+				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+						label, operation, operand, comment);
+				file.writeLine(strexc);
+				strexc = "";
+				continue;
+			}
 			length = tables.getLength(operation, operand);
-			counter.AddtoCounter(length);
+//			cout << "OUTTTTTTTTTTT" << endl;
+			counter.addtoCounter(length);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			if (strexc.length() != 0) {

@@ -63,29 +63,26 @@ void Tables::loadHash() {
 int Tables::getLength(string operation, string operand) {
 //			cout << "--------HEREEEEEEEEEEE " << operation <<"   "<<operand<< endl;
 	string x = toLowerCase(operation);
-	operand = toLowerCase(operand);
-	if (x == "start") {
-		return 0;
-	} else if (x == "end") {
+	string s = toLowerCase(operand);
+	if (x == "start" || x == "end") {
 		return 0;
 	} else if (x == "byte") {
-		if (operand.at(0) == 'x'){
-			int len = operand.length() - 3;
-			cout<<"length "<<len/2<<endl;
-			return len/2;
-		}
-		else if (operand.at(0) == 'c') {
-			int len = operand.length() - 3;
+		if (s.at(0) == 'x') {
+			int len = s.length() - 3;
+//			cout<<"length "<<len/2<<endl;
+			return len / 2;
+		} else if (s.at(0) == 'c') {
+			int len = s.length() - 3;
 			return len;
 		}
 
 	} else if (x == "resw") {
-		int counter = atoi(operand.c_str()) * 3;
+		int counter = atoi(s.c_str()) * 3;
 		return counter;
 	} else if (x == "resb") {
-		int counter = atoi(operand.c_str());
+		int counter = atoi(s.c_str());
 		return counter;
-	}else if(x=="word"){
+	} else if (x == "word") {
 		return 3;
 	} else {
 		if (x.at(0) == '+')

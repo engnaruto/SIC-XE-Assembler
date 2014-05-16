@@ -31,17 +31,18 @@ public:
 	void writeAll(int lineNo, std::string address, std::string label,
 			std::string operation, std::string operand, std::string comment);
 	void writeLine(std::string line);
+	// Other Methods
+	bool eof();
+//	void enableDebug();
+//	void disableDebug();
+	void close();
+private:
 	void writeLabel(std::string label);
 	void writeOperation(std::string operation);
 	void writeOperand(std::string operand);
 	void writeComment(std::string comment);
 	void writeEnter();
-	// Other Methods
-	bool eof();
-	void enableDebug();
-	void disableDebug();
-	void close();
-private:
+	std::string writeAddress(std::string address);
 
 	std::ifstream in;
 	std::ofstream out;

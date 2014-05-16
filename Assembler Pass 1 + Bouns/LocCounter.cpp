@@ -25,7 +25,7 @@ void LocCounter::setCounter(std::string strNum) {
 	hexCounter = dectoHex();
 //	cout << "HEX = " << hexCounter << endl;
 }
-void LocCounter::AddtoCounter(int addresssize) {
+void LocCounter::addtoCounter(int addresssize) {
 	decCounter += addresssize;
 	hexCounter = dectoHex();
 //	lineCounter++;

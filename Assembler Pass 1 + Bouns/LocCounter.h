@@ -14,7 +14,7 @@ class LocCounter {
 public:
 	LocCounter(int start);
 	~LocCounter();
-	void AddtoCounter(int addresssize);
+	void addtoCounter(int addresssize);
 	void setCounter(std::string counter);
 	int getLineCounter();
 	std::string getAddress();

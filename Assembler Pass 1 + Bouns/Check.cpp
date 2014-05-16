@@ -10,12 +10,12 @@
 using namespace std;
 Check::Check(Tables &tables) {
 	this->tables = tables;
-
 }
 Check::~Check() {
 
 }
-string Check::checkAll(string *label, string *operation, string *operand) {
+string Check::checkAll(vector<string> arr, string *label, string *operation,
+		string *operand, string *comment) {
 
 //	bool ok;
 	string exception = "";
@@ -375,4 +375,49 @@ string Check::toLowerCase(string input) {
 		tmp = tmp + d;
 	}
 	return tmp;
+}
+
+Tables Check::getTables() {
+	return tables;
+}
+
+void Check::split(vector<string>arr, string *_label, string *_operation,
+		string *_operand, string *_comment) {
+	*_label = "";
+	*_operation = "";
+	*_operand = "";
+	*_comment = "";
+
+	string ex = "";
+	for (unsigned int i = 0; i < arr.size(); i++) {
+		string tmp = arr[i];
+		if (tmp[0] == '.') {
+			for (unsigned i = 0; i < arr.size(); i++) {
+				*_comment = *_comment + arr[i];
+			}
+		} else {
+			bool ch = checkOperation(&arr[i], &ex);
+			if (ch) {
+				string x = toLowerCase(arr[i]);
+				if (tables.opTable[x].operand == "-" || x == "end") {
+
+					for (unsigned int j = i + 1; j < arr.size(); j++) {
+						*_comment = *_comment + arr[j];
+						i++;
+					}
+				} else {
+					*_operand = arr[i + 1];
+
+					for (unsigned int j = i + 2; j < arr.size(); j++) {
+						*_comment = *_comment + arr[j];
+						i++;
+					}
+
+				}
+			} else {
+				*_label = arr[i];
+			}
+		}
+
+	}
 }

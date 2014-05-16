@@ -14,16 +14,18 @@ class LocCounter {
 public:
 	LocCounter(int start);
 	~LocCounter();
-	void AddtoCounter(int addresssize);
+	void addtoCounter(int addresssize);
 	void setCounter(std::string counter);
 	int getLineCounter();
 	std::string getAddress();
-	int decCounter;
-	int lineCounter;
-	std::string hexCounter;
 private:
 	std::string convDectoHex(int decNum, int r[]);
 	std::string dectoHex();
+	int decCounter;
+	int lineCounter;
+	std::string hexCounter;
+	void makeAddress();
+	int lastLength;
 //	int i;
 };
 

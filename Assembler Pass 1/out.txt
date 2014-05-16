@@ -1,31 +1,28 @@
 Line No.	Address	Label	Mnemonic	Operand	Comments
-.SIC/XE Instruction Set – Lab 1
-.Due date: Sunday, March 30th, 2014
-.Write a sequence of instructions for SIC/XE machine that does the following:
-.a. Set ALPHA equal to the integer portion of BETA / GAMMA.
-.b. Set ALPHA equal to 4 * BETA + 3 * GAMMA.
-.c. Clear a 100-byte string to all blanks.
-.d. SET elements of a 100-word array to 0.
-.
-.
-.        10      18                36
 .23456789012345678901234567890123456789
-0			START	0	
-.
-.                                  PROGRAM D SET elements of a 100-word array to 0.
-.
-1	3		LDX	#0	
-2	6		LDS	#3	
-3	9		LDT	#300	
-4	C	LOOP1	LDA	#0	
-.         STA     STR2,X
-5	E		ADDR	S,X	
-6	10		COMPR	X,T	
-7	13		JLT	LOOP1	
-8	16		J	*	
-.
-.
-.
-9	17	TEST	BYTE	X'25'	
-10	1A	GI	WORD	5	
-11	1A		END		
+1			STA	RT   0	
+	***Error: Invalid Operand
+
+2	00000		LDX	#0	
+3	00000		L DS    	 #3	
+	***Error: Invalid Operation
+	***Error: Unavailable Mnemonic
+	***Error: Invalid Operand
+
+4	00006		LDT	#300	
+5	00009	LOOP1	LDA	#0	
+6	00009		S  TA   	  STR2,X	
+	***Error: Invalid Operation
+	***Error: Unavailable Mnemonic
+	***Error: Invalid Operand
+
+7	0000F		ADDR	S,X	
+8	00011		COMPR	X,T	
+9	00013		JLT	LOOP1	
+10	00016		J	*	
+11	00019	TEST	BYTE	X'25'	
+12	0001A	GI	WORD	5	
+13	0001A		END		
+	***Error: Invalid Operation
+	***Error: Unavailable Mnemonic
+

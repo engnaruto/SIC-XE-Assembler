@@ -20,20 +20,21 @@ string Check::checkAll(string *label, string *operation, string *operand) {
 	bool ok;
 	string exception = "";
 	ok = checkLabel(&(*label), &exception);
-//	if (!ok) {
+	if (!ok) {
 //		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
-//		exception += "\t***Error: Unavailable or duplicate Symbol\n";
-//	}
+		exception += "\t***Error: Unavailable or duplicate Symbol\n";
+	}
 	ok = checkOperation(&(*operation), &exception);
-//	if (!ok) {
+	if (!ok) {
 //		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
-//		exception += "\t***Error: Unavailable Mnemonic\n";
-//	}
+		exception += "\t***Error: Unavailable Mnemonic\n";
+	}
 	ok = checkOperand(&(*operand), &exception);
-//	if (!ok) {
+	if (!ok) {
 //		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
+//		cout << "XXXXX   " << exception << endl;
 //		exception += "\t***Error: Unavailable Operand\n";
-//	}
+	}
 //	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
 
 	return exception;
@@ -70,6 +71,10 @@ bool Check::checkLabel(string *label, string *exception) {
 }
 bool Check::checkOperation(string *operation, string *exception) {
 	bool ok = checkSpaces((*operation), 2);
+	if (!ok) {
+		*exception += "\t***Error: Invalid Operation\n";
+		return false;
+	}
 	(*operation) = trim((*operation));
 	string x = toLowerCase(*operation);
 //	cout << "-----------OPERATION " << *operation << "      " << ok << endl;
@@ -109,9 +114,13 @@ bool Check::checkOperation(string *operation, string *exception) {
 
 bool Check::checkOperand(string *operand, string *exception) {
 	bool ok = checkSpaces((*operand), 0);
+	if (!ok) {
+		*exception += "\t***Error: Invalid Operand\n";
+		return false;
+	}
 	(*operand) = trim((*operand));
-
 	if (ok == true && !(*operand).empty()) {
+//		cout << "---- << " << *operand << " << ----" << endl;
 		if ((*operand).at(0) == '\0') {
 			return true;
 		} else {
@@ -132,6 +141,7 @@ bool Check::checkOperand(string *operand, string *exception) {
 						|| (*operand).at(0) == 's' || (*operand).at(0) == 'l') {
 					return true;
 				} else {
+					*exception += "\t***Error: Invalid Operand\n";
 					return false;
 				}
 			} else if ((*operand).at(0) == '=') {
@@ -145,7 +155,6 @@ bool Check::checkOperand(string *operand, string *exception) {
 		}
 	}
 	if ((*operand).empty()) {
-//		cout << "ASASASASASASAS  " << (*operand) << "     " << ok << endl;
 		return true;
 	}
 	return false;
@@ -155,32 +164,75 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 		string *exception) {
 	string mapOperand = tables.opTable[operation].operand;
 	bool ok = false;
-	if (operand == "-") {
+	if (operation == "start" || operation == "word" || operation == "resb"
+			|| operation == "resw") {
+		if (isNumber(operand)) {
+			ok = true;
+		}
+	} else if (operation == "end") {
+		if (operand.empty()) {
+			ok = true;
+		}
+	} else if (operation == "byte") {
+//CHECK ARRAY OR HEXA
+	} else if (operand == "-") {
 		if (operand.length() == 0) {
 			ok = true;
 		}
 	} else if (mapOperand == "r1") {
 		ok = checkRegister(operand);
 	} else if (mapOperand == "r1,r2") {
-		int pos = operand.find(",");
-		string str1 = operand.substr(0, pos);
-		string str2 = operand.substr(pos + 1);
-		ok = checkRegister(str1) & checkRegister(str2);
+		if (operand.find(",") < 100 && operand.find(",") > 0) {
+			int pos = operand.find(",");
+			string str1 = operand.substr(0, pos);
+			string str2 = operand.substr(pos + 1);
+			ok = true;
+			if (!checkRegister(str2) || !checkRegister(str2)) {
+				*exception += "\t***Error: Illegal address for register";
+				ok = false;
+			}
+		} else {
+			*exception += "\t***Error: Missing comma in operand";
+			ok = false;
+		}
 	} else if (mapOperand == "r1,n") {
 		if (operand.find(",") < 100 && operand.find(",") > 0) {
 			int pos = operand.find(",");
 			string str1 = operand.substr(0, pos);
 			string str2 = operand.substr(pos + 1);
-			ok = checkRegister(str1) & isNumber(str2);
+			ok = true;
+			if (!checkRegister(str2)) {
+				*exception += "\t***Error: Illegal address for register";
+				ok = false;
+			}
+			if (!isNumber(str2)) {
+				ok = false;
+				*exception += "\t***Error: Invalid n";
+			}
+		} else {
+			*exception += "\t***Error: Missing comma in operand";
+			ok = false;
 		}
+
 	} else if (mapOperand == "m") {
 		string s = "";
+		//  #   @
+
 		if (s == "3/4") {
 			if (operand.find(",") < 100 && operand.find(",") > 0) {
 				int pos = operand.find(",");
 				string str1 = operand.substr(0, pos);
 				string str2 = operand.substr(pos + 1);
-				ok = (str1 == "x") & (!checkRegister(str2));
+				if (str2 != "x") {
+					*exception += "\t***Error: Illegal address for register";
+					ok = false;
+				}
+				ok &= (!checkRegister(str1));
+				if (ok) {
+					*exception += "\t***Error: Illegal address for symbol";
+				}
+			} else {
+				*exception += "\t***Error: Missing comma in operand";
 			}
 		} else {
 			int x = checkAtHash(operand);
@@ -189,7 +241,7 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			}
 		}
 	} else {
-		cout << "ERROR IN hashTable.txt >> " << mapOperand << endl;
+		*exception += "\t***Error: Undefined symbol in operand";
 	}
 	return ok;
 }
@@ -270,7 +322,7 @@ bool Check::isatSymTable(string label) {
 	}
 }
 
-bool Check::checkLabelAndNubmers(char c, string label, string * exception) {
+bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 
 	if (label.at(0) >= '0' && label.at(0) <= '9') {
 		for (unsigned int i = 1; i < label.length(); i++) {

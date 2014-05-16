@@ -20,7 +20,7 @@ FileOperations::~FileOperations() {
 void FileOperations::use(string fileName) {
 //	in.open(fileName.c_str());
 	in.open("in.txt");
-	cout << "IN FILE" << endl;
+//	cout << "IN FILE" << endl;
 //	freopen(fileName.c_str(), "r", stdin);
 }
 
@@ -112,7 +112,15 @@ void FileOperations::writeComment(string comment) {
 	cout << comment;
 #endif
 }
-
+//string FileOperations::writeAddress(std::string address) {
+//	string s = "";
+//	for (unsigned int i = 0; i < 5 - address.length(); i++) {
+//		s += "0";
+//	}
+//	s += address;
+////	cout<<"DDDDDDDDDDDD "<<s<<endl;
+//	return address;
+//}
 void FileOperations::writeEnter() {
 	out << "\n";
 #ifdef debug

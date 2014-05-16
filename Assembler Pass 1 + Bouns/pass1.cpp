@@ -1,7 +1,8 @@
 #include <vector>
+#include "FileOperations.h"
 #include "Tables.h"
-#include "debug.cpp"
 #include "Check.h"
+#include "debug.cpp"
 #include "LocCounter.h"
 
 using namespace std;
@@ -16,37 +17,40 @@ string readSplitLine(FileOperations &file) {
 		if (line.size() < 12) {
 //			throw;
 			s = "Error: Line is too short !!!\n";
-		} else if (line.size() > 35) {
-			label = file.readLabel(line);
-			operand = file.readOperand(line);
-			operation = file.readOperation(line);
-			comment = file.readComment(line);
-
-		} else if (line.size() > 15) {
-			label = file.readLabel(line);
-			operand = file.readOperand(line);
-			operation = file.readOperation(line);
-			comment = "";
-		} else {
-			label = file.readLabel(line);
-			operation = file.readOperation(line);
-			operand = "";
-			comment = "";
 		}
-	} else {
-		s = "Comment";
+//		else if (line.size() > 35) {
+//			label = file.readLabel(line);
+//			operand = file.readOperand(line);
+//			operation = file.readOperation(line);
+//			comment = file.readComment(line);
+//
+//		} else if (line.size() > 15) {
+//			label = file.readLabel(line);
+//			operand = file.readOperand(line);
+//			operation = file.readOperation(line);
+//			comment = "";
+//		} else {
+//			label = file.readLabel(line);
+//			operation = file.readOperation(line);
+//			operand = "";
+//			comment = "";
+//		}
+//	} else {
+//		s = "Comment";
 	}
-	return s;
-}
+		return s;
+	}
 
 int main(int argc, char **argv) {
 	Tables tables;
-	FileOperations file("in.txt");
 	LocCounter counter(0);
+	Check check(tables);
+	FileOperations file("in.txt");
 	try {
 		tables.loadHash();
 	} catch (exception &e) {
 		file.writeLine("Error: Can't load hashTable.txt");
+		return 0;
 	}
 
 //	string c;
@@ -67,14 +71,12 @@ int main(int argc, char **argv) {
 //	}
 
 	file.writeFirst();
-	Check check(tables);
 	strexc = "";
 	while (!file.eof()) {
 		strexc = readSplitLine(file);
-
 		if (strexc.size() == 0) {
 
-			strexc = check.checkAll(&label, &operation, &operand);
+			strexc = check.checkAll(file.arr,&label, &operation, &operand,&comment);
 //			if (strexc.length() != 0) {
 //				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 //						label, operation, operand, comment);
@@ -84,6 +86,7 @@ int main(int argc, char **argv) {
 //			}
 			t = check.toLowerCase(operation);
 			if (t == "start") {
+cout<<"-------------------------"<<endl;
 				counter.setCounter(operand);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
@@ -91,7 +94,7 @@ int main(int argc, char **argv) {
 			} else {
 				counter.setCounter(0);
 				length = tables.getLength(operand, operation);
-				counter.AddtoCounter(length);
+				counter.addtoCounter(length);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 			}
@@ -109,10 +112,10 @@ int main(int argc, char **argv) {
 
 		strexc = readSplitLine(file);
 		if (strexc.size() == 0) {
-			strexc = check.checkAll(&label, &operation, &operand);
+			strexc = check.checkAll(file.arr,&label, &operation, &operand,&comment);
 //			string s = check.checkAll(label, operand, operation);
 			length = tables.getLength(operation, operand);
-			counter.AddtoCounter(length);
+			counter.addtoCounter(length);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			if (strexc.length() != 0) {

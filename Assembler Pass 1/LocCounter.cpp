@@ -9,9 +9,10 @@
 using namespace std;
 LocCounter::LocCounter(int start) {
 	decCounter = start;
-//	hexCounter = "HHHHHH";
 	hexCounter = dectoHex();
-	lineCounter = 0;
+//	makeAddress();
+	lineCounter = 1;
+	lastLength = 0;
 }
 LocCounter::~LocCounter() {
 
@@ -23,15 +24,16 @@ int i = 0;
 void LocCounter::setCounter(std::string strNum) {
 	decCounter = atoi(strNum.c_str());
 	hexCounter = dectoHex();
-//	cout << "HEX = " << hexCounter << endl;
 }
-void LocCounter::AddtoCounter(int addresssize) {
-	decCounter += addresssize;
+void LocCounter::addtoCounter(int addresssize) {
+//	decCounter += addresssize;
 	hexCounter = dectoHex();
-//	lineCounter++;
+	makeAddress();
+	lastLength = addresssize;
 }
 string LocCounter::getAddress() {
-//	return "HHHHHHHH";
+//	makeAddress();
+	decCounter+=lastLength;
 	return hexCounter;
 }
 
@@ -40,17 +42,21 @@ string LocCounter::dectoHex() {
 	i = 0;
 	return convDectoHex(decCounter, r);
 }
+void LocCounter::makeAddress() {
+	string s = "";
+	for (unsigned int i = 0; i < 5 - hexCounter.length(); i++) {
+		s += "0";
+	}
+	hexCounter = s + hexCounter;
+}
 string LocCounter::convDectoHex(int decNum, int r[]) {
 	string str;
 	if (decNum > 0) {
 		r[i] = decNum % 16;
 		i++;
-
 		decNum = decNum / 16;
-
 		convDectoHex(decNum, r);
 	}
-
 	for (int x = (i - 1); x >= 0; --x) {
 		if (r[x] > 9) {
 			switch (r[x]) {
@@ -58,27 +64,22 @@ string LocCounter::convDectoHex(int decNum, int r[]) {
 				str.append("A");
 				break;
 			}
-
 			case 11: {
 				str.append("B");
 				break;
 			}
-
 			case 12: {
 				str.append("C");
 				break;
 			}
-
 			case 13: {
 				str.append("D");
 				break;
 			}
-
 			case 14: {
 				str.append("E");
 				break;
 			}
-
 			case 15: {
 				str.append("F");
 				break;

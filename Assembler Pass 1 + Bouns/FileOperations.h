@@ -10,13 +10,18 @@
 
 #include<iostream>
 #include <fstream>
+//#include "Tables.h"
+#include <vector>
+//#include "Check.h"
 #include "debug.cpp"
 //#include <string>
 //using namespace std;
-
+//class Check;
 class FileOperations {
 public:
+	 std::vector<std::string>arr;
 	// Constructor/Destructor
+//	FileOperations(std::string fileName);
 	FileOperations(std::string fileName);
 	~FileOperations();
 	void use(std::string filename);
@@ -38,13 +43,21 @@ public:
 	void writeEnter();
 	// Other Methods
 	bool eof();
-	void enableDebug();
-	void disableDebug();
+//	void enableDebug();
+//	void disableDebug();
 	void close();
 private:
 
+//	Check Check::*check;
 	std::ifstream in;
 	std::ofstream out;
+
+	std::string removeSpaces(std::string line);
+	void splitBySpace(std::string line);
+	void split(std::string inputLine[], std::string *_label,
+			std::string *_operation, std::string *_operand,
+			std::string *_comment);
+
 };
 
 #endif /* FILEOPERATIONS_H_ */
