@@ -52,22 +52,22 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-//	string c;
-//	vector<string> v;
-//	while (1) {
-//		cout << "Enter: pass1 <source-file-name>" << endl;
-//		getline(cin, c);
-//		v = tables.split(c, ' ');
-//		if (v[0] == "pass1") {
-//			try {
+	string c;
+	vector<string> v;
+	while (1) {
+		cout << "Enter: pass1 <source-file-name>" << endl;
+		getline(cin, c);
+		v.clear();
+		v = tables.split(c, ' ');
 //		cout << v[0] << " " << v[1] << endl;
-//				file.use(v[1]);
-//				break;
-//			} catch (exception &e) {
-//				continue;
-//			}
-//		}
-//	}
+//		cout << file.use(v[1]) << endl;
+		if (v.size() > 1 && v[0] == "pass1" && file.use(v[1])) {
+//			file.use(v[1]);
+			break;
+		} else {
+			cout << "***Error: Invalid filename" << endl;
+		}
+	}
 
 	file.writeFirst();
 	Check check(&tables);
@@ -114,12 +114,10 @@ int main(int argc, char **argv) {
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
 					&operation, &operand);
-//			string s = check.checkAll(label, operand, operation);
 			if (strexc.length() != 0) {
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				file.writeLine(strexc);
-//				strexc = "";
 				ok = false;
 				continue;
 			}
@@ -128,7 +126,6 @@ int main(int argc, char **argv) {
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			if (strexc.length() != 0) {
-//				cout<<"INNNNNNNNNN"<<endl;
 				file.writeLine(strexc);
 				strexc = "";
 				ok = false;
@@ -142,7 +139,6 @@ int main(int argc, char **argv) {
 			}
 		}
 
-//		cout <<"~~~~~~~~~~~~~~ "<< tables.symTable.size()<<"\t*\n";
 	}
 	t = check.toLowerCase(operation);
 	if (t != "end") {
@@ -155,11 +151,7 @@ int main(int argc, char **argv) {
 	} else {
 		file.writeLine("\n>>    I N C O M P L E T E    A S S E M b L Y");
 	}
-//	for (map<string, string>::iterator it = tables.symTable.begin();
-//			it != tables.symTable.end(); ++it) {
-//		cout << "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
-////			s += "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
-//	}
+
 	file.writeLine(tables.printSymTable());
 	file.close();
 	return 0;

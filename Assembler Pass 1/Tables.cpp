@@ -117,7 +117,7 @@ string Tables::printSymTable() {
 	string s;
 
 	s += "\n\n******************************************\n";
-	s += "*              Symbol Table              *\n";
+	s += "*             Symbol Table               *\n";
 	s += "******************************************\n";
 //cout<<"%%%%%%%%%%   "<< symTable.size()<<endl;
 	string z = "";

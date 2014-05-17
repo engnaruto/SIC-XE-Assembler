@@ -191,8 +191,10 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 	operand = toLowerCase(operand);
 	string mapOperand = tables->opTable[operation].operand;
 	if (operation == "start") {
-		if (isHexaNumber(operand, &(*exception))) {
+		if (checkAddress(operand, &(*exception))) {
 			ok = true;
+		} else {
+			*exception += "\t***Error: Invalid address in operand\n";
 		}
 	} else if (operation == "word" || operation == "resb"
 			|| operation == "resw") {
@@ -200,11 +202,7 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 		if (isNumber(operand)) {
 			ok = true;
 		} else {
-			if (operation == "start") {
-				*exception += "\t***Error: Invalid register in operand\n";
-			}else{
-				*exception += "\t***Error: Invalid number\n";
-			}
+			*exception += "\t***Error: Invalid number\n";
 		}
 	} else if (operation == "end") {
 		if (operand.empty()) {
@@ -365,7 +363,19 @@ int Check::checkAtHash(string searchable) {
 	}
 	return check;
 }
-
+bool Check::checkAddress(string st, string * exception) {
+	string x = toLowerCase(st);
+	for (unsigned int i = 0; i < x.length() && x.at(i) != ' '; i++) {
+		if ((x.at(i) >= '0' && x.at(i) <= '9')
+				|| (x.at(i) >= 'a' && x.at(i) <= 'f') || (int) x.at(i) == 39) {
+			continue;
+		} else {
+			*exception += "\t***Error: Invalid hex number\n";
+			return false;
+		}
+	}
+	return true;
+}
 bool Check::isHexaNumber(string st, string * exception) {
 	string x = toLowerCase(st);
 	if (x.length() % 2 == 1) {

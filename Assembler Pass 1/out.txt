@@ -1,8 +1,6 @@
 Line No.	Address	Label	Mnemonic	Operand	Comments
 .23456789012345678901234567890123456789
-1			START	0	
-	***Error: Invalid hex number
-
+1	00000		START	0	
 2	00000		LDX	#0	
 3	00003		LDS	#3	
 4	00006		LDT	#300	
@@ -12,19 +10,18 @@ Line No.	Address	Label	Mnemonic	Operand	Comments
 8	00011	SSS	COMPR	X,T	
 9	00013		JLT	LOOP1	
 10	00016		J	*	
-11	00019	TEST	BYTE	c'25'	
-12	00019	GI	WORD		
-	***Error: Invalid number
-
-13	0001D		END		
+11	00016	TEST	BYTE	x'25'	
+	***Error: Invalid hex number
+12	0001C	GI	WORD	444	
+13	0001F		END		
 
 >>    I N C O M P L E T E    A S S E M b L Y
 
 
 ******************************************
-*              Symbol Table              *
+*             Symbol Table               *
 ******************************************
-*     gi         	*     	00019        *
+*     gi         	*     	00016        *
 *     loop1        	*     	00006        *
 *     loop2        	*     	00009        *
 *     sss         	*     	0000F        *

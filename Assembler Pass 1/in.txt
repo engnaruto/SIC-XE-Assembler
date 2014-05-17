@@ -9,6 +9,6 @@ LOOP2    STA     STR2,X
 SSS      COMPR   X,T
          JLT     LOOP1
          J       *
-TEST     BYTE    c'25'
-GI       WORD    
+TEST     BYTE    x'25'
+GI       WORD    444
          END

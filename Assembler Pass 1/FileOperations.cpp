@@ -10,16 +10,23 @@
 using namespace std;
 
 FileOperations::FileOperations(string fileName) {
-	in.open("in.txt");
-//	in.open(fileName.c_str());
+//	in.open("in.txt");
+	in.open(fileName.c_str());
 	out.open("out.txt");
 }
 FileOperations::~FileOperations() {
 
 }
-void FileOperations::use(string fileName) {
-//	in.open(fileName.c_str());
-	in.open("in.txt");
+bool FileOperations::use(string fileName) {
+//	in.clear();
+	in.close();
+	in.open(fileName.c_str());
+//	if (in) {
+//		return true;
+//	}
+//	return false;
+	return in.good();
+//	in.open("in.txt");
 //	cout << "IN FILE" << endl;
 //	freopen(fileName.c_str(), "r", stdin);
 }

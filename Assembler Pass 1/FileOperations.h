@@ -19,7 +19,7 @@ public:
 	// Constructor/Destructor
 	FileOperations(std::string fileName);
 	~FileOperations();
-	void use(std::string filename);
+	bool use(std::string filename);
 	//Reading Methods
 	std::string readLine();
 	std::string readLabel(std::string line);
