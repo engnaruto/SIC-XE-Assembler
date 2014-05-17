@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
 			} else {
 				progname = label;
 //				progname = "";
+
 				counter.setCounter("0");
 			}
 			length = tables.getLength(operation, operand);

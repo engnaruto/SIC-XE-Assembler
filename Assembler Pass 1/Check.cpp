@@ -287,6 +287,7 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			if (!ok) {
 				*exception += "\t***Error: Illegal symbol name\n";
 			}
+
 //			} else {
 //				*exception += "\t***Error: Missing comma in operand";
 //			}
