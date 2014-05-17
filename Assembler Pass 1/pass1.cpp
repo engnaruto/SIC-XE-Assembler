@@ -22,7 +22,6 @@ string readSplitLine(FileOperations &file) {
 			operand = file.readOperand(line);
 			operation = file.readOperation(line);
 			comment = file.readComment(line);
-
 		} else if (line.size() > 16) {
 			label = file.readLabel(line);
 			operand = file.readOperand(line);
