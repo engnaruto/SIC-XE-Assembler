@@ -25,7 +25,7 @@ string Check::checkAll(string address, string *label, string *operation,
 	if (ok) {
 		ok = checkOperand(&(*operand), &exception);
 		if (ok) {
-			ok = checkOperationOperandMathcing((*operation), (*operand),
+			ok = checkOperationOperandMatching((*operation), (*operand),
 					&exception);
 		}
 	}
@@ -158,11 +158,21 @@ bool Check::checkOperand(string *operand, string *exception) {
 	return false;
 }
 
-bool Check::checkOperationOperandMathcing(string operation, string operand,
+bool Check::checkOperationOperandMatching(string operation, string operand,
 		string *exception) {
 	bool ok = false;
 	operation = toLowerCase(operation);
 	operand = toLowerCase(operand);
+	if (operation[0] == '+') {
+		string tmp = "";
+		tmp.assign(operation.begin() + 1, operation.end());
+		operation.assign(tmp);
+	}
+	if (operand[0] == '@' || operand[0] == '#') {
+		string tmp = "";
+		tmp.assign(operand.begin() + 1, operand.end());
+		operand.assign(tmp);
+	}
 	string mapOperand = tables->opTable[operation].operand;
 	if (operation == "start") {
 		if (checkAddress(operand, &(*exception))) {

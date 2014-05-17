@@ -24,7 +24,7 @@ private:
 			std::string *exception);
 	bool checkOperation(std::string *operation, std::string *exception);
 	bool checkOperand(std::string *operand, std::string *exception);
-	bool checkOperationOperandMathcing(std::string operation,
+	bool checkOperationOperandMatching(std::string operation,
 			std::string operand, std::string *exception);
 	int checkAtHash(std::string searchable);
 	bool isHexaNumber(std::string st, std::string *exception);

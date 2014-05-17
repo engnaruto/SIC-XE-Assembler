@@ -25,7 +25,7 @@ string Check::checkAll(string address, string *label, string *operation,
 	if (ok) {
 		ok = checkOperand(&(*operand), &exception);
 		if (ok) {
-			ok = checkOperationOperandMathcing((*operation), (*operand),
+			ok = checkOperationOperandMatching((*operation), (*operand),
 					&exception);
 		}
 	}
@@ -91,14 +91,14 @@ bool Check::checkOperation(string *operation, string *exception) {
 		dir[3] = "resw";
 		dir[4] = "start";
 		dir[5] = "end";
-		if (x.empty() == true) {
+		if (x.empty() == true || isalpha(x[0]) == false) {
 			*exception += "\t***Error: Invalid Operation\n";
 			return false;
 		}
-		if (isalpha(x[0]) == false) {
-			*exception += "\t***Error: Invalid Operation\n";
-			return false;
-		}
+//		if (isalpha(x[0]) == false) {
+//			*exception += "\t***Error: Invalid Operation\n";
+//			return false;
+//		}
 //		if (x[0] == '+') {
 //			string tmp = "";
 //			tmp.assign(x.begin() + 1, x.end());
@@ -171,7 +171,7 @@ bool Check::checkOperand(string *operand, string *exception) {
 	return false;
 }
 
-bool Check::checkOperationOperandMathcing(string operation, string operand,
+bool Check::checkOperationOperandMatching(string operation, string operand,
 		string *exception) {
 	bool ok = false;
 	operation = toLowerCase(operation);
@@ -209,10 +209,11 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 //		}
 
 	} else if (operation == "rsub") {
-		ok = true;
+//			ok = false;
 		if (operand.empty()) {
 			ok = true;
-			*exception += "\t***Error: Invalid operand\n";
+		} else {
+			*exception += "\t---***Error: Invalid operand\n";
 		}
 
 	} else if (operation == "byte") {
@@ -280,26 +281,26 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 				*exception += "\t***Error: Illegal address for register\n";
 				ok = false;
 			}
-			ok &= (!checkRegister(str1));
-			int x = checkAtHash(str1);
-			if (x == 2) {
-				ok = false;
-			}
-			if (!ok) {
-				*exception += "\t***Error: Illegal symbol name\n";
-			}
+//			ok &= (!checkRegister(str1));
+////			int x = checkAtHash(str1);
+//			if (x == 2) {
+//				ok = false;
+//			}
+//			if (!ok) {
+//				*exception += "\t***Error: Illegal symbol name\n";
+//			}
 //			} else {
 //				*exception += "\t***Error: Missing comma in operand";
 //			}
 		} else if (operand == "*") {
 			ok = true;
 		} else {
-			int x = checkAtHash(operand);
-			if (x == 0 || x == 1) {
-				ok = true;
-			} else {
-				*exception += "\t***Error: Illegal symbol name\n";
-			}
+//			int x = checkAtHash(operand);
+//			if (x == 0 || x == 1) {
+//				ok = true;
+//			} else {
+//				*exception += "\t***Error: Illegal symbol name\n";
+//			}
 		}
 	} else {
 //		cout << "MMMMMMMMMMMM   " << operation << "   " << operand

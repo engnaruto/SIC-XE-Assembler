@@ -8,15 +8,16 @@ using namespace std;
 
 string line, label, operand, operation, comment, strexc, t, progname;
 int length;
-bool ok;
+bool ok, tooShort;
 string readSplitLine(FileOperations &file) {
-	line = file.readLine();
 
+	line = file.readLine();
 	string s = "";
 	if (line[0] != '.') {
 		if (line.size() < 12) {
 //			throw;
-			s = "\t***Error: Line is too short !!!\n";
+			tooShort = true;
+//			s = "\t***Error: Line is too short !!!\n";
 		} else if (line.size() > 35) {
 			label = file.readLabel(line);
 			operand = file.readOperand(line);
@@ -62,6 +63,7 @@ int main(int argc, char **argv) {
 	Tables tables;
 	FileOperations file("in.txt");
 	LocCounter counter(0);
+	tooShort = false;
 	ok = true;
 	try {
 		tables.loadHash();
@@ -76,6 +78,10 @@ int main(int argc, char **argv) {
 	Check check(&tables);
 	strexc = "";
 	while (!file.eof()) {
+		if (tooShort) {
+			tooShort = false;
+			file.writeLine("\t***Error: Line is too short !!!\n");
+		}
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
@@ -92,6 +98,7 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			t = check.toLowerCase(operation);
+				cout <<"~~~~~~~~~~~~~~~~~~~~~~~~~  "<<t<<endl;
 			if (t == "start") {
 				progname = label;
 				counter.setCounter(operand);
@@ -117,7 +124,10 @@ int main(int argc, char **argv) {
 		}
 	}
 	while (!file.eof()) {
-
+		if (tooShort) {
+			tooShort = false;
+			file.writeLine("\t***Error: Line is too short !!!\n");
+		}
 		strexc = readSplitLine(file);
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
@@ -156,7 +166,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	} else {
 //		operand = check.trim(operand);
-//		cout << "%%%%%%%   " << operand.size() << endl;
+		cout << "%%%%%%%   " << operand<< "    "<<progname << endl;
 		if (progname != operand && !operand.empty()) {
 			file.writeLine("\t***Error: Invalid relocatable address \n");
 			ok = false;

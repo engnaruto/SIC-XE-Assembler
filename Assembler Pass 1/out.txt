@@ -1,23 +1,39 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
 .23456789012345678901234567890
-1       		003E8     		        		START     		1000      		
-2       		003E8     		ALPHA     		LDT      		#10      		
-3       		003EB     		BETA+     		LDCH      		#6       		
-4       		003EE     		        		ADD      		@GAMMA     		
-5       		003F1     		        		J       		*       		
-6       		003F4     		GAMMA     		BYTE      		X'01'     		
-7       		003F5     		THETA     		RESB      		2       		
-8       		003F7     		        		END      		        		
+1       		00000     		        		START     		0000      		
+. LOAD DELTA WITH AN INVALID ADDRESS
+.
+2       		00000     		        		LDA      		#0       		
+3       		00003     		        		STA      		DELTA     		
+4       		00006     		        		LDA      		DELTA     		
+5       		00009     		        		ADD      		8001      		
+6       		0000C     		        		STA      		DELTA     		
+. NO ERROR IN PASS 1 
+. (operand length = 4, that's what really matters)  
+.
+..................................
+7       		0000F     		ALPHA     		LDT      		@DELTA     		
+. VALID INDIRECT ADDRESSING
+8       		00012     		BETA+     		LDCH      		#6       		
+9       		00015     		        		ADD      		@GAMMA     		
+10       		00018     		        		J       		*       		
+11       		0001B     		GAMMA     		BYTE      		X'01'     		
+12       		0001C     		THETA     		RESB      		2       		
+13       		0001E     		DELTA     		RESW      		1       		
+14       		00021     		        		END      		ALPHA     		
+	***Error: Invalid relocatable address 
 
->>    S U C C E S S F U L    A S S E M B L Y
+
+>>    I N C O M P L E T E    A S S E M b L Y
 
 
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	003E8        *
-*     beta+        	*     	003E8        *
-*     gamma        	*     	003F1        *
-*     theta        	*     	003F4        *
+*     alpha        	*     	0000C        *
+*     beta+        	*     	0000F        *
+*     delta        	*     	0001C        *
+*     gamma        	*     	00018        *
+*     theta        	*     	0001B        *
 ******************************************
 

@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-	openFile(tables, file);
+	//openFile(tables, file);
 	file.writeFirst();
 	Check check(&tables);
 	strexc = "";
