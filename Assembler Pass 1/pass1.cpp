@@ -23,7 +23,7 @@ string readSplitLine(FileOperations &file) {
 			operation = file.readOperation(line);
 			comment = file.readComment(line);
 
-		} else if (line.size() > 15) {
+		} else if (line.size() > 16) {
 			label = file.readLabel(line);
 			operand = file.readOperand(line);
 			operation = file.readOperation(line);
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-//	openFile(tables, file);
+	openFile(tables, file);
 	file.writeFirst();
 	Check check(&tables);
 	strexc = "";
@@ -153,7 +153,9 @@ int main(int argc, char **argv) {
 		file.writeLine("\t***Error: No End Mnemonic\n");
 		ok = false;
 	} else {
-		if (progname != operand) {
+//		operand = check.trim(operand);
+//		cout << "%%%%%%%   " << operand.size() << endl;
+		if (progname != operand && !operand.empty()) {
 			file.writeLine("\t***Error: Invalid relocatable address \n");
 			ok = false;
 		}

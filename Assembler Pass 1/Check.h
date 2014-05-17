@@ -16,6 +16,7 @@ public:
 	std::string checkAll(std::string address, std::string *label,
 			std::string *operation, std::string *operand);
 	std::string toLowerCase(std::string input);
+	std::string trim(std::string input);
 private:
 	Tables *tables;
 	bool checkSpaces(std::string str, int type);
@@ -36,7 +37,6 @@ private:
 	bool checkByte(std::string oper, std::string *exception);
 	bool checkAddress(std::string st, std::string * exception);
 	bool isNumber(std::string st);
-	std::string trim(std::string input);
 }
 ;
 
