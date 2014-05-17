@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-	openFile(tables, file);
+//	openFile(tables, file);
 	file.writeFirst();
 	Check check(&tables);
 	strexc = "";
@@ -96,7 +96,8 @@ int main(int argc, char **argv) {
 				progname = label;
 				counter.setCounter(operand);
 			} else {
-				progname = "";
+				progname = label;
+//				progname = "";
 				counter.setCounter("0");
 			}
 			length = tables.getLength(operation, operand);

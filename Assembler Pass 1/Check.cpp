@@ -174,6 +174,16 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 	bool ok = false;
 	operation = toLowerCase(operation);
 	operand = toLowerCase(operand);
+	if (operation[0] == '+') {
+		string tmp = "";
+		tmp.assign(operation.begin() + 1, operation.end());
+		operation.assign(tmp);
+	}
+	if (operand[0] == '@' || operand[0] == '#') {
+		string tmp = "";
+		tmp.assign(operand.begin() + 1, operand.end());
+		operand.assign(tmp);
+	}
 	string mapOperand = tables->opTable[operation].operand;
 	if (operation == "start") {
 		if (checkAddress(operand, &(*exception))) {
@@ -256,31 +266,38 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 		}
 
 	} else if (mapOperand == "m") {
-		string s = "";
+//		string s = tables->opTable[operation].format;
 		//  #   @
 
-		if (s == "3/4") {
-			if (operand.find(",") < 100 && operand.find(",") > 0) {
-				int pos = operand.find(",");
-				string str1 = operand.substr(0, pos);
-				string str2 = operand.substr(pos + 1);
-				if (str2 != "x") {
-					*exception += "\t***Error: Illegal address for register";
-					ok = false;
-				}
-				ok &= (!checkRegister(str1));
-				if (ok) {
-					*exception += "\t***Error: Illegal address for symbol";
-				}
-			} else {
-				*exception += "\t***Error: Missing comma in operand";
+//		if (s == "3/4") {
+		if (operand.find(",") < 100 && operand.find(",") > 0) {
+			int pos = operand.find(",");
+			string str1 = operand.substr(0, pos);
+			string str2 = operand.substr(pos + 1);
+			if (str2 != "x") {
+				*exception += "\t***Error: Illegal address for register\n";
+				ok = false;
 			}
+
+			ok &= (!checkRegister(str1));
+			int x = checkAtHash(str1);
+			if (x == 2) {
+				ok = false;
+			}
+			if (!ok) {
+				*exception += "\t***Error: Illegal symbol name\n";
+			}
+//			} else {
+//				*exception += "\t***Error: Missing comma in operand";
+//			}
 		} else if (operand == "*") {
 			ok = true;
 		} else {
 			int x = checkAtHash(operand);
 			if (x == 0 || x == 1) {
 				ok = true;
+			} else {
+				*exception += "\t***Error: Illegal symbol name\n";
 			}
 		}
 	} else {

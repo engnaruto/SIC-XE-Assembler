@@ -1,21 +1,13 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
-.        10      18                36
-.23456789012345678901234567890123456789
-1       		00000     		        		START     		0       		
-.
-.                                  PROGRAM A Set ALPHA equal to the integer portion of BETA / GAMMA.
-.
-2       		00000     		        		LDA      		#5       		
-3       		00003     		        		DIV      		GAMMA     		
-4       		00006     		        		STA      		ALPHA     		
-5       		00009     		        		J       		*       		
-.
-.
-.
-6       		0000C     		ALPHA     		RESW      		1       		
-7       		0000F     		BETA      		WORD      		15       		
-8       		00012     		GAMMA     		WORD      		-5       		
-9       		00015     		        		END      		        		
+.23456789012345678901234567890
+1       		003E8     		        		START     		1000      		
+2       		003E8     		ALPHA     		LDT      		#10      		
+3       		003EB     		BETA      		+LDCH     		#6       		
+4       		003EF     		        		ADD      		@GAMMA     		
+5       		003F2     		        		J       		*       		
+6       		003F5     		GAMMA     		BYTE      		X'01'     		
+7       		003F6     		THETA     		RESB      		2       		
+8       		003F8     		        		END      		        		
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
@@ -23,8 +15,9 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	00009        *
-*     beta        	*     	0000C        *
-*     gamma        	*     	0000F        *
+*     alpha        	*     	003E8        *
+*     beta        	*     	003E8        *
+*     gamma        	*     	003F2        *
+*     theta        	*     	003F5        *
 ******************************************
 

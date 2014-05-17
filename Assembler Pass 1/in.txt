@@ -1,17 +1,9 @@
-.        10      18                36
-.23456789012345678901234567890123456789
-         START   0
-.
-.                                  PROGRAM A Set ALPHA equal to the integer portion of BETA / GAMMA.
-.
-         LDA     #5
-         DIV     GAMMA
-         STA     ALPHA
+.23456789012345678901234567890
+         START   1000
+ALPHA    LDT     #10
+BETA     +LDCH   #6
+         ADD     @GAMMA
          J       *
-.
-.
-.
-ALPHA    RESW    1
-BETA     WORD    15
-GAMMA    WORD    -5
+GAMMA    BYTE    X'01'
+THETA    RESB    2
          END
