@@ -33,6 +33,7 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 31       		00050     		ERROR     		BYTE      		C'       		
 32       		0004F     		NULL      		BYTE      		X'000004'   		
 33       		00052     		        		END      		        		
+         
 
 
 >>    S U C C E S S F U L    A S S E M B L Y
