@@ -52,22 +52,49 @@ string FileOperations::readComment(string line) {
 
 void FileOperations::writeFirst() {
 //	cout<<"WRITEEEEEEEEEEEEEEEEEEEEEE"<<endl;
-	out << "Line No.\tAddress\tLabel\tMnemonic\tOperand\tComments" << endl;
+	out << "Line No.\t\tAddress\t\t    Label\t\t    Mnemonic\t\tOperand\t\tComments"
+			<< endl;
 #ifdef debug
-	cout << "Line No.\tAddress\t\tLabel\tMnemonic\tOperand\tComments" << endl;
+	cout << "Line No.\t\tAddress\t\t\t     Label\t\t    Mnemonic\t\tOperand\t\tComments"
+			<< endl;
 #endif
 
+}
+string FileOperations::writeFiled(string str) {
+
+	for (unsigned int i = 0; i < 15 - str.length(); i++) {
+		str += " ";
+	}
+	return str;
 }
 void FileOperations::writeAll(int lineNo, string address, string label,
 		string operation, string operand, string comment) {
-	out << lineNo << "\t" << address << "\t" << label << "\t" << operation
-			<< "\t" << operand << "\t" << comment << endl;
+	ostringstream convert;   // stream used for the conversion
+	convert << lineNo; // insert the textual representation of 'Number' in the characters in the stream
+	string s = convert.str();
+	s = writeFiled(s);
+	address = writeFiled(address);
+	label = writeFiled(label);
+	operation = writeFiled(operation);
+	operand = writeFiled(operand);
+	out << s << "\t\t" << address << "\t\t" << label << "\t\t" << operation
+			<< "\t\t" << operand << "\t\t" << comment << endl;
 #ifdef debug
-	cout << lineNo << "\t" << address << "\t" << label << "\t" << operation
-			<< "\t" << operand << "\t" << comment << endl;
+	cout << s << "\t\t" << address << "\t\t" << label << "\t\t" << operation
+			<< "\t\t" << operand << "\t\t" << comment << endl;
 #endif
 
 }
+//void FileOperations::writeAll(int lineNo, string address, string label,
+//		string operation, string operand, string comment) {
+//	out << lineNo << "\t" << address << "\t" << label << "\t" << operation
+//			<< "\t" << operand << "\t" << comment << endl;
+//#ifdef debug
+//	cout << lineNo << "\t" << address << "\t" << label << "\t" << operation
+//			<< "\t" << operand << "\t" << comment << endl;
+//#endif
+//
+//}
 
 void FileOperations::writeLine(string line) {
 

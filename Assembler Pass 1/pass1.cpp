@@ -6,7 +6,7 @@
 
 using namespace std;
 
-string line, label, operand, operation, comment, lowerCaseLine, strexc, t;
+string line, label, operand, operation, comment, strexc, t, progname;
 int length;
 bool ok;
 string readSplitLine(FileOperations &file) {
@@ -40,6 +40,25 @@ string readSplitLine(FileOperations &file) {
 	return s;
 }
 
+void openFile(Tables& tables, FileOperations& file) {
+	string c;
+	vector<string> v;
+	while (1) {
+		cout << "Enter: pass1 <source-file-name>" << endl;
+		getline(cin, c);
+		v.clear();
+		v = tables.split(c, ' ');
+		//		cout << v[0] << " " << v[1] << endl;
+		//		cout << file.use(v[1]) << endl;
+		if (v.size() > 1 && v[0] == "pass1" && file.use(v[1])) {
+			//			file.use(v[1]);
+			break;
+		} else {
+			cout << "***Error: Invalid filename" << endl;
+		}
+	}
+}
+
 int main(int argc, char **argv) {
 	Tables tables;
 	FileOperations file("in.txt");
@@ -52,23 +71,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-	string c;
-	vector<string> v;
-	while (1) {
-		cout << "Enter: pass1 <source-file-name>" << endl;
-		getline(cin, c);
-		v.clear();
-		v = tables.split(c, ' ');
-//		cout << v[0] << " " << v[1] << endl;
-//		cout << file.use(v[1]) << endl;
-		if (v.size() > 1 && v[0] == "pass1" && file.use(v[1])) {
-//			file.use(v[1]);
-			break;
-		} else {
-			cout << "***Error: Invalid filename" << endl;
-		}
-	}
-
+//	openFile(tables, file);
 	file.writeFirst();
 	Check check(&tables);
 	strexc = "";
@@ -80,6 +83,7 @@ int main(int argc, char **argv) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
 					&operation, &operand);
 			if (strexc.length() != 0) {
+				counter.addtoCounter(3);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				file.writeLine(strexc);
@@ -89,8 +93,10 @@ int main(int argc, char **argv) {
 			}
 			t = check.toLowerCase(operation);
 			if (t == "start") {
+				progname = label;
 				counter.setCounter(operand);
 			} else {
+				progname = "";
 				counter.setCounter("0");
 			}
 			length = tables.getLength(operation, operand);
@@ -115,6 +121,7 @@ int main(int argc, char **argv) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
 					&operation, &operand);
 			if (strexc.length() != 0) {
+				counter.addtoCounter(3);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				file.writeLine(strexc);
@@ -144,6 +151,12 @@ int main(int argc, char **argv) {
 	if (t != "end") {
 //		cout<<"^^^^^^^^^^^^^  "<<t<<endl;
 		file.writeLine("\t***Error: No End Mnemonic\n");
+		ok = false;
+	} else {
+		if (progname != operand) {
+			file.writeLine("\t***Error: Invalid relocatable address \n");
+			ok = false;
+		}
 	}
 
 	if (ok) {

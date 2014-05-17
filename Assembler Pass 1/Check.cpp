@@ -21,33 +21,18 @@ string Check::checkAll(string address, string *label, string *operation,
 	bool ok;
 	string exception = "";
 	ok = checkLabel(address, &(*label), &exception);
-	if (!ok) {
-//		cout << "LABEL ERRORRRRRRRRRRRRRRRR" << endl;
-//		exception += "\t***Error: Unavailable or duplicate Symbol\n";
-	}
 	ok = checkOperation(&(*operation), &exception);
-	if (!ok) {
-//		cout << "OPERATION ERRORRRRRRRRRRRRRRRR" << endl;
-//		cout << "~~~~~~~~~~ " << *operation << endl;
-//		exception += "\t***Error: Unavailable Mnemonic\n";
-	}
-	ok = checkOperand(&(*operand), &exception);
-	if (!ok) {
-//		cout << "OPERAND ERRORRRRRRRRRRRRRRRR" << endl;
-//		cout << "XXXXX   " << exception << endl;
-//		exception += "\t***Error: Unavailable Operand\n";
-	}
-	ok = checkOperationOperandMathcing((*operation), (*operand), &exception);
-	if (!ok) {
-//		cout << "Matching ERRORRRRRRRRRRRRRRRR" << endl;
-//		cout << "XXXXX   " << exception << endl;
-//		exception += "\t***Error: Wrong Matching\n";
+	if (ok) {
+		ok = checkOperand(&(*operand), &exception);
+		if (ok) {
+			ok = checkOperationOperandMathcing((*operation), (*operand),
+					&exception);
+		}
 	}
 
 	return exception;
 }
 bool Check::checkLabel(string address, string *label, string *exception) {
-//	cout <<"_____________ "<< tables->symTable.size()<<"\t*\n";
 	bool accep = false;
 	accep = checkSpaces(*label, 1);
 	if (!accep) {
@@ -59,7 +44,6 @@ bool Check::checkLabel(string address, string *label, string *exception) {
 	if (accep && (x).size() != 0 && !(x).empty()) {
 		int check = checkAtHash(x);
 		if (check == 0) {
-//			cout << "~~~~~~~~~ " << x << endl;
 			accep = isalpha((x)[0]);
 			for (unsigned int i = 0; i < (x).length(); i++) {
 				if (isalpha((x)[i]) && i != (x).length() - 1 && accep == true) {
@@ -171,6 +155,7 @@ bool Check::checkOperand(string *operand, string *exception) {
 			} else if ((*operand).at(0) == '*') {
 				return true;
 			} else if ((*operand).find("'") < 50 && (*operand).find("'") > 0) {
+//				cout << "~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 				return checkByte((*operand), &(*exception));
 			} else {
 				return checkLabelAndNubmers('=', (*operand), &(*exception));
@@ -205,22 +190,22 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			*exception += "\t***Error: Invalid number\n";
 		}
 	} else if (operation == "end") {
-		if (operand.empty()) {
 			ok = true;
+		if (operand.empty()) {
 		} else {
-			*exception += "\t***Error: Extra Characters after END\n";
+//			*exception += "\t***Error: Extra Characters after END\n";
 		}
 	} else if (operation == "byte") {
 //CHECK ARRAY OR HEXA
-		string s = "";
-		if (checkByte(operand, &s)) {
+//		string s = "";
+		if (checkByte(operand, &(*exception))) {
 			ok = true;
 		}
-	} else if (operand == "-") {
+	} else if (mapOperand == "-") {
 		if (operand.length() == 0) {
 			ok = true;
 		} else {
-
+			*exception += "\t***Error: Invalid operand\n";
 		}
 	} else if (mapOperand == "r1") {
 		if (operand[0] == 'x') {
@@ -284,8 +269,6 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			}
 		} else if (operand == "*") {
 			ok = true;
-//			cout << "MMMMMMMMMMMM   " << operation << "   " << operand
-//					<< "   ok =   " << ok << endl;
 		} else {
 			int x = checkAtHash(operand);
 			if (x == 0 || x == 1) {
@@ -293,6 +276,8 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			}
 		}
 	} else {
+//		cout << "MMMMMMMMMMMM   " << operation << "   " << operand
+//				<< "   ok =   " << ok << endl;
 		*exception += "\t***Error: Undefined operand type\n";
 	}
 	return ok;
@@ -326,9 +311,9 @@ bool Check::checkSpaces(string str, int type) {
 }
 
 bool Check::checkByte(string oper, string *exception) {
-	if (oper.at(0) == 'c') {
+	if (oper.at(0) == 'c' || oper.at(0) == 'C') {
 		return checkLabelAndNubmers('=', oper, &(*exception));
-	} else if (oper.at(0) == 'x') {
+	} else if (oper.at(0) == 'x' || oper.at(0) == 'X') {
 		return checkLabelAndNubmers('=', oper, &(*exception));
 	} else if (oper.find("'") < 50 && oper.find("'") > 0) {
 		*exception += "\t***Error: Invalid symbol\n";
@@ -343,12 +328,6 @@ int Check::checkAtHash(string searchable) {
 	int check2;
 	int check = 0;
 	int found = tables->symTable.count(x);
-//	for (map<string, string>::iterator it = tables.symTable.begin();
-//				it != tables.symTable.end(); ++it) {
-//			cout<< "*\t" + it->first + "\t*\t" + it->second + "\t*\n";
-//		}
-//	cout<<"%%%%%%%%%%   "<<tables.symTable.size()<<endl;
-//	cout<<"$$$$$$$$$$   "<<found<<endl;
 	if (found > 0) {
 		check1 = 1;
 		check = 1;
@@ -378,6 +357,7 @@ bool Check::checkAddress(string st, string * exception) {
 }
 bool Check::isHexaNumber(string st, string * exception) {
 	string x = toLowerCase(st);
+//	cout << "@@@@@@   " << x << endl;
 	if (x.length() % 2 == 1) {
 		*exception += "\t***Error: Invalid hex number\n";
 		return false;
@@ -416,8 +396,10 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 			}
 		}
 	} else if (label.at(0) == 'x' && (int) label.at(1) == 39 && c == '=') {
-		if (label.length() - 3 % 2 == 0) {
-			return isHexaNumber(label.substr(2), exception);
+
+		if ((label.length() - 3) % 2 == 0) {
+//			cout << "INNNNNNNNNNN   " << label.size() << endl;
+			return isHexaNumber(label.substr(2, label.size() - 3), exception);
 
 		} else {
 			*exception += "\t***Error: Invalid hex number";
@@ -453,7 +435,6 @@ bool Check::checkRegister(string str1, string str2, string *exception) {
 			return true;
 		} else {
 			*exception += "\t***Error: Invalid register\n";
-
 			return false;
 		}
 	} else {
@@ -461,7 +442,6 @@ bool Check::checkRegister(string str1, string str2, string *exception) {
 			return true;
 		else {
 			*exception += "\t***Error: Invalid register must be X\n";
-
 			return false;
 
 		}

@@ -1,5 +1,5 @@
 .23456789012345678901234567890123456789
-         START   0
+ff       START   0
          LDX     #0
          LDS     #3
          LDT     #300
@@ -7,8 +7,9 @@ LOOP1    LDA     #0
 LOOP2    STA     STR2,X
          ADDR    S,X
 SSS      COMPR   X,T
+         fix
          JLT     LOOP1
          J       *
-TEST     BYTE    x'25'
+TEST     BYTE    c'25'
 GI       WORD    444
-         END
+         END     f

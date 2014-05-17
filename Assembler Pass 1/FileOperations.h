@@ -11,6 +11,7 @@
 #include<iostream>
 #include <fstream>
 #include "debug.cpp"
+#include <sstream>
 //#include <string>
 //using namespace std;
 
@@ -41,6 +42,7 @@ private:
 	void writeOperation(std::string operation);
 	void writeOperand(std::string operand);
 	void writeComment(std::string comment);
+	std::string writeFiled(std::string str);
 	void writeEnter();
 	std::string writeAddress(std::string address);
 
