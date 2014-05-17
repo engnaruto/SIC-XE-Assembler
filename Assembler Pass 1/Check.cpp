@@ -278,7 +278,6 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 				*exception += "\t***Error: Illegal address for register\n";
 				ok = false;
 			}
-
 			ok &= (!checkRegister(str1));
 			int x = checkAtHash(str1);
 			if (x == 2) {
