@@ -92,16 +92,18 @@ bool Check::checkOperation(string *operation, string *exception) {
 		dir[4] = "start";
 		dir[5] = "end";
 		if (x.empty() == true) {
+			*exception += "\t***Error: Invalid Operation\n";
 			return false;
 		}
-		if (isalpha(x[0]) == false && x[0] != '+') {
+		if (isalpha(x[0]) == false) {
+			*exception += "\t***Error: Invalid Operation\n";
 			return false;
 		}
-		if (x[0] == '+') {
-			string tmp = "";
-			tmp.assign(x.begin() + 1, x.end());
-			x.assign(tmp);
-		}
+//		if (x[0] == '+') {
+//			string tmp = "";
+//			tmp.assign(x.begin() + 1, x.end());
+//			x.assign(tmp);
+//		}
 		int found = tables->opTable.count(x);
 		if (found > 0) {
 			return true;
@@ -313,12 +315,16 @@ bool Check::checkSpaces(string str, int type) {
 		valid = false;
 
 	for (unsigned int i = 1; i < str.length(); i++) {
-		if (str[i] == ' ' && str[i + 1] != ' ' && i != str.length() - 1)
+		if (str[i] == ' ' && str[i + 1] != ' ' && i != str.length() - 1
+				&& str[8] != '+')
 			valid = false;
 	}
 	string t = trim(str);
 	if (type == 1) {
-		if (str[8] != ' ')
+		if (str[8] == '+') {
+			valid = true;
+		}
+		if (str[8] != ' ' && str[8] != '+')
 			valid = false;
 		if (t.empty()) {
 			valid = true;
@@ -328,8 +334,9 @@ bool Check::checkSpaces(string str, int type) {
 	x = toLowerCase(x);
 	if (type == 2 && (tables->opTable[x].operand != "-" && x != "end")) {
 //cout <<"INNNNNNNN<<<<   "<<x<<endl;
-		if (str[6] != ' ' || str[7] != ' ')
+		if (str[6] != ' ' || str[7] != ' ') {
 			valid = false;
+		}
 	}
 	return valid;
 }
