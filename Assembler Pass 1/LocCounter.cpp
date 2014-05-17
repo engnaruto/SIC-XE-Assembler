@@ -10,7 +10,7 @@ using namespace std;
 LocCounter::LocCounter(int start) {
 	decCounter = start;
 	hexCounter = dectoHex();
-//	makeAddress();
+	makeAddress();
 	lineCounter = 1;
 	lastLength = 0;
 }

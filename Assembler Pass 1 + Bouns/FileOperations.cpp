@@ -6,39 +6,53 @@
  */
 
 #include "FileOperations.h"
+#include <stdio.h>
+#include <string.h>
+
+
 //#include<cstdio>
 using namespace std;
 
 FileOperations::FileOperations(string fileName) {
-
-	in.open("in.txt");
-//	in.open(fileName.c_str());
+//	in.open("in.txt");
+	in.open(fileName.c_str());
 	out.open("out.txt");
 }
 FileOperations::~FileOperations() {
 
 }
-void FileOperations::use(string fileName) {
-//	in.open(fileName.c_str());
-	in.open("in.txt");
-	cout << "IN FILE" << endl;
+bool FileOperations::use(string fileName) {
+//	in.clear();
+	in.close();
+	in.open(fileName.c_str());
+//	if (in) {
+//		return true;
+//	}
+//	return false;
+	return in.good();
+//	in.open("in.txt");
+//	cout << "IN FILE" << endl;
 //	freopen(fileName.c_str(), "r", stdin);
 }
 
 string FileOperations::readLine() {
 	string s;
-	arr.clear();
-	arr.push_back("");
-	arr.push_back("");
-	arr.push_back("");
-	arr.push_back("");
 	getline(in, s);
-	s = removeSpaces(s);
-	splitBySpace(s);
-	cout << "~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 	return s;
 }
+string FileOperations::readLabel(string line) {
+	return line.substr(0, 9);
 
+}
+string FileOperations::readOperation(string line) {
+	return line.substr(9, 8);
+}
+string FileOperations::readOperand(string line) {
+	return line.substr(17, 18);
+}
+string FileOperations::readComment(string line) {
+	return line.substr(35, 31);
+}
 string FileOperations::removeSpaces(string line) {
 	char output[66];
 	int index = 0;
@@ -69,62 +83,69 @@ string FileOperations::removeSpaces(string line) {
 	for (int i = 0; i < index; i++) {
 		out += output[i];
 	}
-	if (out.at(0) == ' ') {
+	if (out.length()>0&&out.at(0) == ' ') {
 		out = out.substr(1);
 	}
 	return out;
 }
-void FileOperations::splitBySpace(string line) {
-//	arr.reserve(4);
-	int pos = line.find(" ");
-	cout<<"************************"<<arr.size()<<endl;
-	int index = 0;
-	while (pos < 100 && pos > 0 && index < 4) {
-		cout << pos << endl;
-		if (index == 3)
-			arr[index] = line;
-		else {
-			arr[index] = line.substr(0, pos);
-			line = line.substr(pos + 1);
-			pos = line.find(" ");
-		}
-		index++;
+
+vector<string> FileOperations::split(string str, std::string sep) {
+	char* cstr = const_cast<char*>(str.c_str());
+	char* current;
+	std::vector<std::string> arr;
+	current = strtok(cstr, sep.c_str());
+	while (current != NULL) {
+		arr.push_back(current);
+		current = strtok(NULL, sep.c_str());
 	}
-}
-
-string FileOperations::readLabel(string line) {
-	return line.substr(0, 9);
-
-}
-string FileOperations::readOperation(string line) {
-	return line.substr(9, 8);
-}
-string FileOperations::readOperand(string line) {
-	return line.substr(17, 18);
-}
-string FileOperations::readComment(string line) {
-	return line.substr(35, 31);
+	return arr;
 }
 
 void FileOperations::writeFirst() {
 //	cout<<"WRITEEEEEEEEEEEEEEEEEEEEEE"<<endl;
-
-	out << "Line No.\tAddress\tLabel\tMnemonic\tOperand\tComments" << endl;
+	out << "Line No.\t\tAddress\t\t    Label\t\t    Mnemonic\t\tOperand\t\tComments"
+			<< endl;
 #ifdef debug
-	cout << "Line No.\tAddress\t\tLabel\tMnemonic\tOperand\tComments" << endl;
+	cout << "Line No.\t\tAddress\t\t\t     Label\t\t    Mnemonic\t\tOperand\t\tComments"
+			<< endl;
 #endif
 
+}
+string FileOperations::writeFiled(string str) {
+
+	for (unsigned int i = 0; i < 15 - str.length(); i++) {
+		str += " ";
+	}
+	return str;
 }
 void FileOperations::writeAll(int lineNo, string address, string label,
 		string operation, string operand, string comment) {
-	out << lineNo << "\t" << address << "\t" << label << "\t" << operation
-			<< "\t" << operand << "\t" << comment << endl;
+	ostringstream convert;   // stream used for the conversion
+	convert << lineNo; // insert the textual representation of 'Number' in the characters in the stream
+	string s = convert.str();
+	s = writeFiled(s);
+	address = writeFiled(address);
+	label = writeFiled(label);
+	operation = writeFiled(operation);
+	operand = writeFiled(operand);
+	out << s << "\t\t" << address << "\t\t" << label << "\t\t" << operation
+			<< "\t\t" << operand << "\t\t" << comment << endl;
 #ifdef debug
-	cout << lineNo << "\t" << address << "\t" << label << "\t" << operation
-			<< "\t" << operand << "\t" << comment << endl;
+	cout << s << "\t\t" << address << "\t\t" << label << "\t\t" << operation
+			<< "\t\t" << operand << "\t\t" << comment << endl;
 #endif
 
 }
+//void FileOperations::writeAll(int lineNo, string address, string label,
+//		string operation, string operand, string comment) {
+//	out << lineNo << "\t" << address << "\t" << label << "\t" << operation
+//			<< "\t" << operand << "\t" << comment << endl;
+//#ifdef debug
+//	cout << lineNo << "\t" << address << "\t" << label << "\t" << operation
+//			<< "\t" << operand << "\t" << comment << endl;
+//#endif
+//
+//}
 
 void FileOperations::writeLine(string line) {
 
@@ -176,7 +197,15 @@ void FileOperations::writeComment(string comment) {
 	cout << comment;
 #endif
 }
-
+//string FileOperations::writeAddress(std::string address) {
+//	string s = "";
+//	for (unsigned int i = 0; i < 5 - address.length(); i++) {
+//		s += "0";
+//	}
+//	s += address;
+////	cout<<"DDDDDDDDDDDD "<<s<<endl;
+//	return address;
+//}
 void FileOperations::writeEnter() {
 	out << "\n";
 #ifdef debug

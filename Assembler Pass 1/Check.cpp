@@ -190,11 +190,19 @@ bool Check::checkOperationOperandMathcing(string operation, string operand,
 			*exception += "\t***Error: Invalid number\n";
 		}
 	} else if (operation == "end") {
-			ok = true;
+		ok = true;
+//		if (operand.empty()) {
+//		} else {
+//			cout<<"\t***Error: Extra Characters after END\n";
+//		}
+
+	} else if (operation == "rsub") {
+		ok = true;
 		if (operand.empty()) {
-		} else {
-//			*exception += "\t***Error: Extra Characters after END\n";
+			ok = true;
+			*exception += "\t***Error: Invalid operand\n";
 		}
+
 	} else if (operation == "byte") {
 //CHECK ARRAY OR HEXA
 //		string s = "";
@@ -418,6 +426,9 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 		*exception += "\t***Error: Invalid expression\n";
 
 		return false;
+	} else if (label.at(0) == '-' && c == '#') {
+		*exception += "\t***Error: Invalid expression no -ve number \n";
+		return false;
 	} else {
 		return true; //checkLabel(label,labels);
 	}
@@ -460,10 +471,11 @@ bool Check::isNumber(string st) {
 	if (st.length() == 0)
 		return false;
 	for (unsigned int i = 0; i < st.length(); i++) {
-		if (st.at(i) >= '0' && st.at(i) <= '9')
+		if ((st.at(i) >= '0' && st.at(i) <= '9') || (st.at(0) == '-')) {
 			continue;
-		else
+		} else {
 			return false;
+		}
 	}
 	return true;
 }
