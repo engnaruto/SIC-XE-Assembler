@@ -32,3 +32,4 @@ EXIT              J       *
                      ERROR    BYTE    C'  ERROR'
 NULL                        BYTE    X'000004'
          END
+         
