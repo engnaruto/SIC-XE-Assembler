@@ -83,9 +83,9 @@ int main(int argc, char **argv) {
 			tooShort = false;
 			file.writeLine("\t***Error: Line is too short !!!\n");
 		}
-		cout << "#######  " << counter.getAddressLabel() << "      " << label
-				<< "      " << operation << "      " << operand << "      "
-				<< comment << endl;
+//		cout << "#######  " << counter.getAddressLabel() << "      " << label
+//				<< "      " << operation << "      " << operand << "      "
+//				<< comment << endl;
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
@@ -141,6 +141,7 @@ int main(int argc, char **argv) {
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
 					&operation, &operand);
+
 			if (strexc.length() != 0) {
 				counter.addtoCounter(3);
 //				cout << "#######  " << counter.getAddressLabel() << "      "

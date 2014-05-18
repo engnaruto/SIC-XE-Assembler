@@ -1,13 +1,13 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
 .23456789012345678901234567890
-1       		003E8     		        		START     		1000      		
-2       		003E8     		ALPHA     		LDA      		#10      		
-3       		003EB     		BETA      		+LDCH     		#6       		
-4       		003EF     		        		ADD      		@GAMMA     		
-5       		003F2     		        		J       		*       		
-6       		003F5     		GAMMA     		BYTE      		X'01'     		
-7       		003F6     		THETA     		RESB      		2       		
-8       		003F8     		        		END      		        		
+1       		01000     		        		START     		1000      		
+2       		01000     		ALPHA     		LDA      		#10      		
+3       		01003     		BETA      		+LDCH     		#6       		
+4       		01007     		        		ADD      		@GAMMA     		
+5       		0100A     		        		J       		*       		
+6       		0100D     		GAMMA     		BYTE      		X'01'     		
+7       		0100E     		THETA     		RESB      		2       		
+8       		01010     		        		END      		        		
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
@@ -15,9 +15,9 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	003E8        *
-*     beta        	*     	003E8        *
-*     gamma        	*     	003F2        *
-*     theta        	*     	003F5        *
+*     alpha        	*     	01000        *
+*     beta        	*     	01003        *
+*     gamma        	*     	0100D        *
+*     theta        	*     	0100E        *
 ******************************************
 

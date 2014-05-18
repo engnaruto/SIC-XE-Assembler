@@ -142,7 +142,7 @@ int main(int argc, char **argv) {
 
 	Tables tables;
 	FileOperations file("in.txt");
-	LocCounter counter(0);
+	LocCounter counter("0");
 	ok = true;
 	try {
 		tables.loadHash();

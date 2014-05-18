@@ -190,17 +190,16 @@ bool Check::checkOperationOperandMatching(string operation, string operand,
 		}
 	} else if (operation == "end") {
 		ok = true;
-//		if (operand.empty()) {
-//		} else {
-//			cout<<"\t***Error: Extra Characters after END\n";
-//		}
-
-	} else if (operation == "rsub") {
-//			ok = false;
 		if (operand.empty()) {
-			ok = true;
 		} else {
-			*exception += "\t---***Error: Invalid operand\n";
+//			*exception += "\t***Error: Extra Characters after END\n";
+		}
+	} else if (operation == "rsub") {
+		ok = true;
+		if (!operand.empty()) {
+			ok = false;
+			*exception += "\t***Error: Invalid operand\n";
+
 		}
 
 	} else if (operation == "byte") {
@@ -256,38 +255,32 @@ bool Check::checkOperationOperandMatching(string operation, string operand,
 		}
 
 	} else if (mapOperand == "m") {
-//		string s = tables->opTable[operation].format;
+		string s = "";
 		//  #   @
 
-//		if (s == "3/4") {
-		if (operand.find(",") < 100 && operand.find(",") > 0) {
-			int pos = operand.find(",");
-			string str1 = operand.substr(0, pos);
-			string str2 = operand.substr(pos + 1);
-			if (str2 != "x") {
-				*exception += "\t***Error: Illegal address for register\n";
-				ok = false;
+		if (s == "3/4") {
+			if (operand.find(",") < 100 && operand.find(",") > 0) {
+				int pos = operand.find(",");
+				string str1 = operand.substr(0, pos);
+				string str2 = operand.substr(pos + 1);
+				if (str2 != "x") {
+					*exception += "\t***Error: Illegal address for register";
+					ok = false;
+				}
+				ok &= (!checkRegister(str1));
+				if (ok) {
+					*exception += "\t***Error: Illegal address for symbol";
+				}
+			} else {
+				*exception += "\t***Error: Missing comma in operand";
 			}
-//			ok &= (!checkRegister(str1));
-////			int x = checkAtHash(str1);
-//			if (x == 2) {
-//				ok = false;
-//			}
-//			if (!ok) {
-//				*exception += "\t***Error: Illegal symbol name\n";
-//			}
-//			} else {
-//				*exception += "\t***Error: Missing comma in operand";
-//			}
 		} else if (operand == "*") {
 			ok = true;
 		} else {
-//			int x = checkAtHash(operand);
-//			if (x == 0 || x == 1) {
-//				ok = true;
-//			} else {
-//				*exception += "\t***Error: Illegal symbol name\n";
-//			}
+			int x = checkAtHash(operand);
+			if (x == 0 || x == 1) {
+				ok = true;
+			}
 		}
 	} else {
 //		cout << "MMMMMMMMMMMM   " << operation << "   " << operand
@@ -400,10 +393,6 @@ bool Check::isatSymTable(string label) {
 bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 
 	if (label.at(0) >= '0' && label.at(0) <= '9') {
-		if (label.length() > 4) {
-			*exception += "\t***Error: Invalid number\n";
-			return false;
-		}
 		for (unsigned int i = 1; i < label.length(); i++) {
 			if (label.at(i) >= '0' && label.at(i) <= '9') {
 				continue;
@@ -416,7 +405,7 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 	} else if (label.at(0) == 'x' && (int) label.at(1) == 39 && c == '=') {
 
 		if ((label.length() - 3) % 2 == 0) {
-// cout << "INNNNNNNNNNN " << label.size() << endl;
+//			cout << "INNNNNNNNNNN   " << label.size() << endl;
 			return isHexaNumber(label.substr(2, label.size() - 3), exception);
 
 		} else {

@@ -62,6 +62,7 @@ void Tables::loadHash() {
 
 int Tables::getLength(string operation, string operand) {
 //			cout << "--------HEREEEEEEEEEEE " << operation <<"   "<<operand<< endl;
+//	cout <<"~~~~~~ "<< label << "    " << operation << endl;
 	string x = toLowerCase(operation);
 	string s = toLowerCase(operand);
 	if (x == "start" || x == "end") {
