@@ -37,6 +37,8 @@ string readSplitLine(FileOperations &file) {
 	} else {
 		s = "Comment";
 	}
+//	cout <<"~~~~  "<< label << " /  " << operation << " /  " << operand << "  / " << comment
+//			<< endl;
 	return s;
 }
 
@@ -72,7 +74,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-	//openFile(tables, file);
+	openFile(tables, file);
 
 	file.writeFirst();
 	Check check(&tables);

@@ -151,14 +151,14 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-	//openFile(tables, file);
+	openFile(tables, file);
 	file.writeFirst();
 	Check check(&tables);
 	strexc = "";
-	int i = 0;
+//	int i = 0;
 
 	while (!file.eof()) {
-		cout << "hi2 " << i++ << endl;
+//		cout << "hi2 " << i++ << endl;
 
 		strexc = readSplitLine2(file, check, tables);
 
@@ -203,7 +203,7 @@ int main(int argc, char **argv) {
 		}
 	}
 	while (!file.eof()) {
-		cout << "hi " << i++ << endl;
+//		cout << "hi " << i++ << endl;
 		strexc = readSplitLine2(file, check, tables);
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,

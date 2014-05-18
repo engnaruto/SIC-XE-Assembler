@@ -129,12 +129,8 @@ bool Check::checkOperation(string *operation, string *exception) {
 }
 
 bool Check::checkOperand(string *operand, string *exception) {
-	bool ok = checkSpaces((*operand), 0);
-	if (!ok) {
-		*exception += "\t***Error: Invalid operand\n";
-		return false;
-	}
-	(*operand) = trim((*operand));
+	bool ok = true;
+//	(*operand) = trim((*operand));
 
 	if (ok == true && !(*operand).empty()) {
 		if ((*operand).length() == 0) {
