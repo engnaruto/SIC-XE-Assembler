@@ -12,7 +12,7 @@
 #include <stdlib.h>
 class LocCounter {
 public:
-	LocCounter(int start);
+	LocCounter(std::string start);
 	~LocCounter();
 	void addtoCounter(int addresssize);
 	void setCounter(std::string counter);
@@ -27,6 +27,7 @@ private:
 	std::string hexCounter;
 	void makeAddress();
 	int lastLength;
+	int conHexaToDec(std ::string s);
 //	int i;
 };
 

@@ -185,6 +185,10 @@ int main(int argc, char **argv) {
 			}
 			length = tables.getLength(operation, operand);
 			counter.addtoCounter(length);
+			t = check.toLowerCase(label);
+			if (!check.trim(t).empty()) {
+				tables.symTable[t] = counter.getAddressLabel();
+			}
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 
@@ -214,6 +218,10 @@ int main(int argc, char **argv) {
 			}
 			length = tables.getLength(operation, operand);
 			counter.addtoCounter(length);
+			t = check.toLowerCase(label);
+			if (!check.trim(t).empty()) {
+				tables.symTable[t] = counter.getAddressLabel();
+			}
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			if (strexc.length() != 0) {

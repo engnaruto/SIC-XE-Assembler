@@ -4,12 +4,14 @@
  *  Created on: May 13, 2014
  *      Author: Naruto
  */
-
+#include <iostream>
+#include <iomanip>
+#include <sstream>
 #include "LocCounter.h"
 using namespace std;
-LocCounter::LocCounter(int start) {
-	decCounter = start;
-	hexCounter = dectoHex();
+LocCounter::LocCounter(string start) {
+	hexCounter = start;
+	decCounter = conHexaToDec(start);
 	makeAddress();
 	lineCounter = 1;
 	lastLength = 0;
@@ -20,10 +22,19 @@ LocCounter::~LocCounter() {
 int LocCounter::getLineCounter() {
 	return lineCounter++;
 }
+
+int LocCounter::conHexaToDec(string s) {
+	int y;
+	std::stringstream stream;
+	stream << s;
+	stream >> hex >> y;
+	return y;
+}
+
 int i = 0;
 void LocCounter::setCounter(std::string strNum) {
-	decCounter = atoi(strNum.c_str());
-	hexCounter = dectoHex();
+	hexCounter = strNum;
+	decCounter = conHexaToDec(strNum);
 }
 void LocCounter::addtoCounter(int addresssize) {
 //	decCounter += addresssize;
@@ -33,7 +44,8 @@ void LocCounter::addtoCounter(int addresssize) {
 }
 string LocCounter::getAddress() {
 //	makeAddress();
-	decCounter+=lastLength;
+	decCounter += lastLength;
+//	hexCounter = dectoHex();
 	return hexCounter;
 }
 string LocCounter::getAddressLabel() {
