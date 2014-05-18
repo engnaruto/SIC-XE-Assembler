@@ -418,6 +418,10 @@ bool Check::isatSymTable(string label) {
 bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 
 	if (label.at(0) >= '0' && label.at(0) <= '9') {
+		if (label.length() > 4) {
+			*exception += "\t***Error: Invalid number\n";
+			return false;
+		}
 		for (unsigned int i = 1; i < label.length(); i++) {
 			if (label.at(i) >= '0' && label.at(i) <= '9') {
 				continue;
@@ -430,7 +434,7 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 	} else if (label.at(0) == 'x' && (int) label.at(1) == 39 && c == '=') {
 
 		if ((label.length() - 3) % 2 == 0) {
-//			cout << "INNNNNNNNNNN   " << label.size() << endl;
+// cout << "INNNNNNNNNNN " << label.size() << endl;
 			return isHexaNumber(label.substr(2, label.size() - 3), exception);
 
 		} else {
@@ -460,68 +464,69 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 	return true;
 }
 
-bool Check::checkRegister(string str1, string str2, string *exception) {
-	string x1 = toLowerCase(str1);
-	string x2 = toLowerCase(str2);
-	if (x1 == "a" || x1 == "b" || x1 == "x" || x1 == "t" || x1 == "s"
-			|| x1 == "l") {
-		if (x2 == "a" || x2 == "b" || x2 == "x" || x2 == "t" || x2 == "s"
-				|| x2 == "l") {
-			return true;
-		} else {
-			*exception += "\t***Error: Invalid register\n";
-			return false;
-		}
-	} else {
-		if (x2 == "x") //&&checkLabel(str1,labels)==true)
-			return true;
-		else {
-			*exception += "\t***Error: Invalid register must be X\n";
-			return false;
 
-		}
+bool Check::checkRegister(string str1, string str2, string *exception) {
+string x1 = toLowerCase(str1);
+string x2 = toLowerCase(str2);
+if (x1 == "a" || x1 == "b" || x1 == "x" || x1 == "t" || x1 == "s"
+		|| x1 == "l") {
+	if (x2 == "a" || x2 == "b" || x2 == "x" || x2 == "t" || x2 == "s"
+			|| x2 == "l") {
+		return true;
+	} else {
+		*exception += "\t***Error: Invalid register\n";
+		return false;
 	}
+} else {
+	if (x2 == "x") //&&checkLabel(str1,labels)==true)
+		return true;
+	else {
+		*exception += "\t***Error: Invalid register must be X\n";
+		return false;
+
+	}
+}
 }
 
 bool Check::checkRegister(string str1) {
-	string x = toLowerCase(str1);
-	if (x == "a" || x == "b" || x == "x" || x == "t" || x == "s" || x == "l") {
-		return true;
-	}
-	return false;
+string x = toLowerCase(str1);
+if (x == "a" || x == "b" || x == "x" || x == "t" || x == "s" || x == "l") {
+	return true;
+}
+return false;
 }
 
 bool Check::isNumber(string st) {
-	if (st.length() == 0)
+if (st.length() == 0)
+	return false;
+for (unsigned int i = 0; i < st.length(); i++) {
+	if ((st.at(i) >= '0' && st.at(i) <= '9') || (st.at(0) == '-')) {
+		continue;
+	} else {
 		return false;
-	for (unsigned int i = 0; i < st.length(); i++) {
-		if ((st.at(i) >= '0' && st.at(i) <= '9') || (st.at(0) == '-')) {
-			continue;
-		} else {
-			return false;
-		}
 	}
-	return true;
+}
+return true;
 }
 
 string Check::trim(string input) {
-	string output = "";
+string output = "";
 
-	for (unsigned int i = 0; i < input.length(); i++) {
-		if (input[i] != ' ' && input[i] != '\t') {
-			output = output + input[i];
-		}
+for (unsigned int i = 0; i < input.length(); i++) {
+	if (input[i] != ' ' && input[i] != '\t') {
+		output = output + input[i];
 	}
-	return output;
+}
+return output;
 }
 string Check::toLowerCase(string input) {
-	unsigned int i;
-	string tmp = "";
-	for (i = 0; i < input.length(); i++) {
-		char c = input[i];
-		int n = tolower(c);
-		char d = char(n);
-		tmp = tmp + d;
-	}
-	return tmp;
+unsigned int i;
+string tmp = "";
+for (i = 0; i < input.length(); i++) {
+	char c = input[i];
+	int n = tolower(c);
+	char d = char(n);
+	tmp = tmp + d;
+}
+return tmp;
 }

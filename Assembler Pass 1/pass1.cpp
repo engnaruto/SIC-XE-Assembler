@@ -62,7 +62,7 @@ void openFile(Tables& tables, FileOperations& file) {
 int main(int argc, char **argv) {
 	Tables tables;
 	FileOperations file("in.txt");
-	LocCounter counter(0);
+	LocCounter counter("0");
 	tooShort = false;
 	ok = true;
 	try {
@@ -78,10 +78,14 @@ int main(int argc, char **argv) {
 	Check check(&tables);
 	strexc = "";
 	while (!file.eof()) {
+
 		if (tooShort) {
 			tooShort = false;
 			file.writeLine("\t***Error: Line is too short !!!\n");
 		}
+		cout << "#######  " << counter.getAddressLabel() << "      " << label
+				<< "      " << operation << "      " << operand << "      "
+				<< comment << endl;
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
@@ -98,7 +102,8 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			t = check.toLowerCase(operation);
-				cout <<"~~~~~~~~~~~~~~~~~~~~~~~~~  "<<t<<endl;
+//			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~  " << t << endl;
+
 			if (t == "start") {
 				progname = label;
 				counter.setCounter(operand);
@@ -110,6 +115,10 @@ int main(int argc, char **argv) {
 			}
 			length = tables.getLength(operation, operand);
 			counter.addtoCounter(length);
+			t = check.toLowerCase(label);
+			if (!check.trim(t).empty()) {
+				tables.symTable[t] = counter.getAddressLabel();
+			}
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 
@@ -134,6 +143,9 @@ int main(int argc, char **argv) {
 					&operation, &operand);
 			if (strexc.length() != 0) {
 				counter.addtoCounter(3);
+//				cout << "#######  " << counter.getAddressLabel() << "      "
+//						<< label << "      " << operation << "      " << operand
+//						<< "      " << comment << endl;
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				file.writeLine(strexc);
@@ -142,6 +154,13 @@ int main(int argc, char **argv) {
 			}
 			length = tables.getLength(operation, operand);
 			counter.addtoCounter(length);
+//			cout << "#######  " << counter.getAddressLabel() << "      "
+//					<< label << "      " << operation << "      " << operand
+//					<< "      " << comment << endl;
+			t = check.toLowerCase(label);
+			if (!check.trim(t).empty()) {
+				tables.symTable[t] = counter.getAddressLabel();
+			}
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			if (strexc.length() != 0) {
@@ -166,7 +185,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	} else {
 //		operand = check.trim(operand);
-		cout << "%%%%%%%   " << operand<< "    "<<progname << endl;
+//		cout << "%%%%%%%   " << operand << "    " << progname << endl;
 		if (progname != operand && !operand.empty()) {
 			file.writeLine("\t***Error: Invalid relocatable address \n");
 			ok = false;
