@@ -1,9 +1,8 @@
 .23456789012345678901234567890
-         START   0000
-ALPHA    LDT     #10        . THIS IS COMMENT
+ALPHA    LDT     #10
 BETA    +LDCH    #6
          ADD     @GAMMA
          J       *
 GAMMA    BYTE    X'01'
 THETA    RESB    2
-         END     ALPHA
+. MISSING END STATEMENT

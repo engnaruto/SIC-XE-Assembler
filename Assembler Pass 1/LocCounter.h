@@ -19,15 +19,16 @@ public:
 	int getLineCounter();
 	std::string getAddress();
 	std::string getAddressLabel();
-private:
+	int conHexaToDec(std::string s);
+	std::string dectoHex(int num);
 	std::string convDectoHex(int decNum, int r[]);
+private:
 	std::string dectoHex();
 	int decCounter;
 	int lineCounter;
 	std::string hexCounter;
 	void makeAddress();
 	int lastLength;
-	int conHexaToDec(std ::string s);
 //	int i;
 };
 

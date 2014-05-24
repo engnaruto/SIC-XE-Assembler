@@ -52,6 +52,11 @@ string LocCounter::getAddressLabel() {
 	return hexCounter;
 }
 
+string LocCounter::dectoHex(int num) {
+	int r[50];
+	i = 0;
+	return convDectoHex(num, r);
+}
 string LocCounter::dectoHex() {
 	int r[50];
 	i = 0;

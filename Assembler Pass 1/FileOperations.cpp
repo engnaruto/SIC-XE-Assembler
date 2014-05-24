@@ -36,12 +36,18 @@ string FileOperations::readLine() {
 	getline(in, s);
 	return s;
 }
+
+bool FileOperations::writeIn(std::string filename) {
+	out.close();
+	out.open(filename.c_str());
+	return out.good();
+}
 string FileOperations::readLabel(string line) {
-	return line.substr(0, 9);
+	return line.substr(0, 8);
 
 }
 string FileOperations::readOperation(string line) {
-	return line.substr(9, 8);
+	return line.substr(8, 9);
 }
 string FileOperations::readOperand(string line) {
 	return line.substr(17, 18);
@@ -52,18 +58,21 @@ string FileOperations::readComment(string line) {
 
 void FileOperations::writeFirst() {
 //	cout<<"WRITEEEEEEEEEEEEEEEEEEEEEE"<<endl;
-	out << "Line No.\t\tAddress\t\t    Label\t\t    Mnemonic\t\tOperand\t\tComments"
+	out
+			<< "Line No.\t\tAddress\t\t    Label\t\t    Mnemonic\t\tOperand\t\tComments"
 			<< endl;
 #ifdef debug
-	cout << "Line No.\t\tAddress\t\t\t     Label\t\t    Mnemonic\t\tOperand\t\tComments"
+	cout
+			<< "Line No.\t\tAddress\t\t\t     Label\t\t    Mnemonic\t\tOperand\t\tComments"
 			<< endl;
 #endif
 
 }
 string FileOperations::writeFiled(string str) {
-
-	for (unsigned int i = 0; i < 15 - str.length(); i++) {
-		str += " ";
+	if (str.length() <= 15) {
+		for (unsigned int i = 0; i < 15 - str.length(); i++) {
+			str += " ";
+		}
 	}
 	return str;
 }
@@ -77,11 +86,56 @@ void FileOperations::writeAll(int lineNo, string address, string label,
 	label = writeFiled(label);
 	operation = writeFiled(operation);
 	operand = writeFiled(operand);
+//	cout << "*******************" << endl;
 	out << s << "\t\t" << address << "\t\t" << label << "\t\t" << operation
 			<< "\t\t" << operand << "\t\t" << comment << endl;
 #ifdef debug
 	cout << s << "\t\t" << address << "\t\t" << label << "\t\t" << operation
 			<< "\t\t" << operand << "\t\t" << comment << endl;
+#endif
+
+}
+void FileOperations::writeAll(string address, string objectCode, string label,
+		string operation, string operand) {
+	objectCode = writeFiled(objectCode);
+	address = writeFiled(address);
+	label = writeFiled(label);
+	operation = writeFiled(operation);
+	operand = writeFiled(operand);
+//	cout << "*******************" << endl;
+	out << address << " " << objectCode << " " << label << " " << operation
+			<< " " << operand << endl;
+#ifdef debug
+	out << address << " " << objectCode << " " << label << " " << operation
+			<< " " << operand << endl;
+#endif
+
+}
+void FileOperations::writeImmidiate(string address, string label,
+		string operation, string operand) {
+
+//	address = writeFiled(address);
+//	label = writeFiled(label);
+//	operation = writeFiled(operation);
+//	operand = writeFiled(operand);
+	if (trim(address).size() == 0) {
+		address = "-";
+	}
+	if (trim(label).size() == 0) {
+		label = "-";
+	}
+	if (trim(operation).size() == 0) {
+		operation = "-";
+	}
+	if (trim(operand).size() == 0) {
+		operand = "-";
+	}
+//	cout << "*******************" << endl;
+	out << address << " " << label << " " << operation << " " << operand
+			<< endl;
+#ifdef debug
+	cout << address << " " << label << " " << operation << " " << operand
+			<< endl;
 #endif
 
 }
@@ -101,6 +155,13 @@ void FileOperations::writeLine(string line) {
 	out << line << endl;
 #ifdef debug
 	cout << line << endl;
+#endif
+}
+void FileOperations::writeTxtRecord(string strtAddress, string length,
+		string record) {
+	out << "T" << strtAddress << "^" << length << "^" << record << endl;
+#ifdef debug
+	cout << "T" << strtAddress << "^" << length << "^" << record << endl;
 #endif
 }
 
@@ -168,5 +229,31 @@ bool FileOperations::eof() {
 void FileOperations::close() {
 	in.close();
 	out.close();
+}
+
+string FileOperations::trim(string input) {
+	string output = "";
+
+	for (unsigned int i = 0; i < input.length(); i++) {
+		if (input[i] != ' ' && input[i] != '\t') {
+			output = output + input[i];
+		}
+	}
+	return output;
+}
+vector<string> &FileOperations::split(const string &s, char delim,
+		vector<string> &elems) {
+	stringstream ss(s);
+	string item;
+	while (getline(ss, item, delim)) {
+		elems.push_back(item);
+	}
+	return elems;
+}
+
+vector<string> FileOperations::split(const string &s, char delim) {
+	vector<string> elems;
+	split(s, delim, elems);
+	return elems;
 }
 

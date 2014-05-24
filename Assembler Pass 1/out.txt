@@ -1,24 +1,111 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
-.23456789012345678901234567890
-1       		01000     		        		START     		1000      		
-2       		01000     		ALPHA     		LDT      		#10      		
-3       		01003     		BETA      		+LDCH     		#6       		
-4       		01007     		        		ADD      		@GAMMA     		
-5       		0100A     		        		J       		*       		
-6       		0100D     		GAMMA     		BYTE      		X'01'     		
-7       		0100E     		THETA     		RESB      		2       		
-8       		01010     		        		END      		        		
-9       		01010     		        		END      		        		
+.       ..     ...                ..
+1       		00000     		PROG      		start     		0       		
+2       		00000     		FIRST     		LDA      		#0       		
+3       		00003     		        		LDT      		#3       		
+4       		00006     		        		LDS      		@LBL3     		
+5       		00009     		        		ADDR      		T,A      		
+6       		0000B     		        		LDX      		#0       		
+7       		0000E     		LOOP      		STA      		BUF,X     		
+8       		00011     		        		ADDR      		T,X      		
+9       		00013     		        		COMPR     		X,S      		
+10       		00015     		        		JLT      		LOOP      		
+11       		00018     		        		JSUB      		FUN      		
+12       		0001B     		        		J       		*       		
+13       		0001E     		FUN      		LDB      		30       		
+14       		00021     		        		+LDA      		BUF      		
+15       		00025     		        		+LDT      		30       		
+16       		00029     		        		RSUB      		1000      		 .this is an inline comment    
+17       		0002C     		BUF      		RESW      		10       		
+18       		0004A     		LBL1      		WORD      		7       		
+19       		0004D     		LBL2      		WORD      		30       		
+20       		00050     		LBL3      		WORD      		60       		
+21       		00053     		BUF2      		RESB      		12       		
+22       		0005F     		TEMP1     		BYTE      		X'ABCDEF'   		
+23       		00062     		TEMP2     		BYTE      		C'ABCDEF'   		
+24       		00068     		        		END      		FIRST     		
 
 >>    S U C C E S S F U L    A S S E M B L Y
+
+
+
+>>    S T A R T I N G  P A S S  2
 
 
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	01000        *
-*     beta        	*     	01003        *
-*     gamma        	*     	0100D        *
-*     theta        	*     	0100E        *
+*     buf         	*     	0002C        *
+*     buf2        	*     	00053        *
+*     first        	*     	00000        *
+*     fun         	*     	0001E        *
+*     lbl1        	*     	0004A        *
+*     lbl2        	*     	0004D        *
+*     lbl3        	*     	00050        *
+*     loop        	*     	0000E        *
+*     prog        	*     	00000        *
+*     temp1        	*     	0005F        *
+*     temp2        	*     	00062        *
 ******************************************
 
+.       ..     ...                ..
+00000               FIRST      LDA       #0       
+00000               FIRST      LDA       #0       
+	***Error: Invalid Label
+
+00003                        LDT       #3       
+00003                        LDT       #3       
+	***Error: Invalid Label
+
+00006      62004               LDS       @LBL3     
+00006      62004               LDS       @LBL3     
+00009                        ADDR       T,A      
+00009                        ADDR       T,A      
+	***Error: Invalid Label
+
+0000B                        LDX       #0       
+0000B                        LDX       #0       
+	***Error: Invalid Label
+
+0000E      FA001      LOOP       STA       BUF,X     
+0000E      FA001      LOOP       STA       BUF,X     
+00011                        ADDR       T,X      
+00011                        ADDR       T,X      
+	***Error: Invalid Label
+
+00013                        COMPR      X,S      
+00013                        COMPR      X,S      
+	***Error: Invalid Label
+
+00015      32000               JLT       LOOP      
+00015      32000               JLT       LOOP      
+00018      42003               JSUB       FUN      
+00018      42003               JSUB       FUN      
+0001B                        J        *       
+0001B                        J        *       
+	***Error: Invalid Label
+
+0001E      601       FUN       LDB       30       
+0001E      601       FUN       LDB       30       
+00021      10002C               +LDA       BUF      
+00021      10002C               +LDA       BUF      
+00025      100001               +LDT       30       
+00025      100001               +LDT       30       
+00029      1                 RSUB       1000      
+00029      1                 RSUB       1000      
+0002C               BUF       RESW       10       
+0002C               BUF       RESW       10       
+0004A      7        LBL1       WORD       7       
+0004A      7        LBL1       WORD       7       
+0004D      1        LBL2       WORD       30       
+0004D      1        LBL2       WORD       30       
+00050      3        LBL3       WORD       60       
+00050      3        LBL3       WORD       60       
+00053               BUF2       RESB       12       
+00053               BUF2       RESB       12       
+0005F      ABCDEF      TEMP1      BYTE       X'ABCDEF'   
+0005F      ABCDEF      TEMP1      BYTE       X'ABCDEF'   
+00062      040404040404   TEMP2      BYTE       C'ABCDEF'   
+00062      040404040404   TEMP2      BYTE       C'ABCDEF'   
+00068                        END       FIRST     
+00068                        END       FIRST     

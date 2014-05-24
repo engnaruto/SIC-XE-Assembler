@@ -102,7 +102,7 @@ bool Check::checkOperation(string *operation, string *exception) {
 			}
 		}
 	}
-
+	*exception = "\tError: Invalid operation\n";
 	return false;
 }
 

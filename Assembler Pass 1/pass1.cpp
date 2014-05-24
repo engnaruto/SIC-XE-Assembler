@@ -6,11 +6,13 @@
 
 using namespace std;
 
-string line, label, operand, operation, comment, strexc, t, progname;
+string line, address, label, operand, operation, progname, comment, strexc,
+		proglength, t, txtRec, startaddress, recAddress;
 int length;
 bool ok, tooShort;
+vector<string> arr;
+vector<string> format4;
 string readSplitLine(FileOperations &file) {
-
 	line = file.readLine();
 	string s = "";
 	if (line[0] != '.') {
@@ -37,8 +39,32 @@ string readSplitLine(FileOperations &file) {
 	} else {
 		s = "Comment";
 	}
-//	cout <<"~~~~  "<< label << " /  " << operation << " /  " << operand << "  / " << comment
-//			<< endl;
+	return s;
+}
+string readImmidiate(FileOperations &file) {
+	line = file.readLine();
+	string s = "";
+	if (line[0] == '.') {
+		s = "Comment";
+	} else {
+		arr.clear();
+		arr = file.split(line, ' ');
+		address = arr[0];
+		label = arr[1];
+		if (label == "-") {
+			label = "";
+		}
+		operation = arr[2];
+		operand = arr[3];
+		if (operation == "-") {
+			operand = "";
+		} else if (arr.size() > 4) {
+			for (unsigned int i = 5; i < arr.size(); i++) {
+				operand += " " + arr[i];
+			}
+		}
+//		cout <<"**************** "<< arr[0]<<"   "<< arr[1]<<"   "<< arr[2]<<"   "<< arr[3]<<"   " << endl;
+	}
 	return s;
 }
 
@@ -64,6 +90,8 @@ void openFile(Tables& tables, FileOperations& file) {
 int main(int argc, char **argv) {
 	Tables tables;
 	FileOperations file("in.txt");
+	FileOperations imFile("i.txt");
+	imFile.writeIn("immidiate.txt");
 	LocCounter counter("0");
 	tooShort = false;
 	ok = true;
@@ -74,7 +102,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-	openFile(tables, file);
+//	openFile(tables, file);
 
 	file.writeFirst();
 	Check check(&tables);
@@ -85,9 +113,7 @@ int main(int argc, char **argv) {
 			tooShort = false;
 			file.writeLine("\t***Error: Line is too short !!!\n");
 		}
-//		cout << "#######  " << counter.getAddressLabel() << "      " << label
-//				<< "      " << operation << "      " << operand << "      "
-//				<< comment << endl;
+
 		strexc = readSplitLine(file);
 
 		if (strexc.size() == 0) {
@@ -104,15 +130,13 @@ int main(int argc, char **argv) {
 				continue;
 			}
 			t = check.toLowerCase(operation);
-//			cout << "~~~~~~~~~~~~~~~~~~~~~~~~~  " << t << endl;
 
 			if (t == "start") {
 				progname = label;
 				counter.setCounter(operand);
 			} else {
-				progname = label;
+//				progname = label;
 //				progname = "";
-
 				counter.setCounter("0");
 			}
 			length = tables.getLength(operation, operand);
@@ -123,11 +147,14 @@ int main(int argc, char **argv) {
 			}
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
+			imFile.writeImmidiate(counter.getAddressLabel(), label, operation,
+					operand);
 
 			break;
 		} else {
 			if (strexc == "Comment") {
 				file.writeLine(line);
+				imFile.writeLine(line);
 			} else {
 				file.writeLine(strexc);
 				ok = false;
@@ -139,16 +166,16 @@ int main(int argc, char **argv) {
 			tooShort = false;
 			file.writeLine("\t***Error: Line is too short !!!\n");
 		}
+		label = operand = operation = "";
 		strexc = readSplitLine(file);
+		if (check.trim(line).size() == 0) {
+			strexc += "\t***Error: Line is too short !!!\n";
+		}
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
 					&operation, &operand);
-
 			if (strexc.length() != 0) {
 				counter.addtoCounter(3);
-//				cout << "#######  " << counter.getAddressLabel() << "      "
-//						<< label << "      " << operation << "      " << operand
-//						<< "      " << comment << endl;
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				file.writeLine(strexc);
@@ -157,15 +184,14 @@ int main(int argc, char **argv) {
 			}
 			length = tables.getLength(operation, operand);
 			counter.addtoCounter(length);
-//			cout << "#######  " << counter.getAddressLabel() << "      "
-//					<< label << "      " << operation << "      " << operand
-//					<< "      " << comment << endl;
 			t = check.toLowerCase(label);
 			if (!check.trim(t).empty()) {
 				tables.symTable[t] = counter.getAddressLabel();
 			}
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
+			imFile.writeImmidiate(counter.getAddressLabel(), label, operation,
+					operand);
 			if (strexc.length() != 0) {
 				file.writeLine(strexc);
 				strexc = "";
@@ -174,6 +200,7 @@ int main(int argc, char **argv) {
 		} else {
 			if (strexc == "Comment") {
 				file.writeLine(line);
+				imFile.writeLine(line);
 			} else {
 				file.writeLine(strexc);
 				ok = false;
@@ -189,19 +216,150 @@ int main(int argc, char **argv) {
 	} else {
 //		operand = check.trim(operand);
 //		cout << "%%%%%%%   " << operand << "    " << progname << endl;
-		if (progname != operand && !operand.empty()) {
+		int x = tables.symTable.count(operand);
+		if (x > 0 && !operand.empty()) {
 			file.writeLine("\t***Error: Invalid relocatable address \n");
 			ok = false;
 		}
 	}
 
 	if (ok) {
-		file.writeLine("\n>>    S U C C E S S F U L    A S S E M B L Y");
+		file.writeLine("\n>>    S U C C E S S F U L    A S S E M B L Y\n");
+		file.writeLine("\n\n>>    S T A R T I N G  P A S S  2");
+		proglength = counter.getAddressLabel();
 	} else {
 		file.writeLine("\n>>    I N C O M P L E T E    A S S E M b L Y");
 	}
 
 	file.writeLine(tables.printSymTable());
+	imFile.close();
+	if (ok) {
+		file.use("immidiate.txt");
+		imFile.writeIn("OPFILE.txt");
+		while (!file.eof()) {
+			strexc = readImmidiate(file);
+			if (strexc == "Comment") {
+				file.writeLine(line);
+			} else {
+				string x = check.toLowerCase(operation);
+//				cout << "&&&&&&&&&&&&&&   " << x << endl;
+				if (x == "start") {
+					if (progname.size() < 6) {
+						for (unsigned int i = 0; i < 6 - progname.length();
+								i++) {
+							progname += " ";
+						}
+					}
+					imFile.writeLine(
+							"H" + progname + "^" + address + "^" + proglength);
+				} else {
+					if (operation[0] == '+') {
+						format4.push_back(address);
+					}
+					int length = tables.getLength(operation, operand);
+					int curAddress = counter.conHexaToDec(address);
+					length += curAddress;
+					string nextAddress = counter.dectoHex(length);
+					string objectCode = check.format(operation, operand,
+							nextAddress);		//call ebtehal
+					if (objectCode == "") {
+						file.writeAll(address, "", label, operation, operand);
+						file.writeLine("\t***Error: Invalid Label\n");
+						ok = false;
+					} else if (objectCode == "dir") {
+						string length = counter.dectoHex(txtRec.size());
+						imFile.writeTxtRecord(recAddress, length, txtRec);
+						txtRec = objectCode;
+						recAddress = address;
+						file.writeAll(address, "", label, operation, operand);
+					} else if (objectCode == "noObject") {
+						file.writeAll(address, "", label, operation, operand);
+					} else {
+						file.writeAll(address, objectCode, label, operation,
+								operand);
+					}
+					if (ok) {
+						if (txtRec.size() == 0) {
+							recAddress = address;
+						}
+						if (txtRec.size() + objectCode.size() > 60) {
+							string length = counter.dectoHex(txtRec.size());
+							imFile.writeTxtRecord(address, length, txtRec);
+							txtRec = objectCode;
+							recAddress = address;
+						} else {
+							txtRec += objectCode;
+						}
+					}
+				}
+				startaddress = address;
+				if (startaddress.size() <= 6) {
+					for (unsigned int i = 0; i < 6 - startaddress.length();
+							i++) {
+						startaddress = "0" + startaddress;
+					}
+				}
+				break;
+			}
+		}
+
+		while (!file.eof()) {
+			strexc = readImmidiate(file);
+			if (strexc == "Comment") {
+				file.writeLine(line);
+			} else {
+				if (operation[0] == '+') {
+					format4.push_back(address);
+				}
+				int length = tables.getLength(operation, operand);
+				int curAddress = counter.conHexaToDec(address);
+				length += curAddress;
+				string nextAddress = counter.dectoHex(length);
+				cout << "~~~~~~~~~~~~   " << line << endl;
+				string objectCode = check.format(operation, operand,
+						nextAddress);		//call ebtehal
+				if (objectCode == "") {
+					file.writeAll(address, "", label, operation, operand);
+					file.writeLine("\t***Error: Invalid Label\n");
+					ok = false;
+				} else if (objectCode == "dir") {
+					string length = counter.dectoHex(txtRec.size());
+					imFile.writeTxtRecord(recAddress, length, txtRec);
+					txtRec = objectCode;
+					recAddress = address;
+					file.writeAll(address, "", label, operation, operand);
+				} else if (objectCode == "noObject") {
+					file.writeAll(address, "", label, operation, operand);
+				} else {
+					file.writeAll(address, objectCode, label, operation,
+							operand);
+				}
+				if (ok) {
+					if (txtRec.size() == 0) {
+						recAddress = address;
+					}
+					if (txtRec.size() + objectCode.size() > 60) {
+						string length = counter.dectoHex(txtRec.size());
+						imFile.writeTxtRecord(address, length, txtRec);
+						txtRec = objectCode;
+						recAddress = address;
+					} else {
+						txtRec += objectCode;
+					}
+				}
+			}
+		}
+		for (unsigned int i = 0; i < format4.size(); i++) {
+			int x = counter.conHexaToDec(arr[i]);
+			x++;
+			string s = counter.dectoHex(x);
+			imFile.writeLine("M" + s + "^05");
+		}
+//		cout << "~~~~~~~   " << startaddress << endl;
+		imFile.writeLine("E" + startaddress);
+
+	}
+
 	file.close();
 	return 0;
 }

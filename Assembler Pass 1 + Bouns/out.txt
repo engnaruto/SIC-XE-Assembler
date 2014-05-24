@@ -1,16 +1,17 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
 .23456789012345678901234567890
-1       		00000     		        		START     		0000      		
-2       		00000     		ALPHA     		LDT      		#10      		
-3       		00003     		BETA      		+LDCH     		#6       		
-4       		00007     		        		ADD      		@GAMMA     		
-5       		0000A     		        		J       		*       		
-6       		0000D     		GAMMA     		BYTE      		X'01'     		
-7       		0000E     		THETA     		RESB      		2       		
-8       		00010     		        		END      		ALPHA     		
+1       		00000     		ALPHA     		LDT      		#10      		
+2       		00003     		BETA      		+LDCH     		#6       		
+3       		00007     		        		ADD      		@GAMMA     		
+4       		0000A     		        		J       		*       		
+5       		0000D     		GAMMA     		BYTE      		X'01'     		
+6       		0000E     		THETA     		RESB      		2       		
+. MISSING END STATEMENT
+
+	***Error: No End Mnemonic
 
 
->>    S U C C E S S F U L    A S S E M B L Y
+>>    I N C O M P L E T E    A S S E M b L Y
 
 
 ******************************************
