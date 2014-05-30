@@ -106,8 +106,8 @@ void FileOperations::writeAll(string address, string objectCode, string label,
 	out << address << " " << objectCode << " " << label << " " << operation
 			<< " " << operand << endl;
 #ifdef debug
-	out << address << " " << objectCode << " " << label << " " << operation
-			<< " " << operand << endl;
+//	out << address << " " << objectCode << " " << label << " " << operation
+//			<< " " << operand << endl;
 #endif
 
 }
@@ -134,8 +134,8 @@ void FileOperations::writeImmidiate(string address, string label,
 	out << address << " " << label << " " << operation << " " << operand
 			<< endl;
 #ifdef debug
-	cout << address << " " << label << " " << operation << " " << operand
-			<< endl;
+//	cout << address << " " << label << " " << operation << " " << operand
+//			<< endl;
 #endif
 
 }
@@ -161,7 +161,7 @@ void FileOperations::writeTxtRecord(string strtAddress, string length,
 		string record) {
 	out << "T" << strtAddress << "^" << length << "^" << record << endl;
 #ifdef debug
-	cout << "T" << strtAddress << "^" << length << "^" << record << endl;
+//	cout << "T" << strtAddress << "^" << length << "^" << record << endl;
 #endif
 }
 

@@ -1,29 +1,57 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
-.       ..     ...                ..
-1       		00000     		PROG      		start     		0       		
-2       		00000     		FIRST     		LDA      		#0       		
-3       		00003     		        		LDT      		#3       		
-4       		00006     		        		LDS      		@LBL3     		
-5       		00009     		        		ADDR      		T,A      		
-6       		0000B     		        		LDX      		#0       		
-7       		0000E     		LOOP      		STA      		BUF,X     		
-8       		00011     		        		ADDR      		T,X      		
-9       		00013     		        		COMPR     		X,S      		
-10       		00015     		        		JLT      		LOOP      		
-11       		00018     		        		JSUB      		FUN      		
-12       		0001B     		        		J       		*       		
-13       		0001E     		FUN      		LDB      		30       		
-14       		00021     		        		+LDA      		BUF      		
-15       		00025     		        		+LDT      		30       		
-16       		00029     		        		RSUB      		1000      		 .this is an inline comment    
-17       		0002C     		BUF      		RESW      		10       		
-18       		0004A     		LBL1      		WORD      		7       		
-19       		0004D     		LBL2      		WORD      		30       		
-20       		00050     		LBL3      		WORD      		60       		
-21       		00053     		BUF2      		RESB      		12       		
-22       		0005F     		TEMP1     		BYTE      		X'ABCDEF'   		
-23       		00062     		TEMP2     		BYTE      		C'ABCDEF'   		
-24       		00068     		        		END      		FIRST     		
+.2345678901234567890123456789
+1       		00000     		COPY      		START     		0       		
+2       		00000     		FIRST     		STL      		RETADR     		
+3       		00003     		        		LDB      		#LENGTH    		
+.         BASE    LENGTH
+4       		00006     		CLOOP     		+JSUB     		RDREC     		
+5       		0000A     		        		LDA      		LENGTH     		
+6       		0000D     		        		COMP      		#0       		
+7       		00010     		        		JEQ      		ENDFIL     		
+8       		00013     		        		+JSUB     		WRREC     		
+9       		00017     		        		J       		CLOOP     		
+10       		0001A     		ENDFIL     		LDA      		RETADR,X    		
+11       		0001D     		        		STA      		BUFFER     		
+12       		00020     		        		LDA      		#3       		
+13       		00023     		        		STA      		LENGTH     		
+14       		00026     		        		+JSUB     		WRREC     		
+15       		0002A     		        		J       		#6       		
+16       		0002D     		RETADR     		RESW      		1       		
+17       		00030     		LENGTH     		RESW      		1       		
+18       		00033     		BUFFER     		RESB      		4096      		
+19       		        		BUFEND     		EQU      		RETADR     		
+.MAXLEN   EQU     BUFEND
+.        .       .
+.        .       .
+.        .       .
+20       		01033     		RDREC     		CLEAR     		X       		
+.         CLEAR   A
+.         CLEAR   S
+21       		01035     		        		+LDA      		#RLOOP     		
+22       		01039     		RLOOP     		TD       		INPUT     		
+23       		0103C     		        		JEQ      		RLOOP     		
+24       		0103F     		        		RD       		INPUT     		
+25       		01042     		        		COMPR     		A,S      		
+26       		01044     		        		JEQ      		EXIT      		
+27       		01047     		        		STCH      		#5       		
+.         TIXR    T
+28       		0104A     		        		JLT      		RLOOP     		
+29       		0104D     		EXIT      		STX      		#5       		
+30       		01050     		        		RSUB      		        		
+31       		01053     		INPUT     		BYTE      		X'F1'     		
+.        .       .
+.        .       .
+.        .       .
+32       		01054     		WRREC     		CLEAR     		X       		
+33       		01056     		        		LDT      		#5       		
+34       		01059     		WLOOP     		TD       		RLOOP     		
+35       		0105C     		        		JEQ      		WLOOP     		
+36       		0105F     		        		LDCH      		#6       		
+37       		01062     		        		WD       		RLOOP     		
+.         TIXR    T
+38       		01065     		        		JLT      		WLOOP     		
+39       		01068     		        		RSUB      		        		
+40       		0106B     		        		END      		FIRST     		
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
@@ -35,77 +63,73 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     buf         	*     	0002C        *
-*     buf2        	*     	00053        *
+*     RETADR       	*     	0002D        *
+*     bufend       	*     	00033        *
+*     buffer       	*     	00033        *
+*     cloop        	*     	00006        *
+*     copy        	*     	00000        *
+*     endfil       	*     	0001A        *
+*     exit        	*     	0104D        *
 *     first        	*     	00000        *
-*     fun         	*     	0001E        *
-*     lbl1        	*     	0004A        *
-*     lbl2        	*     	0004D        *
-*     lbl3        	*     	00050        *
-*     loop        	*     	0000E        *
-*     prog        	*     	00000        *
-*     temp1        	*     	0005F        *
-*     temp2        	*     	00062        *
+*     input        	*     	01053        *
+*     length       	*     	00030        *
+*     rdrec        	*     	01033        *
+*     retadr       	*     	0002D        *
+*     rloop        	*     	01039        *
+*     wloop        	*     	01059        *
+*     wrrec        	*     	01054        *
 ******************************************
 
-.       ..     ...                ..
-00000               FIRST      LDA       #0       
-00000               FIRST      LDA       #0       
-	***Error: Invalid Label
-
-00003                        LDT       #3       
-00003                        LDT       #3       
-	***Error: Invalid Label
-
-00006      62004               LDS       @LBL3     
-00006      62004               LDS       @LBL3     
-00009                        ADDR       T,A      
-00009                        ADDR       T,A      
-	***Error: Invalid Label
-
-0000B                        LDX       #0       
-0000B                        LDX       #0       
-	***Error: Invalid Label
-
-0000E      FA001      LOOP       STA       BUF,X     
-0000E      FA001      LOOP       STA       BUF,X     
-00011                        ADDR       T,X      
-00011                        ADDR       T,X      
-	***Error: Invalid Label
-
-00013                        COMPR      X,S      
-00013                        COMPR      X,S      
-	***Error: Invalid Label
-
-00015      32000               JLT       LOOP      
-00015      32000               JLT       LOOP      
-00018      42003               JSUB       FUN      
-00018      42003               JSUB       FUN      
-0001B                        J        *       
-0001B                        J        *       
-	***Error: Invalid Label
-
-0001E      601       FUN       LDB       30       
-0001E      601       FUN       LDB       30       
-00021      10002C               +LDA       BUF      
-00021      10002C               +LDA       BUF      
-00025      100001               +LDT       30       
-00025      100001               +LDT       30       
-00029      1                 RSUB       1000      
-00029      1                 RSUB       1000      
-0002C               BUF       RESW       10       
-0002C               BUF       RESW       10       
-0004A      7        LBL1       WORD       7       
-0004A      7        LBL1       WORD       7       
-0004D      1        LBL2       WORD       30       
-0004D      1        LBL2       WORD       30       
-00050      3        LBL3       WORD       60       
-00050      3        LBL3       WORD       60       
-00053               BUF2       RESB       12       
-00053               BUF2       RESB       12       
-0005F      ABCDEF      TEMP1      BYTE       X'ABCDEF'   
-0005F      ABCDEF      TEMP1      BYTE       X'ABCDEF'   
-00062      040404040404   TEMP2      BYTE       C'ABCDEF'   
-00062      040404040404   TEMP2      BYTE       C'ABCDEF'   
-00068                        END       FIRST     
-00068                        END       FIRST     
+.2345678901234567890123456789
+00000      17202a      FIRST      STL       RETADR     
+00003      69202a               LDB       #LENGTH    
+.         BASE    LENGTH
+00006      4b101033     CLOOP      +JSUB      RDREC     
+0000A      032023               LDA       LENGTH     
+0000D      290000               COMP       #0       
+00010      332007               JEQ       ENDFIL     
+00013      4b101054              +JSUB      WRREC     
+00017      3f2fec               J        CLOOP     
+0001A      03a010      ENDFIL      LDA       RETADR,X    
+0001D      0f2013               STA       BUFFER     
+00020      010003               LDA       #3       
+00023      0f200a               STA       LENGTH     
+00026      4b101054              +JSUB      WRREC     
+0002A      3d0006               J        #6       
+0002D               RETADR      RESW       1       
+00030               LENGTH      RESW       1       
+00033               BUFFER      RESB       4096      
+-                 BUFEND      EQU       RETADR     
+.MAXLEN   EQU     BUFEND
+.        .       .
+.        .       .
+.        .       .
+01033      B410       RDREC      CLEAR      X       
+.         CLEAR   A
+.         CLEAR   S
+01035      1101039              +LDA       #RLOOP     
+01039      e32017      RLOOP      TD        INPUT     
+0103C      332ffa               JEQ       RLOOP     
+0103F      db2011               RD        INPUT     
+01042      A004                COMPR      A,S      
+01044      332006               JEQ       EXIT      
+01047      550005               STCH       #5       
+.         TIXR    T
+0104A      3b2fec               JLT       RLOOP     
+0104D      110005      EXIT       STX       #5       
+01050      4f0000               RSUB               
+01053      F1        INPUT      BYTE       X'F1'     
+.        .       .
+.        .       .
+.        .       .
+01054      B410       WRREC      CLEAR      X       
+01056      750005               LDT       #5       
+01059      e32fdd      WLOOP      TD        RLOOP     
+0105C      332ffa               JEQ       WLOOP     
+0105F      510006               LDCH       #6       
+01062      df2fd4               WD        RLOOP     
+.         TIXR    T
+01065      3b2ff1               JLT       WLOOP     
+01068      4f0000               RSUB               
+0106B                        END       FIRST     
+0106B                        END       FIRST     

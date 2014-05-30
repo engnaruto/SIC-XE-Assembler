@@ -8,6 +8,8 @@
 #include "Check.h"
 #include <sstream>
 #include <cstdlib>
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -22,30 +24,22 @@ Check::~Check() {
 
 }
 string Check::checkAll(string address, string *label, string *operation,
-		string *operand) {
+		string *operand, LocCounter*loc) {
 
 	bool ok;
 	string exception = "";
 	ok = checkLabel(address, &(*label), &exception);
-//	cout << "OKKKKKK" << endl;
 	ok = checkOperation(&(*operation), &exception);
-//	cout << "--OKKKKKK   " << ok << endl;
 	if (ok) {
 		ok = checkOperand(&(*operand), &exception);
-//		cout << "**OKKKKKK" << endl;
 		if (ok) {
 			ok = checkOperationOperandMatching((*operation), (*operand),
 					&exception);
-//			cout << "~~~~OKKKKKK" << endl;
 		}
 	}
-//	cout << *label << "    " << *operation << endl;
-//	if ((*label).size() > 1 && (*label).at((*label).length() - 1) == '+') {
-//		(*label) = (*label).substr(0, (*label).length() - 1);
-//		(*operation) = "+" + (*operation);
-////		cout << *label << "    " << *operation << endl;
-//	}
-
+	EQU((*operation), (*operand), (*loc), &exception);
+//	ORG((*operation), (*operand), (*loc), &exception);
+	cout << "~~~~~~~  " << endl;
 	return exception;
 }
 bool Check::checkLabel(string address, string *label, string *exception) {
@@ -102,17 +96,24 @@ bool Check::checkOperation(string *operation, string *exception) {
 	}
 	(*operation) = trim((*operation));
 	string x = toLowerCase(*operation);
+
 	if (x[0] == '+') {
 		x = x.substr(1);
 	}
 	if (ok == true) {
-		string dir[6];
+		if (x == "base" || x == "use") {
+			*exception += "\t***Error: Not supported directive\n";
+		}
+//		cout << "  oper  " << x << endl;
+		string dir[8];
 		dir[0] = "word";
 		dir[1] = "byte";
 		dir[2] = "resb";
 		dir[3] = "resw";
 		dir[4] = "start";
 		dir[5] = "end";
+		dir[6] = "equ";
+		dir[7] = "rsub";
 		if (x.empty() == true || isalpha(x[0]) == false) {
 			*exception += "\t***Error: Invalid Operation\n";
 			return false;
@@ -133,8 +134,9 @@ bool Check::checkOperation(string *operation, string *exception) {
 			return true;
 		}
 		int i;
-		for (i = 0; i < 6; i++) {
+		for (i = 0; i < 8; i++) {
 			if (x == dir[i]) {
+//				cout << " vbvbvbvbvbv   " << x;
 				return true;
 			}
 		}
@@ -223,7 +225,7 @@ bool Check::checkOperationOperandMatching(string operation, string operand,
 		} else {
 			*exception += "\t***Error: Invalid number\n";
 		}
-	} else if (operation == "end") {
+	} else if (operation == "end" || operation == "equ" || operation == "org") {
 		ok = true;
 //		if (operand.empty()) {
 //		} else {
@@ -342,6 +344,7 @@ bool Check::checkSpaces(string str, int type) {
 		x = toLowerCase(x);
 		if (tables->opTable[x].operand != "-" && x != "end") {
 			if (str[7] != ' ' || str[8] != ' ') {
+//				cout << "######  /" << str << endl;
 				valid = false;
 			}
 		}
@@ -563,6 +566,7 @@ string Check::toLowerCase(string input) {
 	string tmp = "";
 	for (i = 0; i < input.length(); i++) {
 		char c = input[i];
+//		cout << "~~~~~~  " << c << endl;
 		int n = tolower(c);
 		char d = char(n);
 		tmp = tmp + d;
@@ -571,6 +575,7 @@ string Check::toLowerCase(string input) {
 }
 string Check::evaluate(string oper, LocCounter loc, string *exception) {
 	int arr[50];
+	oper = toLowerCase(oper);
 	if (oper.find("+") < 20 && oper.find("+") > 0) {
 		int x = oper.find("+");
 		string lab = oper.substr(0, x);
@@ -591,7 +596,7 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			string result = loc.convDectoHex(plus, arr);
 			return result;
 		} else {
-			*exception += "\t***Error: Undifined Symbol\n";
+			*exception += "\t***Error: Undefined Symbol\n";
 			return "";
 
 		}
@@ -672,9 +677,10 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 	} else {
 		if (isatSymTable((oper))) {
 			string address = tables->symTable.at(oper);
+//		cout << "!!!!!!!!!!!!!!!!!!  "<<address << endl;
 			return address;
 		} else {
-			*exception += "\t***Error: Undifined Symbol\n";
+			*exception += "\t***Error: Undefined Symbol\n";
 			return "";
 		}
 	}
@@ -691,19 +697,34 @@ void Check::ORG(string operat, string oper, LocCounter loc, string *exception) {
 			loc.setCounter(result);
 	}
 }
-string Check::EQU(string operat, string oper, LocCounter loc,
+void Check::EQU(string operat, string oper, LocCounter loc,
 		string * exception) {
+	string x = oper;
 	string equ = toLowerCase(operat);
 	equ = trim(equ);
 	oper = trim(oper);
 	if (equ == "equ") {
-		if (isNumber(oper) == true)
-			return NULL;
+		if (isNumber(oper) == true) {
+//			return NULL;
+		}
 		string result = evaluate(oper, loc, exception);
-		return result;
+		tables->symTable.insert(pair<string, string>(x, result));
 	}
-	return "";
+//	return "";
 }
+//string Check::EQU(string operat, string oper, LocCounter loc,
+//		string * exception) {
+//	string equ = toLowerCase(operat);
+//	equ = trim(equ);
+//	oper = trim(oper);
+//	if (equ == "equ") {
+//		if (isNumber(oper) == true)
+//			return NULL;
+//		string result = evaluate(oper, loc, exception);
+//		return result;
+//	}
+//	return "";
+//}
 
 int Check::dec_to_binary(int dec) {
 	int bin = 0, pos = 1;
@@ -733,6 +754,7 @@ int Check::binary_to_dec(int bin) {
 string Check::opCodeFor4(string operation, string operand, string address) {
 	operand = toLowerCase(operand);
 	string small_operation = toLowerCase(operation);
+	small_operation = small_operation.substr(1);
 	string result = "";
 	string op = tables->opTable.at(small_operation).opcode;
 	int op_dec = conHexaToDec(op);
@@ -755,7 +777,9 @@ string Check::opCodeFor4(string operation, string operand, string address) {
 	op_binstr[op_binstr.length() - 2] = n;
 	int op_binEdit = atoi(op_binstr.c_str());
 	int op_decEdit = binary_to_dec(op_binEdit);
-	string op_hexEdit = dectoHex(op_decEdit);
+	string op_hexEdit = "";
+	op_hexEdit = dectoHex(op_decEdit);
+//	cout << "  op   " << op_hexEdit << "  " << operation << endl;
 	result = result + op_hexEdit;
 
 	for (unsigned int i = 0; i < operand.length(); i++) {
@@ -783,7 +807,7 @@ string Check::opCodeFor4(string operation, string operand, string address) {
 	operand.assign(tmp);
 
 	int x = tables->symTable.count(operand);
-//	cout << "#####################  " << operand << endl;
+
 	if (x > 0) {
 		string distin = tables->symTable.at(operand);
 
@@ -819,6 +843,7 @@ string Check::opCode(string operation, string operand, string address) {
 		if (tables->opTable.at(small_operation).operand == "r1") {
 			string reg = regFormat(small_operation);
 			result = result + op + reg;
+
 			return result;
 		} else if (tables->opTable.at(small_operation).operand == "r1,r2") {
 			string reg = regFormat2(small_operation);
@@ -829,23 +854,36 @@ string Check::opCode(string operation, string operand, string address) {
 	int op_dec = conHexaToDec(op);
 	int op_bin = dec_to_binary(op_dec);
 	string op_binstr = convertIntToString(op_bin);
+
 	char n = '0';
 	char i = '0';
 	if (operand[0] == '@') {
 		n = '1';
 	}
 	if (operand[0] == '#') {
+
 		i = '1';
 	}
 	if (n == '0' && i == '0') {
+
 		n = '1';
 		i = '1';
 	}
+
+	if(op_binstr.length()==1){
+		op_binstr='0'+op_binstr;
+	}
+	cout<<"totoooo "<<op_binstr<<endl;
 	op_binstr[op_binstr.length() - 1] = i;
 	op_binstr[op_binstr.length() - 2] = n;
+
 	int op_binEdit = atoi(op_binstr.c_str());
 	int op_decEdit = binary_to_dec(op_binEdit);
 	string op_hexEdit = dectoHex(op_decEdit);
+	if (op_hexEdit.length() == 1) {
+		op_hexEdit = '0' + op_hexEdit;
+	}
+cout<<"beto  "<<operation<<"    "<<op_hexEdit<<endl;
 	result = result + op_hexEdit;
 	if (tables->opTable.at(small_operation).format == "3/4") {
 		string xbpe = "";
@@ -863,12 +901,21 @@ string Check::opCode(string operation, string operand, string address) {
 		}
 		string bp = "";
 		string addresse = calcuteAddresse(address, &bp, operand);
+		if(addresse=="error"){
+			return addresse;
+		}
 
-		xbpe = xbpe + bp + "0";
+		xbpe = xbpe + bp;
+		xbpe = xbpe + '0';
+//cout<<"beto "<<bp<<"      "<<xbpe<<"    "<<small_operation<<endl;
 		int xbpe_bin = atoi(xbpe.c_str());
 		int xbpe_dec = binary_to_dec(xbpe_bin);
 		string hexa = dectoHex(xbpe_dec);
-		result = result + hexa + addresse;
+		if (hexa.length() == 0) {
+			hexa = "0";
+		}
+
+		result = result + hexa[0] + addresse;
 	}
 
 	return result;
@@ -892,55 +939,65 @@ string Check::calcuteAddresse(string next_a, string *bp, string operand) {
 	operand.assign(tmp);
 
 	int x = tables->symTable.count(operand);
-//	cout << "#####################  " << operand << endl;
 	if (x > 0) {
 		string distin = tables->symTable.at(operand);
 		int dis_dec = conHexaToDec(distin);
 		int next_dec = conHexaToDec(next_a);
 		int diff = dis_dec - next_dec;
-
+//cout<<"DIFFF    "<<operand<<"    "<<diff<<endl;
 		//pc condition
-		if (diff > -2047 && diff < 2048) {
+		if (diff > -2048 && diff < 2047) {
+
 			*bp = "01";
+//			cout<<"totooo "<<*bp<<endl;
 			string addr = dectoHex(diff);
 			if (addr.length() == 0) {
 				res = "000";
 			} else if (addr.length() == 1) {
 				res = "00" + addr;
 			} else if (addr.length() == 2) {
-				res = "0" + addr;
+				res = '0' + addr;
 			} else if (addr.length() == 3) {
 				res = addr;
+			}
+			else{
+				res=addr[addr.length()-3];
+				res=res+addr[addr.length()-2];
+				res=res+addr[addr.length()-1];
+
 			}
 			return res;
 		} else {
 			//base condition
-
-			int base_dec = conHexaToDec(base);
-			int differ = dis_dec - base_dec;
-			string edit = dectoHex(differ);
-			if (edit.length() == 0) {
-				res = "000";
-			} else if (edit.length() == 1) {
-				res = "00" + edit;
-			} else if (edit.length() == 2) {
-				res = "0" + edit;
-			} else if (edit.length() == 3) {
-				res = edit;
-			}
-			return res;
+//
+//			int base_dec = conHexaToDec(base);
+//			int differ = dis_dec - base_dec;
+//			string edit = dectoHex(differ);
+//			if (edit.length() == 0) {
+//				res = "000";
+//			} else if (edit.length() == 1) {
+//				res = "00" + edit;
+//			} else if (edit.length() == 2) {
+//				res = '0' + edit;
+//			} else if (edit.length() == 3) {
+//				res = edit;
+//			}
+			return "error";
 		}
 
 	} else {
 		*bp = "00";
 		int decim = atoi(operand.c_str());
 		string addr = dectoHex(decim);
+
 		if (addr.length() == 0) {
 			res = "000";
-		} else if (operand.length() == 1) {
+		} else if (addr.length() == 1) {
 			res = "00" + addr;
-		} else if (operand.length() == 2) {
-			res = "0" + addr;
+		} else if (addr.length() == 2) {
+
+			res = res + '0' + addr;
+			cout << " one   " << res << endl;
 		} else {
 			res = addr;
 		}
@@ -966,52 +1023,71 @@ string Check::regFormat(string operand) {
 }
 string Check::regFormat2(string operand) {
 	string reg = "";
-	if (operand[0] == 'A') {
-		reg = "0";
-	} else if (operand[0] == 'X') {
-		reg = "1";
-	} else if (operand[0] == 'L') {
-		reg = "2";
-	} else if (operand[0] == 'S') {
-		reg = "4";
-	} else if (operand[0] == 'T') {
-		reg = "5";
-	} else if (operand[0] == 'B') {
-		reg = "6";
+	if (operand[0] == 'A' || operand[0] == 'a') {
+		reg = '0';
+	} else if (operand[0] == 'X' || operand[0] == 'x') {
+		reg = '1';
+	} else if (operand[0] == 'L' || operand[0] == 'l') {
+		reg = '3';
+	} else if (operand[0] == 'S' || operand[0] == 's') {
+		reg = '4';
+	} else if (operand[0] == 'T' || operand[0] == 't') {
+		reg = '5';
+	} else if (operand[0] == 'B' || operand[0] == 'b') {
+		reg = '6';
 	}
-	if (operand[2] == 'A') {
-		reg = reg + "0";
-	} else if (operand[2] == 'X') {
-		reg = reg + "1";
-	} else if (operand[2] == 'L') {
-		reg = reg + "2";
-	} else if (operand[2] == 'S') {
-		reg = reg + "4";
-	} else if (operand[2] == 'T') {
-		reg = reg + "5";
-	} else if (operand[2] == 'B') {
-		reg = reg + "3";
+	if (operand[2] == 'A' || operand[2] == 'a') {
+		reg = reg + '0';
+	} else if (operand[2] == 'X' || operand[2] == 'x') {
+		reg = reg + '1';
+	} else if (operand[2] == 'L' || operand[2] == 'l') {
+		reg = reg + '3';
+	} else if (operand[2] == 'S' || operand[2] == 's') {
+		reg = reg + '4';
+	} else if (operand[2] == 'T' || operand[2] == 't') {
+		reg = reg + '5';
+	} else if (operand[2] == 'B' || operand[2] == 'b') {
+		reg = reg + '6';
 	}
 	return reg;
 }
 
 string Check::format(string operation, string operand, string address) {
 	string object = "";
-	string ob_directive;
+	string ob_directive = "";
+
 	bool directive = checkDirectives(operation, operand, &ob_directive);
+	string small_operation = toLowerCase(operation);
+	string result = "";
+	string op = tables->opTable.at(small_operation).opcode;
 	if (directive == true) {
 		return ob_directive;
+	} else if (tables->opTable.at(small_operation).format == "1") {
+		return op;
+	} else if (tables->opTable.at(small_operation).format == "2") {
+		if (tables->opTable.at(small_operation).operand == "r1") {
+			string reg = regFormat(operand);
+			result = result + op + reg;
+//			cout<<"totoooo   "<<result<<endl;
+			return result;
+		} else if (tables->opTable.at(small_operation).operand == "r1,r2") {
+			string reg = regFormat2(operand);
+			result = result + op + reg;
+			return result;
+		}
 	} else {
 		if (validOperand(operand)) {
 
 			if (operation[0] == '+') {
 				object = opCodeFor4(operation, operand, address);
 			} else {
+
 				object = opCode(operation, operand, address);
 			}
 		}
 		return object;
 	}
+	return "-_-";
 }
 
 int Check::conHexaToDec(string s) {
@@ -1038,14 +1114,15 @@ string Check::convertIntToString(int number) {
 	return theNumberString;
 }
 bool Check::validOperand(string operand) {
-	bool number = isNumberOperand(operand);
-	if (number == true) {
-		return true;
-	}
+
 	if (operand[0] == '#' || operand[0] == '@') {
 		string tmp = "";
 		tmp.assign(operand.begin() + 1, operand.end());
 		operand.assign(tmp);
+	}
+	bool number = isNumberOperand(operand);
+	if (number == true) {
+		return true;
 	}
 	if (number == false) {
 		string out_index = "";
@@ -1066,8 +1143,10 @@ bool Check::validOperand(string operand) {
 }
 
 string Check::dectoHex(int decimal) {
-	int r[50];
-	return convDectoHex(decimal, r);
+	std::stringstream stream;
+	stream << std::hex << decimal;
+	std::string result(stream.str());
+	return result;
 }
 
 string Check::convDectoHex(int decNum, int r[]) {

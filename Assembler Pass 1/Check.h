@@ -15,12 +15,14 @@ public:
 	Check(Tables *tables);
 	~Check();
 	std::string checkAll(std::string address, std::string *label,
-			std::string *operation, std::string *operand);
+			std::string *operation, std::string *operand, LocCounter*loc);
 	std::string toLowerCase(std::string input);
 	std::string trim(std::string input);
 	void ORG(std::string operat, std::string oper, LocCounter loc,
 			std::string *exception);
-	std::string EQU(std::string operat, std::string oper, LocCounter loc,
+//	std::string EQU(std::string operat, std::string oper, LocCounter loc,
+//			std::string * exception);
+	void EQU(std::string operat, std::string oper, LocCounter loc,
 			std::string * exception);
 	std::string format(std::string operation, std::string operand,
 			std::string address);
@@ -65,7 +67,8 @@ private:
 	std::string convDectoHex(int decNum, int r[]);
 	bool checkDirectives(std::string operation, std::string operand,
 			std::string *ob_directive);
-	std::string evaluate(std::string oper, LocCounter loc, std::string *exception);
+	std::string evaluate(std::string oper, LocCounter loc,
+			std::string *exception);
 }
 ;
 

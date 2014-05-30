@@ -1,25 +1,53 @@
-.       ..     ...                ..
-PROG     start   0
-FIRST    LDA     #0
-         LDT     #3
-         LDS     @LBL3
-         ADDR    T,A
-         LDX     #0
-LOOP     STA     BUF,X
-         ADDR    T,X
-         COMPR   X,S
-         JLT     LOOP
-         JSUB    FUN
-         J       *
-FUN      LDB     30
-        +LDA     BUF
-        +LDT     30
-         RSUB    1000               .this is an inline comment    
-BUF      RESW    10
-LBL1     WORD    7
-LBL2     WORD    30
-LBL3     WORD    60
-BUF2     RESB    12
-TEMP1    BYTE    X'ABCDEF'
-TEMP2    BYTE    C'ABCDEF'
+.2345678901234567890123456789
+COPY     START   0
+FIRST    STL     RETADR
+         LDB     #LENGTH
+.         BASE    LENGTH
+CLOOP   +JSUB    RDREC
+         LDA     LENGTH
+         COMP    #0
+         JEQ     ENDFIL
+        +JSUB    WRREC
+         J       CLOOP
+ENDFIL   LDA     RETADR,X
+         STA     BUFFER
+         LDA     #3
+         STA     LENGTH
+        +JSUB    WRREC
+         J       #6
+RETADR   RESW    1
+LENGTH   RESW    1
+BUFFER   RESB    4096
+BUFEND   EQU     RETADR
+.MAXLEN   EQU     BUFEND
+.        .       .
+.        .       .
+.        .       .
+RDREC    CLEAR   X
+.         CLEAR   A
+.         CLEAR   S
+        +LDA     #RLOOP
+RLOOP    TD      INPUT
+         JEQ     RLOOP
+         RD      INPUT
+         COMPR   A,S
+         JEQ     EXIT
+         STCH    #5
+.         TIXR    T
+         JLT     RLOOP
+EXIT     STX     #5
+         RSUB
+INPUT    BYTE    X'F1'
+.        .       .
+.        .       .
+.        .       .
+WRREC    CLEAR   X
+         LDT     #5
+WLOOP    TD      RLOOP
+         JEQ     WLOOP
+         LDCH    #6
+         WD      RLOOP
+.         TIXR    T
+         JLT     WLOOP
+         RSUB
          END     FIRST

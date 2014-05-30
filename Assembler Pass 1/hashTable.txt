@@ -33,7 +33,7 @@ norm - 1 C8
 or m 3/4 44 
 rd m 3/4 D8 
 rmo r1,r2 2 AC 
-rsub 3/4 4C PC 
+rsub - 3/4 4C PC 
 shiftl r1,n 2 A4 
 shiftr r1,n 2 A8 
 sio - 1 F0 

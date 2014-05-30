@@ -6,10 +6,11 @@
 
 using namespace std;
 
-string line, address, label, operand, operation, progname, comment, strexc,
-		proglength, t, txtRec, startaddress, recAddress;
-int length;
-bool ok, tooShort;
+string line = "", address = "", label = "", operand = "", operation = "",
+		progname = "", comment = "", strexc = "", proglength = "", t = "",
+		txtRec = "", startaddress = "", recAddress = "";
+int length = 0;
+bool ok = true, tooShort = false;
 vector<string> arr;
 vector<string> format4;
 string readSplitLine(FileOperations &file) {
@@ -56,7 +57,7 @@ string readImmidiate(FileOperations &file) {
 		}
 		operation = arr[2];
 		operand = arr[3];
-		if (operation == "-") {
+		if (operand == "-") {
 			operand = "";
 		} else if (arr.size() > 4) {
 			for (unsigned int i = 5; i < arr.size(); i++) {
@@ -119,7 +120,8 @@ int main(int argc, char **argv) {
 		if (strexc.size() == 0) {
 
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
-					&operation, &operand);
+					&operation, &operand, &counter);
+
 			if (strexc.length() != 0) {
 				counter.addtoCounter(3);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
@@ -173,7 +175,8 @@ int main(int argc, char **argv) {
 		}
 		if (strexc.size() == 0) {
 			strexc = check.checkAll(counter.getAddressLabel(), &label,
-					&operation, &operand);
+					&operation, &operand, &counter);
+//			cout << strexc << endl;
 			if (strexc.length() != 0) {
 				counter.addtoCounter(3);
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
@@ -182,16 +185,23 @@ int main(int argc, char **argv) {
 				ok = false;
 				continue;
 			}
-			length = tables.getLength(operation, operand);
-			counter.addtoCounter(length);
-			t = check.toLowerCase(label);
-			if (!check.trim(t).empty()) {
-				tables.symTable[t] = counter.getAddressLabel();
+			string x = tables.toLowerCase(operation);
+			if (x == "equ" || x == "org") {
+				file.writeAll(counter.getLineCounter(), "", label, operation,
+						operand, comment);
+				imFile.writeImmidiate("", label, operation, operand);
+			} else {
+				length = tables.getLength(operation, operand);
+				counter.addtoCounter(length);
+				t = check.toLowerCase(label);
+				if (!check.trim(t).empty()) {
+					tables.symTable[t] = counter.getAddressLabel();
+				}
+				file.writeAll(counter.getLineCounter(), counter.getAddress(),
+						label, operation, operand, comment);
+				imFile.writeImmidiate(counter.getAddressLabel(), label,
+						operation, operand);
 			}
-			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
-					operation, operand, comment);
-			imFile.writeImmidiate(counter.getAddressLabel(), label, operation,
-					operand);
 			if (strexc.length() != 0) {
 				file.writeLine(strexc);
 				strexc = "";
@@ -254,6 +264,7 @@ int main(int argc, char **argv) {
 							"H" + progname + "^" + address + "^" + proglength);
 				} else {
 					if (operation[0] == '+') {
+//						cout << "~~~~~~~~~~~~  " << address << endl;
 						format4.push_back(address);
 					}
 					int length = tables.getLength(operation, operand);
@@ -268,12 +279,23 @@ int main(int argc, char **argv) {
 						ok = false;
 					} else if (objectCode == "dir") {
 						string length = counter.dectoHex(txtRec.size());
-						imFile.writeTxtRecord(recAddress, length, txtRec);
-						txtRec = objectCode;
+						if (txtRec != "") {
+							imFile.writeTxtRecord(recAddress, length, txtRec);
+						}
+						txtRec = "";
 						recAddress = address;
+						//					cout <<"~~~~~~  "<< address << "   " << txtRec << "   " << label
+						//							<< "   " << operation << "   " << operand << endl;
 						file.writeAll(address, "", label, operation, operand);
+						objectCode = "";
 					} else if (objectCode == "noObject") {
+						objectCode = "";
 						file.writeAll(address, "", label, operation, operand);
+					} else if (objectCode == "error") {
+						file.writeAll(address, "", label, operation, operand);
+						file.writeLine(
+								"\t***Error: Base addressing not supported\n");
+						ok = false;
 					} else {
 						file.writeAll(address, objectCode, label, operation,
 								operand);
@@ -309,57 +331,93 @@ int main(int argc, char **argv) {
 				file.writeLine(line);
 			} else {
 				if (operation[0] == '+') {
+//					cout << "~~~~~~~~~~~~  " << address << endl;
 					format4.push_back(address);
 				}
-				int length = tables.getLength(operation, operand);
-				int curAddress = counter.conHexaToDec(address);
-				length += curAddress;
-				string nextAddress = counter.dectoHex(length);
-				cout << "~~~~~~~~~~~~   " << line << endl;
-				string objectCode = check.format(operation, operand,
-						nextAddress);		//call ebtehal
-				if (objectCode == "") {
-					file.writeAll(address, "", label, operation, operand);
-					file.writeLine("\t***Error: Invalid Label\n");
-					ok = false;
-				} else if (objectCode == "dir") {
-					string length = counter.dectoHex(txtRec.size());
-					imFile.writeTxtRecord(recAddress, length, txtRec);
-					txtRec = objectCode;
-					recAddress = address;
-					file.writeAll(address, "", label, operation, operand);
-				} else if (objectCode == "noObject") {
-					file.writeAll(address, "", label, operation, operand);
-				} else {
-					file.writeAll(address, objectCode, label, operation,
-							operand);
-				}
-				if (ok) {
-					if (txtRec.size() == 0) {
-						recAddress = address;
-					}
-					if (txtRec.size() + objectCode.size() > 60) {
+//				cout << "$$$$$$$$   " << ok << "  " << operation << "  "
+//						<< operand << endl;
+				string x = tables.toLowerCase(operation);
+				if (x != "equ" && x != "org") {
+					int length = tables.getLength(operation, operand);
+					int curAddress = counter.conHexaToDec(address);
+					length += curAddress;
+					string nextAddress = counter.dectoHex(length);
+//				cout << "~~~~~~~~~~~~   " << line << endl;
+					string objectCode = check.format(operation, operand,
+							nextAddress);		//call ebtehal
+					if (objectCode == "") {
+						file.writeAll(address, "", label, operation, operand);
+						file.writeLine("\t***Error: Invalid Label\n");
+						ok = false;
+					} else if (objectCode == "dir") {
 						string length = counter.dectoHex(txtRec.size());
-						imFile.writeTxtRecord(address, length, txtRec);
-						txtRec = objectCode;
+						if (txtRec != "") {
+							imFile.writeTxtRecord(recAddress, length, txtRec);
+						}
+						txtRec = "";
 						recAddress = address;
+//					cout <<"~~~~~~  "<< address << "   " << txtRec << "   " << label
+//							<< "   " << operation << "   " << operand << endl;
+						file.writeAll(address, "", label, operation, operand);
+						objectCode = "";
+					} else if (objectCode == "noObject") {
+						objectCode = "";
+						file.writeAll(address, "", label, operation, operand);
+					} else if (objectCode == "error") {
+						cout << "!!!!!!!!  " << operation <<"    "<<operand<< endl;
+						file.writeAll(address, "", label, operation, operand);
+						file.writeLine(
+								"\t-_-***Error: Base addressing not supported\n");
+						ok = false;
+						objectCode = "";
 					} else {
-						txtRec += objectCode;
+						file.writeAll(address, objectCode, label, operation,
+								operand);
 					}
+					if (ok) {
+						if (txtRec.size() == 0) {
+							recAddress = address;
+						}
+						if (txtRec.size() + objectCode.size() > 60) {
+							string length = counter.dectoHex(txtRec.size());
+							imFile.writeTxtRecord(address, length, txtRec);
+							txtRec = objectCode;
+							recAddress = address;
+						} else {
+							txtRec += objectCode;
+						}
+					}
+				} else {
+					file.writeAll(address, "", label, operation, operand);
 				}
 			}
 		}
-		for (unsigned int i = 0; i < format4.size(); i++) {
-			int x = counter.conHexaToDec(arr[i]);
-			x++;
-			string s = counter.dectoHex(x);
-			imFile.writeLine("M" + s + "^05");
-		}
+		if (ok) {
+
+//		cout << "~~~~~~ " << txtRec << endl;
+			if (txtRec.length() > 0) {
+
+				string length = counter.dectoHex(txtRec.size());
+				imFile.writeTxtRecord(address, length, txtRec);
+			}
+			for (unsigned int i = 0; i < format4.size(); i++) {
+//			cout << "~~~~~~~~~~~~  " << format4[i] << endl;
+				int x = counter.conHexaToDec(format4[i]);
+				x++;
+				string s = counter.dectoHex(x);
+				if (s.length() < 5) {
+					for (unsigned int i = 0; i < 5 - s.length(); i++) {
+						s = "0" + s;
+					}
+				}
+				imFile.writeLine("M" + s + "^05");
+			}
 //		cout << "~~~~~~~   " << startaddress << endl;
-		imFile.writeLine("E" + startaddress);
+			imFile.writeLine("E" + startaddress);
+
+		}
 
 	}
-
 	file.close();
 	return 0;
 }
