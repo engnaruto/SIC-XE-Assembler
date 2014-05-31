@@ -15,7 +15,8 @@ using namespace std;
 
 string arr_addresses[10];
 string base = "";
-
+bool experrsion = false;
+string adress_expression = "";
 Check::Check(Tables *tables) {
 	this->tables = (tables);
 
@@ -37,9 +38,9 @@ string Check::checkAll(string address, string *label, string *operation,
 					&exception);
 		}
 	}
-	EQU((*operation), (*operand), (*loc), &exception);
-//	ORG((*operation), (*operand), (*loc), &exception);
-	cout << "~~~~~~~  " << endl;
+//	EQU((*label), (*operation), (*operand), (*loc), &exception);
+	ORG((*operation), (*operand), &(*loc), &exception);
+//	cout << "~~~~~~~  " << endl;
 	return exception;
 }
 bool Check::checkLabel(string address, string *label, string *exception) {
@@ -96,16 +97,19 @@ bool Check::checkOperation(string *operation, string *exception) {
 	}
 	(*operation) = trim((*operation));
 	string x = toLowerCase(*operation);
+	if(x=="+rsub"){
+		*exception += "\t***Error: REUB cannot be format 4 instruction\n";
+	}
 
 	if (x[0] == '+') {
 		x = x.substr(1);
 	}
 	if (ok == true) {
-		if (x == "base" || x == "use") {
+		if (x == "base" || x == "use"||x == "ltorg") {
 			*exception += "\t***Error: Not supported directive\n";
 		}
 //		cout << "  oper  " << x << endl;
-		string dir[8];
+		string dir[9];
 		dir[0] = "word";
 		dir[1] = "byte";
 		dir[2] = "resb";
@@ -114,6 +118,7 @@ bool Check::checkOperation(string *operation, string *exception) {
 		dir[5] = "end";
 		dir[6] = "equ";
 		dir[7] = "rsub";
+		dir[8] = "org";
 		if (x.empty() == true || isalpha(x[0]) == false) {
 			*exception += "\t***Error: Invalid Operation\n";
 			return false;
@@ -134,7 +139,7 @@ bool Check::checkOperation(string *operation, string *exception) {
 			return true;
 		}
 		int i;
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 9; i++) {
 			if (x == dir[i]) {
 //				cout << " vbvbvbvbvbv   " << x;
 				return true;
@@ -223,7 +228,7 @@ bool Check::checkOperationOperandMatching(string operation, string operand,
 		if (isNumber(operand)) {
 			ok = true;
 		} else {
-			*exception += "\t***Error: Invalid number\n";
+			*exception += "\t***Error: Invalid number2\n";
 		}
 	} else if (operation == "end" || operation == "equ" || operation == "org") {
 		ok = true;
@@ -253,7 +258,7 @@ bool Check::checkOperationOperandMatching(string operation, string operand,
 			*exception += "\t***Error: Invalid operand\n";
 		}
 	} else if (mapOperand == "r1") {
-		if (operand[0] == 'x') {
+		if (checkRegister(operand)) {
 			ok = true;
 		} else {
 			*exception += "\t***Error: Invalid register in operand\n";
@@ -449,7 +454,9 @@ bool Check::checkLabelAndNubmers(char c, string label, string *exception) {
 //			return false;
 //		}
 		for (unsigned int i = 1; i < label.length(); i++) {
-			if (label.at(i) >= '0' && label.at(i) <= '9') {
+			if ((label.at(i) >= '0' && label.at(i) <= '9') || label.at(i) == '-'
+					|| label.at(i) == '+' || label.at(i) == '/'
+					|| label.at(i) == '*') {
 				continue;
 			} else {
 				*exception += "\t***Error: Invalid number\n";
@@ -574,9 +581,9 @@ string Check::toLowerCase(string input) {
 	return tmp;
 }
 string Check::evaluate(string oper, LocCounter loc, string *exception) {
-	int arr[50];
 	oper = toLowerCase(oper);
 	if (oper.find("+") < 20 && oper.find("+") > 0) {
+
 		int x = oper.find("+");
 		string lab = oper.substr(0, x);
 		string op = oper.substr(x + 1);
@@ -585,19 +592,45 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			int add = loc.conHexaToDec(address);
 			int plus = atoi(oper.substr(x + 1).c_str());
 			add = add + plus;
-			string result = loc.convDectoHex(add, arr);
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if ((isNumber(lab) == true) && (isNumber(op) == true)) {
+			int val1 = atoi(lab.c_str());
+			int val2 = atoi(op.c_str());
+			int val = val1 + val2;
+			string result = dectoHex(val);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
 			return result;
 		} else if (isatSymTable((lab)) && (isNumber(op) == false)) {
-			string address1 = tables->symTable.at(lab);
-			string address2 = tables->symTable.at(op);
-			int add1 = loc.conHexaToDec(address1);
-			int add2 = loc.conHexaToDec(address2);
-			int plus = add1 + add2;
-			string result = loc.convDectoHex(plus, arr);
+			*exception += "\t***Error: Can't add t relative labels\n";
+			return "error";
+		} else if (lab == "*" && (isNumber(op) == false)) {
+			*exception += "\t***Error: Can't add t relative labels\n";
+			return "error";
+		} else if (lab == "*" && (isNumber(op) == true)) {
+			string address = loc.getAddressLabel();
+			int add = loc.conHexaToDec(address);
+			int plus = atoi(oper.substr(x + 1).c_str());
+			add = add + plus;
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
 			return result;
 		} else {
 			*exception += "\t***Error: Undefined Symbol\n";
-			return "";
+			return "error";
 
 		}
 
@@ -610,7 +643,17 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			int add = loc.conHexaToDec(address);
 			int munes = atoi(oper.substr(x + 1).c_str());
 			add = add - munes;
-			string result = loc.convDectoHex(add, arr);
+			if (add < 0) {
+				*exception += "\t***Error: Address can't be negative\n";
+
+				return "error";
+			}
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
 			return result;
 		} else if (isatSymTable((lab)) && (isNumber(op) == false)) {
 			string address1 = tables->symTable.at(lab);
@@ -618,11 +661,72 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			int add1 = loc.conHexaToDec(address1);
 			int add2 = loc.conHexaToDec(address2);
 			int munes = add1 - add2;
-			string result = loc.convDectoHex(munes, arr);
+			if (munes < 0) {
+				*exception += "\t***Error: Address can't be negative\n";
+
+				return "error";
+			}
+			string result = dectoHex(munes);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if ((isNumber(lab) == true) && (isNumber(op) == true)) {
+			int val1 = atoi(lab.c_str());
+			int val2 = atoi(op.c_str());
+			int val = val1 - val2;
+			if (val < 0) {
+				*exception += "\t***Error: Address can't be negative\n";
+
+				return "error";
+			}
+			string result = dectoHex(val);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if (lab == "*" && (isNumber(op) == false)) {
+			string address1 = loc.getAddressLabel();
+			string address2 = tables->symTable.at(op);
+			int add1 = loc.conHexaToDec(address1);
+			int add2 = loc.conHexaToDec(address2);
+			int munes = add1 - add2;
+			if (munes < 0) {
+				*exception += "\t***Error: Address can't be negative\n";
+
+				return "error";
+			}
+			string result = dectoHex(munes);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if (lab == "*" && (isNumber(op) == true)) {
+			string address = loc.getAddressLabel();
+			int add = loc.conHexaToDec(address);
+			int munes = atoi(oper.substr(x + 1).c_str());
+			add = add - munes;
+			if (add < 0) {
+				*exception += "\t***Error: Address can't be negative\n";
+
+				return "error";
+			}
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
 			return result;
 		} else {
-			*exception += "\t***Error: Undifined Symbol\n";
-			return "";
+			*exception += "\t***Error: Undefined Symbol\n";
+			return "error";
 
 		}
 	} else if (oper.find("*") < 20 && oper.find("*") > 0) {
@@ -634,19 +738,45 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			int add = loc.conHexaToDec(address);
 			int multi = atoi(oper.substr(x + 1).c_str());
 			add = add * multi;
-			string result = loc.convDectoHex(add, arr);
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if ((isNumber(lab) == true) && (isNumber(op) == true)) {
+			int val1 = atoi(lab.c_str());
+			int val2 = atoi(op.c_str());
+			int val = val1 * val2;
+			string result = dectoHex(val);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if (lab == "*" && (isNumber(op) == false)) {
+			*exception += "\t***Error: Can't add t relative labels\n";
+			return "error";
+		} else if (lab == "*" && (isNumber(op) == true)) {
+			string address = loc.getAddressLabel();
+			int add = loc.conHexaToDec(address);
+			int mult = atoi(oper.substr(x + 1).c_str());
+			add = add * mult;
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
 			return result;
 		} else if (isatSymTable((lab)) && (isNumber(op) == false)) {
-			string address1 = tables->symTable.at(lab);
-			string address2 = tables->symTable.at(op);
-			int add1 = loc.conHexaToDec(address1);
-			int add2 = loc.conHexaToDec(address2);
-			int multi = add1 * add2;
-			string result = loc.convDectoHex(multi, arr);
-			return result;
+			*exception += "\t***Error: Can't multiply t relative labels\n";
+			return "error";
 		} else {
-			*exception += "\t***Error: Undifined Symbol\n";
-			return "";
+			*exception += "\t***Error: Undefined Symbol\n";
+			return "error";
 
 		}
 
@@ -659,19 +789,45 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			int add = loc.conHexaToDec(address);
 			int div = atoi(oper.substr(x + 1).c_str());
 			add = (int) (add / div);
-			string result = loc.convDectoHex(add, arr);
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if ((isNumber(lab) == true) && (isNumber(op) == true)) {
+			int val1 = atoi(lab.c_str());
+			int val2 = atoi(op.c_str());
+			int val = val1 / val2;
+			string result = dectoHex(val);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+		} else if (lab == "*" && (isNumber(op) == false)) {
+			*exception += "\t***Error: Can't add t relative labels\n";
+			return "error";
+		} else if (lab == "*" && (isNumber(op) == true)) {
+			string address = loc.getAddressLabel();
+			int add = loc.conHexaToDec(address);
+			int div = atoi(oper.substr(x + 1).c_str());
+			add = add / div;
+			string result = dectoHex(add);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
 			return result;
 		} else if (isatSymTable((lab)) && (isNumber(op) == false)) {
-			string address1 = tables->symTable.at(lab);
-			string address2 = tables->symTable.at(op);
-			int add1 = loc.conHexaToDec(address1);
-			int add2 = loc.conHexaToDec(address2);
-			int div = add1 / add2;
-			string result = loc.convDectoHex(div, arr);
-			return result;
+			*exception += "\t***Error: Can't divide t relative labels\n";
+			return "error";
 		} else {
 			*exception += "\t***Error: Undifined Symbol\n";
-			return "";
+			return "error";
 		}
 
 	} else {
@@ -679,38 +835,65 @@ string Check::evaluate(string oper, LocCounter loc, string *exception) {
 			string address = tables->symTable.at(oper);
 //		cout << "!!!!!!!!!!!!!!!!!!  "<<address << endl;
 			return address;
+		} else if (isNumber(oper)) {
+
+			int val = atoi(oper.c_str());
+//			cout << "~~~~~~~~~~~~~~~~~~~~~~~~    number " << val << endl;
+			string result = dectoHex(val);
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
+
+		} else if (oper == "*") {
+			string result = loc.getAddressLabel();
+			if (result.length() < 5) {
+				for (unsigned int i = 0; result.length() < 5; i++) {
+					result = "0" + result;
+				}
+			}
+			return result;
 		} else {
 			*exception += "\t***Error: Undefined Symbol\n";
-			return "";
+			return "error";
 		}
 	}
-	return "";
+	return "error";
 }
 
-void Check::ORG(string operat, string oper, LocCounter loc, string *exception) {
+void Check::ORG(string operat, string oper, LocCounter *loc,
+		string *exception) {
 	string org = toLowerCase(operat);
 	org = trim(org);
 	oper = trim(oper);
 	if (org == "org") {
-		string result = evaluate(oper, loc, exception);
-		if (result.length() > 0)
-			loc.setCounter(result);
+		string result = evaluate(oper, (*loc), exception);
+		if (result != "error") {
+
+			cout << "~~~~~~   " << (*loc).getAddressLabel() << endl;
+			(*loc).setCounter(result);
+		}
 	}
 }
-void Check::EQU(string operat, string oper, LocCounter loc,
+void Check::EQU(string lab, string operat, string oper, LocCounter loc,
 		string * exception) {
-	string x = oper;
+//	cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@  " << operat << endl;
 	string equ = toLowerCase(operat);
 	equ = trim(equ);
 	oper = trim(oper);
 	if (equ == "equ") {
-		if (isNumber(oper) == true) {
-//			return NULL;
-		}
 		string result = evaluate(oper, loc, exception);
-		tables->symTable.insert(pair<string, string>(x, result));
+//		cout << "in here " << result << endl;
+		tables->symTable[toLowerCase(lab)] = result;
+//		tables->symTable.insert(pair<string, string>(toLowerCase(lab), result));
+//		tables->symTable.insert(pair<string, string>(toLowerCase(lab), result));
+//		cout << lab << " " << result << endl;
 	}
+
 //	return "";
+
 }
 //string Check::EQU(string operat, string oper, LocCounter loc,
 //		string * exception) {
@@ -751,7 +934,8 @@ int Check::binary_to_dec(int bin) {
 
 	return dec;
 }
-string Check::opCodeFor4(string operation, string operand, string address) {
+string Check::opCodeFor4(string operation, string operand, string address,
+		string curaddress) {
 	operand = toLowerCase(operand);
 	string small_operation = toLowerCase(operation);
 	small_operation = small_operation.substr(1);
@@ -773,13 +957,21 @@ string Check::opCodeFor4(string operation, string operand, string address) {
 		n = '1';
 		i = '1';
 	}
+	if (op_binstr.length() == 1) {
+			op_binstr = '0' + op_binstr;
+		}
+
 	op_binstr[op_binstr.length() - 1] = i;
 	op_binstr[op_binstr.length() - 2] = n;
 	int op_binEdit = atoi(op_binstr.c_str());
 	int op_decEdit = binary_to_dec(op_binEdit);
 	string op_hexEdit = "";
 	op_hexEdit = dectoHex(op_decEdit);
-//	cout << "  op   " << op_hexEdit << "  " << operation << endl;
+
+	cout << "  op   " << op_hexEdit << "  " << operation << endl;
+	if(op_hexEdit.length()==1){
+		op_hexEdit='0'+op_hexEdit;
+	}
 	result = result + op_hexEdit;
 
 	for (unsigned int i = 0; i < operand.length(); i++) {
@@ -805,10 +997,16 @@ string Check::opCodeFor4(string operation, string operand, string address) {
 		}
 	}
 	operand.assign(tmp);
+	if (operand == "*") {
+		address = curaddress;
+		result = result + address;
+		return result;
+	}
 
 	int x = tables->symTable.count(operand);
-
-	if (x > 0) {
+	if (experrsion) {
+		result = result + adress_expression;
+	} else if (x > 0) {
 		string distin = tables->symTable.at(operand);
 
 		result = result + distin;
@@ -832,8 +1030,12 @@ string Check::opCodeFor4(string operation, string operand, string address) {
 	return result;
 }
 
-string Check::opCode(string operation, string operand, string address) {
+string Check::opCode(string operation, string operand, string address,
+		string curaddress) {
 	string small_operation = toLowerCase(operation);
+	if(small_operation=="rsub"){
+		return "4f0000";
+	}
 	string result = "";
 	string op = tables->opTable.at(small_operation).opcode;
 
@@ -870,10 +1072,10 @@ string Check::opCode(string operation, string operand, string address) {
 		i = '1';
 	}
 
-	if(op_binstr.length()==1){
-		op_binstr='0'+op_binstr;
+	if (op_binstr.length() == 1) {
+		op_binstr = '0' + op_binstr;
 	}
-	cout<<"totoooo "<<op_binstr<<endl;
+	//cout << "totoooo " << op_binstr << endl;
 	op_binstr[op_binstr.length() - 1] = i;
 	op_binstr[op_binstr.length() - 2] = n;
 
@@ -883,7 +1085,7 @@ string Check::opCode(string operation, string operand, string address) {
 	if (op_hexEdit.length() == 1) {
 		op_hexEdit = '0' + op_hexEdit;
 	}
-cout<<"beto  "<<operation<<"    "<<op_hexEdit<<endl;
+//cout<<"beto  "<<operation<<"    "<<op_hexEdit<<endl;
 	result = result + op_hexEdit;
 	if (tables->opTable.at(small_operation).format == "3/4") {
 		string xbpe = "";
@@ -900,11 +1102,10 @@ cout<<"beto  "<<operation<<"    "<<op_hexEdit<<endl;
 			xbpe = "0";
 		}
 		string bp = "";
-		string addresse = calcuteAddresse(address, &bp, operand);
-		if(addresse=="error"){
+		string addresse = calcuteAddresse(address, &bp, operand, curaddress);
+		if (addresse == "error") {
 			return addresse;
 		}
-
 		xbpe = xbpe + bp;
 		xbpe = xbpe + '0';
 //cout<<"beto "<<bp<<"      "<<xbpe<<"    "<<small_operation<<endl;
@@ -920,7 +1121,8 @@ cout<<"beto  "<<operation<<"    "<<op_hexEdit<<endl;
 
 	return result;
 }
-string Check::calcuteAddresse(string next_a, string *bp, string operand) {
+string Check::calcuteAddresse(string next_a, string *bp, string operand,
+		string curaddress) {
 	string res = "";
 	operand = toLowerCase(operand);
 	if (operand[0] == '#' || operand[0] == '@') {
@@ -937,9 +1139,61 @@ string Check::calcuteAddresse(string next_a, string *bp, string operand) {
 		}
 	}
 	operand.assign(tmp);
+	if (operand == "*") {
+*bp="01";
+		int nex = conHexaToDec(next_a);
+		int cur = conHexaToDec(curaddress);
+		int diff = nex - cur;
+		string hexa = dectoHex(diff);
+		if (hexa.length() == 0) {
+			res = "000";
+		} else if (hexa.length() == 1) {
+			res = "00" + hexa;
+		} else if (hexa.length() == 2) {
+			res = '0' + hexa;
+		} else if (hexa.length() == 3) {
+			res = hexa;
+		} else {
+			res = hexa[hexa.length() - 3];
+			res = res + hexa[hexa.length() - 2];
+			res = res + hexa[hexa.length() - 1];
+
+		}
+		return res;
+
+	}
 
 	int x = tables->symTable.count(operand);
-	if (x > 0) {
+	if (experrsion) {
+
+		int dis_dec = conHexaToDec(adress_expression);
+		int next_dec = conHexaToDec(next_a);
+		int diff = dis_dec - next_dec;
+		//pc condition
+		if (diff > -2048 && diff < 2047) {
+			*bp = "01";
+			string addr = dectoHex(diff);
+			if (addr.length() == 0) {
+				res = "000";
+			} else if (addr.length() == 1) {
+				res = "00" + addr;
+			} else if (addr.length() == 2) {
+				res = '0' + addr;
+			} else if (addr.length() == 3) {
+				res = addr;
+			} else {
+				res = addr[addr.length() - 3];
+				res = res + addr[addr.length() - 2];
+				res = res + addr[addr.length() - 1];
+
+			}
+			return res;
+		} else {
+
+			return "error";
+		}
+
+	} else if (x > 0) {
 		string distin = tables->symTable.at(operand);
 		int dis_dec = conHexaToDec(distin);
 		int next_dec = conHexaToDec(next_a);
@@ -959,11 +1213,10 @@ string Check::calcuteAddresse(string next_a, string *bp, string operand) {
 				res = '0' + addr;
 			} else if (addr.length() == 3) {
 				res = addr;
-			}
-			else{
-				res=addr[addr.length()-3];
-				res=res+addr[addr.length()-2];
-				res=res+addr[addr.length()-1];
+			} else {
+				res = addr[addr.length() - 3];
+				res = res + addr[addr.length() - 2];
+				res = res + addr[addr.length() - 1];
 
 			}
 			return res;
@@ -997,7 +1250,7 @@ string Check::calcuteAddresse(string next_a, string *bp, string operand) {
 		} else if (addr.length() == 2) {
 
 			res = res + '0' + addr;
-			cout << " one   " << res << endl;
+//			cout << " one   " << res << endl;
 		} else {
 			res = addr;
 		}
@@ -1052,14 +1305,22 @@ string Check::regFormat2(string operand) {
 	return reg;
 }
 
-string Check::format(string operation, string operand, string address) {
+string Check::format(string operation, string operand, string address,
+		string curaddress, LocCounter loc) {
 	string object = "";
 	string ob_directive = "";
-
+	adress_expression = "";
+	experrsion = false;
 	bool directive = checkDirectives(operation, operand, &ob_directive);
 	string small_operation = toLowerCase(operation);
 	string result = "";
 	string op = tables->opTable.at(small_operation).opcode;
+	for (unsigned int i = 0; i < operand.length(); i++) {
+		if (operand[i] == '+' || operand[i] == '/' || operand[i] == '-'
+				|| (operand[i] == '*' && operand.length() != 1)) {
+			experrsion = true;
+		}
+	}
 	if (directive == true) {
 		return ob_directive;
 	} else if (tables->opTable.at(small_operation).format == "1") {
@@ -1076,18 +1337,35 @@ string Check::format(string operation, string operand, string address) {
 			return result;
 		}
 	} else {
-		if (validOperand(operand)) {
-
-			if (operation[0] == '+') {
-				object = opCodeFor4(operation, operand, address);
+		if (experrsion) {
+			string excep = "";
+			adress_expression = evaluate(operand, loc, &excep);
+			if (adress_expression == "error") {
+				return "invalid";
 			} else {
+				if (operation[0] == '+') {
+					object = opCodeFor4(operation, operand, address,
+							curaddress);
+				} else {
 
-				object = opCode(operation, operand, address);
+					object = opCode(operation, operand, address, curaddress);
+				}
 			}
+			return object;
+		} else {
+			if (validOperand(operand)) {
+				if (operation[0] == '+') {
+					object = opCodeFor4(operation, operand, address,
+							curaddress);
+				} else {
+
+					object = opCode(operation, operand, address, curaddress);
+				}
+			}
+			return object;
 		}
-		return object;
 	}
-	return "-_-";
+	return "non";
 }
 
 int Check::conHexaToDec(string s) {
@@ -1099,7 +1377,8 @@ int Check::conHexaToDec(string s) {
 }
 bool Check::isNumberOperand(string st) {
 	for (unsigned int i = 0; i < st.length(); i++) {
-		if ((st.at(i) >= '0' && st.at(i) <= '9')) {
+		if ((st.at(i) >= '0' && st.at(i) <= '9') || st.at(i) == '-'
+				|| st.at(i) == '+' || st.at(i) == '/' || st.at(i) == '*') {
 			continue;
 		} else {
 			return false;
@@ -1114,8 +1393,11 @@ string Check::convertIntToString(int number) {
 	return theNumberString;
 }
 bool Check::validOperand(string operand) {
+	if (operand == "*") {
+		return true;
+	}
 
-	if (operand[0] == '#' || operand[0] == '@') {
+	else if (operand[0] == '#' || operand[0] == '@') {
 		string tmp = "";
 		tmp.assign(operand.begin() + 1, operand.end());
 		operand.assign(tmp);

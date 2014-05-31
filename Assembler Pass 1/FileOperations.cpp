@@ -111,6 +111,22 @@ void FileOperations::writeAll(string address, string objectCode, string label,
 #endif
 
 }
+string FileOperations::writeError(string address, string objectCode,
+		string label, string operation, string operand) {
+	objectCode = writeFiled(objectCode);
+	address = writeFiled(address);
+	label = writeFiled(label);
+	operation = writeFiled(operation);
+	operand = writeFiled(operand);
+//	cout << "*******************" << endl;
+	string s = address + " " + label + " " + operation + " "
+			+ operand + "\n";
+#ifdef debug
+//	out << address << " " << objectCode << " " << label << " " << operation
+//			<< " " << operand << endl;
+#endif
+	return s;
+}
 void FileOperations::writeImmidiate(string address, string label,
 		string operation, string operand) {
 

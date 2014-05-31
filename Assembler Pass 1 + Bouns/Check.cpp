@@ -102,7 +102,11 @@ bool Check::checkOperation(string *operation, string *exception) {
 			}
 		}
 	}
-	*exception = "\tError: Invalid operation\n";
+	if (x=="equ"||x=="use"||x=="org"||x=="ltorg") {
+	*exception = "\t***Warning: Not supported Directive\n";
+	return false;
+	}
+	*exception = "\t***Error: Invalid operation\n";
 	return false;
 }
 

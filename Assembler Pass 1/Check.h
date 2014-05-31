@@ -18,18 +18,18 @@ public:
 			std::string *operation, std::string *operand, LocCounter*loc);
 	std::string toLowerCase(std::string input);
 	std::string trim(std::string input);
-	void ORG(std::string operat, std::string oper, LocCounter loc,
+	void ORG(std::string operat, std::string oper, LocCounter *loc,
 			std::string *exception);
 //	std::string EQU(std::string operat, std::string oper, LocCounter loc,
 //			std::string * exception);
-	void EQU(std::string operat, std::string oper, LocCounter loc,
+	void EQU(std::string lab,std::string operat, std::string oper, LocCounter loc,
 			std::string * exception);
 	std::string format(std::string operation, std::string operand,
-			std::string address);
+			std::string address,std::string curaddress , LocCounter loc );
 	std::string opCodeFor4(std::string operation, std::string operand,
-			std::string address);
+			std::string address,std::string curaddress);
 	std::string opCode(std::string operation, std::string operand,
-			std::string address);
+			std::string address,std::string curaddress);
 
 private:
 	Tables *tables;
@@ -61,7 +61,7 @@ private:
 	std::string regFormat(std::string operand);
 	std::string regFormat2(std::string operand);
 	std::string calcuteAddresse(std::string next_a, std::string *bp,
-			std::string operand);
+			std::string operand,std::string curaddress);
 	bool validOperand(std::string operand);
 	bool isNumberOperand(std::string st);
 	std::string convDectoHex(int decNum, int r[]);

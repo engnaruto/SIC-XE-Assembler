@@ -34,6 +34,8 @@ public:
 			std::string operation, std::string operand, std::string comment);
 	void writeAll(std::string address, std::string objectCode,
 			std::string label, std::string operation, std::string operand);
+	std::string writeError(std::string address, std::string objectCode,
+			std::string label, std::string operation, std::string operand);
 	void writeImmidiate(std::string address, std::string label,
 			std::string operation, std::string operand);
 	void writeLine(std::string line);

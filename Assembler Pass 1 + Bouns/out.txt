@@ -1,14 +1,33 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
-.23456789012345678901234567890
-1       		00000     		ALPHA     		LDT      		#10      		
-2       		00003     		BETA      		+LDCH     		#6       		
-3       		00007     		        		ADD      		@GAMMA     		
-4       		0000A     		        		J       		*       		
-5       		0000D     		GAMMA     		BYTE      		X'01'     		
-6       		0000E     		THETA     		RESB      		2       		
-. MISSING END STATEMENT
+.       ..     ...                ..
+1       		00000     		PROG      		start     		0       		
+2       		00000     		FIRST     		LDA      		#0       		
+3       		00003     		        		LDT      		#3       		
+4       		00006     		        		LDS      		@LBL3     		
+5       		00009     		        		ADDR      		T,A      		
+6       		0000B     		        		LDX      		#0       		
+7       		0000E     		LOOP      		STA      		BUF,X     		
+8       		00011     		        		ADDR      		T,X      		
+9       		00013     		        		COMPR     		X,S      		
+10       		00015     		        		JLT      		LOOP      		
+11       		00018     		        		JSUB      		FUN      		
+12       		0001B     		TEMP      		EQU      		FIRST     		
+	***Warning: Not supported Directive
 
-	***Error: No End Mnemonic
+13       		0001E     		        		J       		*       		
+                  ......... this is a function ..........
+14       		00021     		FUN      		LDB      		30       		
+15       		00024     		        		+LDA      		BUF      		
+16       		00028     		        		+LDT      		30       		
+17       		0002C     		        		RSUB      		        		
+18       		0002F     		BUF      		RESW      		10       		
+19       		0004D     		LBL1      		WORD      		7       		
+20       		00050     		LBL2      		WORD      		30       		
+21       		00053     		LBL3      		WORD      		60       		
+22       		00056     		BUF2      		RESB      		12       		
+23       		00062     		TEMP1     		BYTE      		X'ABCDEF'   		
+24       		00065     		TEMP2     		BYTE      		C'ABCDEF'   		
+25       		0006B     		        		END      		FIRST     		
 
 
 >>    I N C O M P L E T E    A S S E M b L Y
@@ -17,9 +36,17 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	00000        *
-*     beta        	*     	00003        *
-*     gamma        	*     	0000D        *
-*     theta        	*     	0000E        *
+*     buf         	*     	0002F        *
+*     buf2        	*     	00056        *
+*     first        	*     	00000        *
+*     fun         	*     	00021        *
+*     lbl1        	*     	0004D        *
+*     lbl2        	*     	00050        *
+*     lbl3        	*     	00053        *
+*     loop        	*     	0000E        *
+*     prog        	*     	00000        *
+*     temp        	*     	00018        *
+*     temp1        	*     	00062        *
+*     temp2        	*     	00065        *
 ******************************************
 

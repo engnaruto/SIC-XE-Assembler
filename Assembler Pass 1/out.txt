@@ -9,49 +9,50 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 6       		0000D     		        		COMP      		#0       		
 7       		00010     		        		JEQ      		ENDFIL     		
 8       		00013     		        		+JSUB     		WRREC     		
-9       		00017     		        		J       		CLOOP     		
-10       		0001A     		ENDFIL     		LDA      		RETADR,X    		
+9       		00017     		        		J       		CLOO      		
+10       		0001A     		ENDFIL     		LDA      		CLOOP     		
 11       		0001D     		        		STA      		BUFFER     		
 12       		00020     		        		LDA      		#3       		
-13       		00023     		        		STA      		LENGTH     		
+13       		00023     		        		STA      		ENDFIL     		
 14       		00026     		        		+JSUB     		WRREC     		
-15       		0002A     		        		J       		#6       		
+15       		0002A     		        		J       		@RETADR    		
+.         LTORG
 16       		0002D     		RETADR     		RESW      		1       		
 17       		00030     		LENGTH     		RESW      		1       		
 18       		00033     		BUFFER     		RESB      		4096      		
-19       		        		BUFEND     		EQU      		RETADR     		
-.MAXLEN   EQU     BUFEND
+19       		        		BUFEND     		EQU      		*       		
+20       		        		MAXLEN     		EQU      		BUFEND-BUFFER 		
 .        .       .
 .        .       .
 .        .       .
-20       		01033     		RDREC     		CLEAR     		X       		
-.         CLEAR   A
-.         CLEAR   S
-21       		01035     		        		+LDA      		#RLOOP     		
-22       		01039     		RLOOP     		TD       		INPUT     		
-23       		0103C     		        		JEQ      		RLOOP     		
-24       		0103F     		        		RD       		INPUT     		
-25       		01042     		        		COMPR     		A,S      		
-26       		01044     		        		JEQ      		EXIT      		
-27       		01047     		        		STCH      		#5       		
-.         TIXR    T
-28       		0104A     		        		JLT      		RLOOP     		
-29       		0104D     		EXIT      		STX      		#5       		
-30       		01050     		        		RSUB      		        		
-31       		01053     		INPUT     		BYTE      		X'F1'     		
+21       		01033     		RDREC     		CLEAR     		X       		
+22       		01035     		        		CLEAR     		A       		
+23       		01037     		        		CLEAR     		S       		
+24       		01039     		        		+LDA      		#RLOOP     		
+25       		0103D     		RLOOP     		TD       		INPUT     		
+26       		01040     		        		JEQ      		RLOOP     		
+27       		01043     		        		RD       		INPUT     		
+28       		01046     		        		COMPR     		A,S      		
+29       		01048     		        		JEQ      		EXIT      		
+30       		0104B     		        		STCH      		WLOOP,X    		
+31       		0104E     		        		TIXR      		T       		
+32       		01050     		        		JLT      		RLOOP     		
+33       		01053     		EXIT      		STX      		RLOOP     		
+34       		01056     		        		RSUB      		        		
+35       		01059     		INPUT     		BYTE      		X'F1'     		
 .        .       .
 .        .       .
 .        .       .
-32       		01054     		WRREC     		CLEAR     		X       		
-33       		01056     		        		LDT      		#5       		
-34       		01059     		WLOOP     		TD       		RLOOP     		
-35       		0105C     		        		JEQ      		WLOOP     		
-36       		0105F     		        		LDCH      		#6       		
-37       		01062     		        		WD       		RLOOP     		
-.         TIXR    T
-38       		01065     		        		JLT      		WLOOP     		
-39       		01068     		        		RSUB      		        		
-40       		0106B     		        		END      		FIRST     		
+36       		0105A     		WRREC     		CLEAR     		X       		
+37       		0105C     		        		LDT      		WLOOP     		
+38       		0105F     		WLOOP     		TD       		RLOOP     		
+39       		01062     		        		JEQ      		WLOOP     		
+40       		01065     		        		LDCH      		WLOOP,X    		
+41       		01068     		        		WD       		RLOOP     		
+42       		0106B     		        		TIXR      		T       		
+43       		0106D     		        		JLT      		WLOOP     		
+44       		01070     		        		RSUB      		        		
+45       		01073     		        		END      		FIRST     		
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
@@ -63,21 +64,21 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     RETADR       	*     	0002D        *
-*     bufend       	*     	00033        *
+*     bufend       	*     	01033        *
 *     buffer       	*     	00033        *
 *     cloop        	*     	00006        *
 *     copy        	*     	00000        *
 *     endfil       	*     	0001A        *
-*     exit        	*     	0104D        *
+*     exit        	*     	01053        *
 *     first        	*     	00000        *
-*     input        	*     	01053        *
+*     input        	*     	01059        *
 *     length       	*     	00030        *
+*     maxlen       	*     	01000        *
 *     rdrec        	*     	01033        *
 *     retadr       	*     	0002D        *
-*     rloop        	*     	01039        *
-*     wloop        	*     	01059        *
-*     wrrec        	*     	01054        *
+*     rloop        	*     	0103D        *
+*     wloop        	*     	0105F        *
+*     wrrec        	*     	0105A        *
 ******************************************
 
 .2345678901234567890123456789
@@ -88,48 +89,57 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 0000A      032023               LDA       LENGTH     
 0000D      290000               COMP       #0       
 00010      332007               JEQ       ENDFIL     
-00013      4b101054              +JSUB      WRREC     
-00017      3f2fec               J        CLOOP     
-0001A      03a010      ENDFIL      LDA       RETADR,X    
+00013      4b10105A              +JSUB      WRREC     
+00017                        J        CLOO      
+	***Error: Invalid Label
+
+0001A      032fe9      ENDFIL      LDA       CLOOP     
 0001D      0f2013               STA       BUFFER     
 00020      010003               LDA       #3       
-00023      0f200a               STA       LENGTH     
-00026      4b101054              +JSUB      WRREC     
-0002A      3d0006               J        #6       
+00023      0f2ff4               STA       ENDFIL     
+00026      4b10105A              +JSUB      WRREC     
+0002A      3e2000               J        @RETADR    
+.         LTORG
 0002D               RETADR      RESW       1       
 00030               LENGTH      RESW       1       
 00033               BUFFER      RESB       4096      
--                 BUFEND      EQU       RETADR     
-.MAXLEN   EQU     BUFEND
+-                 BUFEND      EQU       *       
+-                 MAXLEN      EQU       BUFEND-BUFFER 
 .        .       .
 .        .       .
 .        .       .
 01033      B410       RDREC      CLEAR      X       
-.         CLEAR   A
-.         CLEAR   S
-01035      1101039              +LDA       #RLOOP     
-01039      e32017      RLOOP      TD        INPUT     
-0103C      332ffa               JEQ       RLOOP     
-0103F      db2011               RD        INPUT     
-01042      A004                COMPR      A,S      
-01044      332006               JEQ       EXIT      
-01047      550005               STCH       #5       
-.         TIXR    T
-0104A      3b2fec               JLT       RLOOP     
-0104D      110005      EXIT       STX       #5       
-01050      4f0000               RSUB               
-01053      F1        INPUT      BYTE       X'F1'     
+01035      B400                CLEAR      A       
+01037      B440                CLEAR      S       
+01039      0110103D              +LDA       #RLOOP     
+0103D      e32019      RLOOP      TD        INPUT     
+01040      332ffa               JEQ       RLOOP     
+01043      db2013               RD        INPUT     
+01046      A004                COMPR      A,S      
+01048      332008               JEQ       EXIT      
+0104B      57a011               STCH       WLOOP,X    
+0104E      B850                TIXR       T       
+01050      3b2fea               JLT       RLOOP     
+01053      132fe7      EXIT       STX       RLOOP     
+01056      4f0000               RSUB               
+01059      F1        INPUT      BYTE       X'F1'     
 .        .       .
 .        .       .
 .        .       .
-01054      B410       WRREC      CLEAR      X       
-01056      750005               LDT       #5       
-01059      e32fdd      WLOOP      TD        RLOOP     
-0105C      332ffa               JEQ       WLOOP     
-0105F      510006               LDCH       #6       
-01062      df2fd4               WD        RLOOP     
-.         TIXR    T
-01065      3b2ff1               JLT       WLOOP     
-01068      4f0000               RSUB               
-0106B                        END       FIRST     
-0106B                        END       FIRST     
+0105A      B410       WRREC      CLEAR      X       
+0105C      772000               LDT       WLOOP     
+0105F      e32fdb      WLOOP      TD        RLOOP     
+01062      332ffa               JEQ       WLOOP     
+01065      53aff7               LDCH       WLOOP,X    
+01068      df2fd2               WD        RLOOP     
+0106B      B850                TIXR       T       
+0106D      3b2fef               JLT       WLOOP     
+01070      4f0000               RSUB               
+01073                        END       FIRST     
+01073                        END       FIRST     
+
+
+ERRORS REPORT:
+00017               J        CLOO      
+	***Error: Invalid Label
+

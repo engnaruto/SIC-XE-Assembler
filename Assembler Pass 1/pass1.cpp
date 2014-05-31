@@ -8,7 +8,7 @@ using namespace std;
 
 string line = "", address = "", label = "", operand = "", operation = "",
 		progname = "", comment = "", strexc = "", proglength = "", t = "",
-		txtRec = "", startaddress = "", recAddress = "";
+		txtRec = "", startaddress = "", recAddress = "", report = "";
 int length = 0;
 bool ok = true, tooShort = false;
 vector<string> arr;
@@ -147,6 +147,8 @@ int main(int argc, char **argv) {
 			if (!check.trim(t).empty()) {
 				tables.symTable[t] = counter.getAddressLabel();
 			}
+			string d = "";
+			check.EQU(label, operation, operand, counter, &d);
 			file.writeAll(counter.getLineCounter(), counter.getAddress(), label,
 					operation, operand, comment);
 			imFile.writeImmidiate(counter.getAddressLabel(), label, operation,
@@ -187,16 +189,26 @@ int main(int argc, char **argv) {
 			}
 			string x = tables.toLowerCase(operation);
 			if (x == "equ" || x == "org") {
+				string d = "";
+				counter.addtoCounter(0);
+				check.EQU(label, operation, operand, counter, &d);
 				file.writeAll(counter.getLineCounter(), "", label, operation,
 						operand, comment);
+				if (d.length() != 0) {
+					file.writeLine(d);
+					ok = false;
+					continue;
+				}
 				imFile.writeImmidiate("", label, operation, operand);
 			} else {
 				length = tables.getLength(operation, operand);
 				counter.addtoCounter(length);
 				t = check.toLowerCase(label);
+				string x = check.toLowerCase(operation);
 				if (!check.trim(t).empty()) {
 					tables.symTable[t] = counter.getAddressLabel();
 				}
+
 				file.writeAll(counter.getLineCounter(), counter.getAddress(),
 						label, operation, operand, comment);
 				imFile.writeImmidiate(counter.getAddressLabel(), label,
@@ -243,6 +255,7 @@ int main(int argc, char **argv) {
 
 	file.writeLine(tables.printSymTable());
 	imFile.close();
+	report += "\n\nERRORS REPORT:\n";
 	if (ok) {
 		file.use("immidiate.txt");
 		imFile.writeIn("OPFILE.txt");
@@ -272,10 +285,13 @@ int main(int argc, char **argv) {
 					length += curAddress;
 					string nextAddress = counter.dectoHex(length);
 					string objectCode = check.format(operation, operand,
-							nextAddress);		//call ebtehal
+							nextAddress, address, counter);		//call ebtehal
 					if (objectCode == "") {
 						file.writeAll(address, "", label, operation, operand);
 						file.writeLine("\t***Error: Invalid Label\n");
+						report += file.writeError(address, "", label, operation,
+								operand);
+						report += "\t***Error: Invalid Label\n";
 						ok = false;
 					} else if (objectCode == "dir") {
 						string length = counter.dectoHex(txtRec.size());
@@ -288,6 +304,14 @@ int main(int argc, char **argv) {
 						//							<< "   " << operation << "   " << operand << endl;
 						file.writeAll(address, "", label, operation, operand);
 						objectCode = "";
+					} else if (objectCode == "invalid") {
+						file.writeAll(address, "", label, operation, operand);
+						file.writeLine("\t***Error: Invalid Expression\n");
+						report += file.writeError(address, "", label, operation,
+								operand);
+						report += "\t***Error: Invalid Expression\n";
+						ok = false;
+						objectCode = "";
 					} else if (objectCode == "noObject") {
 						objectCode = "";
 						file.writeAll(address, "", label, operation, operand);
@@ -295,6 +319,9 @@ int main(int argc, char **argv) {
 						file.writeAll(address, "", label, operation, operand);
 						file.writeLine(
 								"\t***Error: Base addressing not supported\n");
+						report += file.writeError(address, "", label, operation,
+								operand);
+						report += "\t***Error: Base addressing not supported\n";
 						ok = false;
 					} else {
 						file.writeAll(address, objectCode, label, operation,
@@ -303,10 +330,11 @@ int main(int argc, char **argv) {
 					if (ok) {
 						if (txtRec.size() == 0) {
 							recAddress = address;
+							cout << "~~~~~~~~~~~~~   " << recAddress << endl;
 						}
 						if (txtRec.size() + objectCode.size() > 60) {
-							string length = counter.dectoHex(txtRec.size());
-							imFile.writeTxtRecord(address, length, txtRec);
+							string length = counter.dectoHex(txtRec.size() / 2);
+							imFile.writeTxtRecord(recAddress, length, txtRec);
 							txtRec = objectCode;
 							recAddress = address;
 						} else {
@@ -344,10 +372,14 @@ int main(int argc, char **argv) {
 					string nextAddress = counter.dectoHex(length);
 //				cout << "~~~~~~~~~~~~   " << line << endl;
 					string objectCode = check.format(operation, operand,
-							nextAddress);		//call ebtehal
+							nextAddress, address, counter);		//call ebtehal
 					if (objectCode == "") {
 						file.writeAll(address, "", label, operation, operand);
 						file.writeLine("\t***Error: Invalid Label\n");
+						report += file.writeError(address, "", label, operation,
+								operand);
+						report += "\t***Error: Invalid Label\n";
+
 						ok = false;
 					} else if (objectCode == "dir") {
 						string length = counter.dectoHex(txtRec.size());
@@ -360,14 +392,27 @@ int main(int argc, char **argv) {
 //							<< "   " << operation << "   " << operand << endl;
 						file.writeAll(address, "", label, operation, operand);
 						objectCode = "";
+					} else if (objectCode == "invalid") {
+						file.writeAll(address, "", label, operation, operand);
+						file.writeLine("\t***Error: Invalid Expression\n");
+						report += file.writeError(address, "", label, operation,
+								operand);
+						report += "\t***Error: Invalid Expression\n";
+						ok = false;
+						objectCode = "";
 					} else if (objectCode == "noObject") {
 						objectCode = "";
 						file.writeAll(address, "", label, operation, operand);
 					} else if (objectCode == "error") {
-						cout << "!!!!!!!!  " << operation <<"    "<<operand<< endl;
+						cout << "!!!!!!!!  " << operation << "    " << operand
+								<< endl;
 						file.writeAll(address, "", label, operation, operand);
 						file.writeLine(
-								"\t-_-***Error: Base addressing not supported\n");
+								"\t***Error: Base addressing not supported\n");
+						report += file.writeError(address, "", label, operation,
+								operand);
+						report += "\t***Error: Base addressing not supported\n";
+
 						ok = false;
 						objectCode = "";
 					} else {
@@ -377,10 +422,11 @@ int main(int argc, char **argv) {
 					if (ok) {
 						if (txtRec.size() == 0) {
 							recAddress = address;
+							cout << "~~~~~~~~~~~~~   " << recAddress << endl;
 						}
 						if (txtRec.size() + objectCode.size() > 60) {
-							string length = counter.dectoHex(txtRec.size());
-							imFile.writeTxtRecord(address, length, txtRec);
+							string length = counter.dectoHex(txtRec.size() / 2);
+							imFile.writeTxtRecord(recAddress, length, txtRec);
 							txtRec = objectCode;
 							recAddress = address;
 						} else {
@@ -397,8 +443,8 @@ int main(int argc, char **argv) {
 //		cout << "~~~~~~ " << txtRec << endl;
 			if (txtRec.length() > 0) {
 
-				string length = counter.dectoHex(txtRec.size());
-				imFile.writeTxtRecord(address, length, txtRec);
+				string length = counter.dectoHex(txtRec.size() / 2);
+				imFile.writeTxtRecord(recAddress, length, txtRec);
 			}
 			for (unsigned int i = 0; i < format4.size(); i++) {
 //			cout << "~~~~~~~~~~~~  " << format4[i] << endl;
@@ -416,7 +462,9 @@ int main(int argc, char **argv) {
 			imFile.writeLine("E" + startaddress);
 
 		}
-
+		if (!ok) {
+			file.writeLine(report);
+		}
 	}
 	file.close();
 	return 0;
