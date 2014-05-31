@@ -280,8 +280,23 @@ int main(int argc, char **argv) {
 							progname += " ";
 						}
 					}
+					int start = counter.conHexaToDec(address);
+					int end = counter.conHexaToDec(proglength);
+					int length = end - start - 1;
+					string hexLen = counter.dectoHex(length);
+					if (hexLen.length() < 6) {
+						for (int i = 0; hexLen.length() < 6; i++) {
+							hexLen = "0" + hexLen;
+						}
+					}
+					string add = address;
+					if (add.length() < 6) {
+						for (int i = 0; add.length() < 6; i++) {
+							add = "0" + add;
+						}
+					}
 					imFile.writeLine(
-							"H" + progname + "^" + address + "^" + proglength);
+							"H" + progname + "^" + add + "^" + hexLen);
 				} else {
 					if (operation[0] == '+') {
 //						cout << "~~~~~~~~~~~~  " << address << endl;
