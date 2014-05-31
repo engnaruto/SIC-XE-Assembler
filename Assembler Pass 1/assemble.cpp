@@ -166,7 +166,8 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
-	while (!file.eof()) {
+	bool xx = true;
+	while (xx && !file.eof()) {
 		if (tooShort) {
 			tooShort = false;
 			file.writeLine("\t***Error: Line is too short !!!\n");
@@ -229,6 +230,10 @@ int main(int argc, char **argv) {
 				ok = false;
 			}
 		}
+		string cx = check.toLowerCase(operation);
+		if (cx == "end") {
+			xx = false;
+		}
 
 	}
 	t = check.toLowerCase(operation);
@@ -244,6 +249,7 @@ int main(int argc, char **argv) {
 			file.writeLine("\t***Error: Invalid relocatable address \n");
 			ok = false;
 		}
+
 	}
 
 	if (ok) {

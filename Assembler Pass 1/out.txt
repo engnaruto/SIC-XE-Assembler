@@ -9,7 +9,7 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 6       		0000D     		        		COMP      		#0       		
 7       		00010     		        		JEQ      		ENDFIL     		
 8       		00013     		        		+JSUB     		WRREC     		
-9       		00017     		        		J       		CLOO      		
+9       		00017     		        		J       		CLOOP     		
 10       		0001A     		ENDFIL     		LDA      		CLOOP     		
 11       		0001D     		        		STA      		BUFFER     		
 12       		00020     		        		LDA      		#3       		
@@ -90,9 +90,7 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 0000D      290000               COMP       #0       
 00010      332007               JEQ       ENDFIL     
 00013      4b10105A              +JSUB      WRREC     
-00017                        J        CLOO      
-	***Error: Invalid Label
-
+00017      3f2fec               J        CLOOP     
 0001A      032fe9      ENDFIL      LDA       CLOOP     
 0001D      0f2013               STA       BUFFER     
 00020      010003               LDA       #3       
@@ -137,9 +135,3 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 01070      4f0000               RSUB               
 01073                        END       FIRST     
 01073                        END       FIRST     
-
-
-ERRORS REPORT:
-00017               J        CLOO      
-	***Error: Invalid Label
-

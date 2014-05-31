@@ -8,7 +8,7 @@ CLOOP   +JSUB    RDREC
          COMP    #0
          JEQ     ENDFIL
         +JSUB    WRREC
-         J       CLOO
+         J       CLOOP
 ENDFIL   LDA     CLOOP
          STA     BUFFER
          LDA     #3

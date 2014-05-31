@@ -81,9 +81,11 @@ bool Check::checkOperation(string *operation, string *exception) {
 		dir[4] = "start";
 		dir[5] = "end";
 		if (x.empty() == true) {
+			*exception = "\t***Error: Invalid operation\n";
 			return false;
 		}
 		if (isalpha(x[0]) == false && x[0] != '+') {
+			*exception = "\t***Error: Invalid operation\n";
 			return false;
 		}
 		if (x[0] == '+') {
@@ -102,9 +104,9 @@ bool Check::checkOperation(string *operation, string *exception) {
 			}
 		}
 	}
-	if (x=="equ"||x=="use"||x=="org"||x=="ltorg") {
-	*exception = "\t***Warning: Not supported Directive\n";
-	return false;
+	if (x == "equ" || x == "use" || x == "org" || x == "ltorg") {
+		*exception = "\t***Warning: Not supported Directive\n";
+		return false;
 	}
 	*exception = "\t***Error: Invalid operation\n";
 	return false;
@@ -159,6 +161,7 @@ bool Check::checkOperand(string *operand, string *exception) {
 	if ((*operand).empty()) {
 		return true;
 	}
+	*exception += "\t***Error: Invalid operand\n";
 	return false;
 }
 

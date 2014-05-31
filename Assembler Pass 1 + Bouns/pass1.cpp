@@ -202,7 +202,9 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
-	while (!file.eof()) {
+
+	bool xx = true;
+	while (xx && !file.eof()) {
 //		cout << "hi " << i++ << endl;
 		strexc = readSplitLine2(file, check, tables);
 		if (strexc.size() == 0) {
@@ -238,8 +240,13 @@ int main(int argc, char **argv) {
 			}
 		}
 		t = check.toLowerCase(operation);
-		if (t == "end")
+		if (t == "end") {
 			end = true;
+		}
+		string cx = check.toLowerCase(operation);
+		if (cx == "end") {
+			xx = false;
+		}
 	}
 	t = check.toLowerCase(operation);
 	cout << "op  " << operation << endl;
@@ -248,7 +255,8 @@ int main(int argc, char **argv) {
 		file.writeLine("\t***Error: No End Mnemonic\n");
 		ok = false;
 	} else {
-		if (progname != operand && !operand.empty()) {
+		int x = tables.symTable.count(operand);
+		if (x > 0 && !operand.empty()) {
 			file.writeLine("\t***Error: Invalid relocatable address \n");
 			ok = false;
 		}

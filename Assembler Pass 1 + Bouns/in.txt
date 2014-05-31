@@ -10,7 +10,7 @@
          COMPR   X,S
          JLT     LOOP
          JSUB    FUN
-TEMP     EQU     FIRST
+.TEMP     EQU     FIRST
          J       *
                   ......... this is a function ..........
 FUN      LDB     30
