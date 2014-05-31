@@ -73,13 +73,14 @@ void openFile(Tables& tables, FileOperations& file) {
 	string c;
 	vector<string> v;
 	while (1) {
-		cout << "Enter: pass1 <source-file-name>" << endl;
+
+		cout << "Enter: assemble <source-file-name>" << endl;
 		getline(cin, c);
 		v.clear();
 		v = tables.split(c, ' ');
 		//		cout << v[0] << " " << v[1] << endl;
 		//		cout << file.use(v[1]) << endl;
-		if (v.size() > 1 && v[0] == "pass1" && file.use(v[1])) {
+		if (v.size() > 1 && v[0] == "assemble" && file.use(v[1])) {
 			//			file.use(v[1]);
 			break;
 		} else {
@@ -103,7 +104,7 @@ int main(int argc, char **argv) {
 		ok = false;
 	}
 
-//	openFile(tables, file);
+	openFile(tables, file);
 
 	file.writeFirst();
 	Check check(&tables);
