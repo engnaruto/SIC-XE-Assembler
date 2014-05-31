@@ -97,7 +97,7 @@ bool Check::checkOperation(string *operation, string *exception) {
 	}
 	(*operation) = trim((*operation));
 	string x = toLowerCase(*operation);
-	if(x=="+rsub"){
+	if (x == "+rsub") {
 		*exception += "\t***Error: REUB cannot be format 4 instruction\n";
 	}
 
@@ -105,7 +105,7 @@ bool Check::checkOperation(string *operation, string *exception) {
 		x = x.substr(1);
 	}
 	if (ok == true) {
-		if (x == "base" || x == "use"||x == "ltorg") {
+		if (x == "base" || x == "use" || x == "ltorg") {
 			*exception += "\t***Error: Not supported directive\n";
 		}
 //		cout << "  oper  " << x << endl;
@@ -958,8 +958,8 @@ string Check::opCodeFor4(string operation, string operand, string address,
 		i = '1';
 	}
 	if (op_binstr.length() == 1) {
-			op_binstr = '0' + op_binstr;
-		}
+		op_binstr = '0' + op_binstr;
+	}
 
 	op_binstr[op_binstr.length() - 1] = i;
 	op_binstr[op_binstr.length() - 2] = n;
@@ -969,8 +969,8 @@ string Check::opCodeFor4(string operation, string operand, string address,
 	op_hexEdit = dectoHex(op_decEdit);
 
 	cout << "  op   " << op_hexEdit << "  " << operation << endl;
-	if(op_hexEdit.length()==1){
-		op_hexEdit='0'+op_hexEdit;
+	if (op_hexEdit.length() == 1) {
+		op_hexEdit = '0' + op_hexEdit;
 	}
 	result = result + op_hexEdit;
 
@@ -1033,7 +1033,7 @@ string Check::opCodeFor4(string operation, string operand, string address,
 string Check::opCode(string operation, string operand, string address,
 		string curaddress) {
 	string small_operation = toLowerCase(operation);
-	if(small_operation=="rsub"){
+	if (small_operation == "rsub") {
 		return "4f0000";
 	}
 	string result = "";
@@ -1140,10 +1140,10 @@ string Check::calcuteAddresse(string next_a, string *bp, string operand,
 	}
 	operand.assign(tmp);
 	if (operand == "*") {
-*bp="01";
+		*bp = "01";
 		int nex = conHexaToDec(next_a);
 		int cur = conHexaToDec(curaddress);
-		int diff = nex - cur;
+		int diff = cur - nex;
 		string hexa = dectoHex(diff);
 		if (hexa.length() == 0) {
 			res = "000";

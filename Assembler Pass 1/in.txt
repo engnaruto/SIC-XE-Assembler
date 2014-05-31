@@ -1,54 +1,9 @@
-.2345678901234567890123456789
-COPY     START   0
-FIRST    STL     RETADR
-         LDB     #LENGTH
-.         BASE    LENGTH
-CLOOP   +JSUB    RDREC
-         LDA     LENGTH
-         COMP    #0
-         JEQ     ENDFIL
-        +JSUB    WRREC
-         J       CLOOP
-ENDFIL   LDA     CLOOP
-         STA     BUFFER
-         LDA     #3
-         STA     ENDFIL
-        +JSUB    WRREC
-         J       @RETADR
-.         LTORG
-RETADR   RESW    1
-LENGTH   RESW    1
-BUFFER   RESB    4096
-BUFEND   EQU     *
-MAXLEN   EQU     BUFEND-BUFFER
-.        .       .
-.        .       .
-.        .       .
-RDREC    CLEAR   X
-         CLEAR   A
-         CLEAR   S
-        +LDA     #RLOOP
-RLOOP    TD      INPUT
-         JEQ     RLOOP
-         RD      INPUT
-         COMPR   A,S
-         JEQ     EXIT
-         STCH    WLOOP,X
-         TIXR    T
-         JLT     RLOOP
-EXIT     STX     RLOOP
-         RSUB
-INPUT    BYTE    X'F1'
-.        .       .
-.        .       .
-.        .       .
-WRREC    CLEAR   X
-         LDT     WLOOP
-WLOOP    TD      RLOOP
-         JEQ     WLOOP
-         LDCH    WLOOP,X
-         WD      RLOOP
-         TIXR    T
-         JLT     WLOOP
-         RSUB
-         END     FIRST
+.23456789012345678901234567890
+         START   1000
+ALPHA    LDT     #10
+BETA    +LDCH    #6
+         ADD     @GAMMA
+         J       *
+GAMMA    BYTE    X'01'
+THETA    RESB    2
+         END     ALPHA
