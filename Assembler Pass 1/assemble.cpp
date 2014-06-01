@@ -295,8 +295,7 @@ int main(int argc, char **argv) {
 							add = "0" + add;
 						}
 					}
-					imFile.writeLine(
-							"H" + progname + "^" + add + "^" + hexLen);
+					imFile.writeLine("H" + progname + "^" + add + "^" + hexLen);
 				} else {
 					if (operation[0] == '+') {
 //						cout << "~~~~~~~~~~~~  " << address << endl;
@@ -356,6 +355,11 @@ int main(int argc, char **argv) {
 						}
 						if (txtRec.size() + objectCode.size() > 60) {
 							string length = counter.dectoHex(txtRec.size() / 2);
+							if (length.length() < 2) {
+								for (int i = 0; length.length() < 2; i++) {
+									length = "0" + length;
+								}
+							}
 							imFile.writeTxtRecord(recAddress, length, txtRec);
 							txtRec = objectCode;
 							recAddress = address;
@@ -404,7 +408,13 @@ int main(int argc, char **argv) {
 
 						ok = false;
 					} else if (objectCode == "dir") {
-						string length = counter.dectoHex(txtRec.size());
+						string length = counter.dectoHex(txtRec.size() / 2);
+						if (length.length() < 2) {
+							for (int i = 0; length.length() < 2; i++) {
+								length = "0" + length;
+							}
+						}
+
 						if (txtRec != "") {
 							imFile.writeTxtRecord(recAddress, length, txtRec);
 						}
@@ -448,6 +458,11 @@ int main(int argc, char **argv) {
 						}
 						if (txtRec.size() + objectCode.size() > 60) {
 							string length = counter.dectoHex(txtRec.size() / 2);
+							if (length.length() < 2) {
+								for (int i = 0; length.length() < 2; i++) {
+									length = "0" + length;
+								}
+							}
 							imFile.writeTxtRecord(recAddress, length, txtRec);
 							txtRec = objectCode;
 							recAddress = address;

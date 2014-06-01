@@ -1,13 +1,14 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
 .23456789012345678901234567890
-1       		01000     		        		START     		1000      		
-2       		01000     		ALPHA     		LDT      		#10      		
-3       		01003     		BETA      		+LDCH     		#6       		
-4       		01007     		        		ADD      		@GAMMA     		
-5       		0100A     		        		J       		*       		
-6       		0100D     		GAMMA     		BYTE      		X'01'     		
-7       		0100E     		THETA     		RESB      		2       		
-8       		01010     		        		END      		ALPHA     		
+. LAST VALID ADDRESS
+1       		03028     		        		START     		3028      		
+2       		03028     		ALPHA     		LDT      		#10      		
+3       		0302B     		BETA      		+LDCH     		#6       		
+4       		0302F     		        		ADD      		@GAMMA     		
+5       		03032     		        		J       		*       		
+6       		03035     		GAMMA     		BYTE      		X'01'     		
+7       		03036     		THETA     		RESB      		2       		
+8       		03038     		        		END      		ALPHA     		
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
@@ -19,18 +20,19 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	01000        *
-*     beta        	*     	01003        *
-*     gamma        	*     	0100D        *
-*     theta        	*     	0100E        *
+*     alpha        	*     	03028        *
+*     beta        	*     	0302B        *
+*     gamma        	*     	03035        *
+*     theta        	*     	03036        *
 ******************************************
 
 .23456789012345678901234567890
-01000      75000a      ALPHA      LDT       #10      
-01003      51100006     BETA       +LDCH      #6       
-01007      1a2003               ADD       @GAMMA     
-0100A      3f2ffd               J        *       
-0100D      01        GAMMA      BYTE       X'01'     
-0100E               THETA      RESB       2       
-01010                        END       ALPHA     
-01010                        END       ALPHA     
+. LAST VALID ADDRESS
+03028      75000a      ALPHA      LDT       #10      
+0302B      51100006     BETA       +LDCH      #6       
+0302F      1a2003               ADD       @GAMMA     
+03032      3f2ffd               J        *       
+03035      01        GAMMA      BYTE       X'01'     
+03036               THETA      RESB       2       
+03038                        END       ALPHA     
+03038                        END       ALPHA     
