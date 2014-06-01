@@ -70,7 +70,7 @@ string readImmidiate(FileOperations &file) {
 }
 
 void openFile(Tables& tables, FileOperations& file) {
-	string c;
+	string c = "";
 	vector<string> v;
 	while (1) {
 
@@ -90,6 +90,9 @@ void openFile(Tables& tables, FileOperations& file) {
 }
 
 int main(int argc, char **argv) {
+	line = "", address = "", label = "", operand = "", operation = "", progname =
+			"", comment = "", strexc = "", proglength = "", t = "", txtRec = "", startaddress =
+			"", recAddress = "", report = "";
 	Tables tables;
 	FileOperations file("in.txt");
 	FileOperations imFile("i.txt");
@@ -384,7 +387,7 @@ int main(int argc, char **argv) {
 			if (strexc == "Comment") {
 				file.writeLine(line);
 			} else {
-				if (operation[0] == '+') {
+				if (operation[0] == '+' && operand[0] != '#') {
 //					cout << "~~~~~~~~~~~~  " << address << endl;
 					format4.push_back(address);
 				}
@@ -502,6 +505,13 @@ int main(int argc, char **argv) {
 		if (!ok) {
 			file.writeLine(report);
 		}
+		if (ok) {
+				file.writeLine("\n>>    S U C C E S S F U L    A S S E M B L Y\n");
+				file.writeLine("\n\n>>    E N D I N G    O F    P A S S  2");
+				proglength = counter.getAddressLabel();
+			} else {
+				file.writeLine("\n>>    I N C O M P L E T E    A S S E M b L Y");
+			}
 	}
 	file.close();
 	return 0;

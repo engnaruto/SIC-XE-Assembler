@@ -1,9 +1,9 @@
 .23456789012345678901234567890
-. LAST VALID ADDRESS
-         START   3028
+         START   1000
 ALPHA    LDT     #10
 BETA    +LDCH    #6
-         ADD     @GAMMA
+. INDEXING
+         ADD     GAMMA,X
          J       *
 GAMMA    BYTE    X'01'
 THETA    RESB    2
