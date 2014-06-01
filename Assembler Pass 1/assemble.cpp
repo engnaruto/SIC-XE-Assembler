@@ -60,9 +60,10 @@ string readImmidiate(FileOperations &file) {
 		if (operand == "-") {
 			operand = "";
 		} else if (arr.size() > 4) {
-			for (unsigned int i = 5; i < arr.size(); i++) {
+			for (unsigned int i = 4; i < arr.size(); i++) {
 				operand += " " + arr[i];
 			}
+//				cout<<"#######  "<<operand<<endl;
 		}
 //		cout <<"**************** "<< arr[0]<<"   "<< arr[1]<<"   "<< arr[2]<<"   "<< arr[3]<<"   " << endl;
 	}

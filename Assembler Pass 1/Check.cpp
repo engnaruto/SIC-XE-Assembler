@@ -1307,6 +1307,7 @@ string Check::regFormat2(string operand) {
 
 string Check::format(string operation, string operand, string address,
 		string curaddress, LocCounter loc) {
+//	cout<<"#######  "<<operand<<endl;
 	string object = "";
 	string ob_directive = "";
 	adress_expression = "";

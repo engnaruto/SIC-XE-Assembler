@@ -1,14 +1,54 @@
 Line No.		Address		    Label		    Mnemonic		Operand		Comments
-.23456789012345678901234567890
-1       		01000     		        		START     		1000      		
-2       		01000     		ALPHA     		LDT      		#10      		
-3       		01003     		BETA      		+LDCH     		#6       		
-. INDEXING
-4       		01007     		        		ADD      		GAMMA,X    		
-5       		0100A     		        		J       		*       		
-6       		0100D     		GAMMA     		BYTE      		X'01'     		
-7       		0100E     		THETA     		RESB      		2       		
-8       		01010     		        		END      		ALPHA     		
+.234567890123456789012345
+1       		00000     		BUBBLE     		START     		0       		
+2       		00000     		        		LDT      		#1       		
+3       		00003     		LOOP1     		LDA      		IIND      		
+4       		00006     		        		COMP      		LEN      		
+5       		00009     		        		JEQ      		EXIT      		
+6       		0000C     		        		LDA      		#0       		
+7       		0000F     		        		STA      		JIND      		
+8       		00012     		LOOP2     		LDX      		JIND      		
+9       		00015     		        		LDA      		LEN      		
+10       		00018     		        		SUB      		#1       		
+11       		0001B     		        		SUB      		IIND      		
+12       		0001E     		        		COMPR     		X,A      		
+13       		00020     		        		JLT      		CON      		
+14       		00023     		        		LDA      		IIND      		
+15       		00026     		        		ADD      		#1       		
+16       		00029     		        		STA      		IIND      		
+17       		0002C     		        		J       		LOOP1     		
+18       		0002F     		CON      		LDCH      		STR,X     		
+19       		00032     		        		STCH      		CH1      		
+20       		00035     		        		LDA      		JIND      		
+21       		00038     		        		ADD      		#1       		
+22       		0003B     		        		STA      		JIND      		
+23       		0003E     		        		LDX      		JIND      		
+24       		00041     		        		LDCH      		STR,X     		
+25       		00044     		        		STCH      		CH2      		
+26       		00047     		        		LDCH      		CH1      		
+27       		0004A     		        		RMO      		A,S      		
+28       		0004C     		        		LDCH      		CH2      		
+29       		0004F     		        		COMPR     		S,A      		
+30       		00051     		        		JGT      		SWAPIT     		
+31       		00054     		        		J       		LOOP2     		
+32       		00057     		SWAPIT     		LDX      		JIND      		
+33       		0005A     		        		LDB      		STR      		
+34       		0005D     		        		LDCH      		CH1      		
+35       		00060     		        		STCH      		STR,X     		
+36       		00063     		        		LDB      		STR      		
+37       		00066     		        		SUBR      		T,X      		
+38       		00068     		        		LDCH      		CH2      		
+39       		0006B     		        		STCH      		STR,X     		
+40       		0006E     		        		LDB      		STR      		
+41       		00071     		        		J       		LOOP2     		
+42       		00074     		EXIT      		J       		*       		
+43       		00077     		IIND      		WORD      		0       		
+44       		0007A     		JIND      		WORD      		0       		
+45       		0007D     		STR      		BYTE      		C' 54321'   		
+46       		00083     		LEN      		WORD      		5       		
+47       		00086     		CH1      		BYTE      		C' '      		
+48       		00087     		CH2      		BYTE      		C' '      		
+49       		00088     		        		END      		        		
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
@@ -20,22 +60,70 @@ Line No.		Address		    Label		    Mnemonic		Operand		Comments
 ******************************************
 *             Symbol Table               *
 ******************************************
-*     alpha        	*     	01000        *
-*     beta        	*     	01003        *
-*     gamma        	*     	0100D        *
-*     theta        	*     	0100E        *
+*     bubble       	*     	00000        *
+*     ch1         	*     	00086        *
+*     ch2         	*     	00087        *
+*     con         	*     	0002F        *
+*     exit        	*     	00074        *
+*     iind        	*     	00077        *
+*     jind        	*     	0007A        *
+*     len         	*     	00083        *
+*     loop1        	*     	00003        *
+*     loop2        	*     	00012        *
+*     str         	*     	0007D        *
+*     swapit       	*     	00057        *
 ******************************************
 
-.23456789012345678901234567890
-01000      75000a      ALPHA      LDT       #10      
-01003      51100006     BETA       +LDCH      #6       
-. INDEXING
-01007      1ba003               ADD       GAMMA,X    
-0100A      3f2ffd               J        *       
-0100D      01        GAMMA      BYTE       X'01'     
-0100E               THETA      RESB       2       
-01010                        END       ALPHA     
-01010                        END       ALPHA     
+.234567890123456789012345
+00000      750001               LDT       #1       
+00003      032071      LOOP1      LDA       IIND      
+00006      2b207a               COMP       LEN      
+00009      332068               JEQ       EXIT      
+0000C      010000               LDA       #0       
+0000F      0f2068               STA       JIND      
+00012      072065      LOOP2      LDX       JIND      
+00015      03206b               LDA       LEN      
+00018      1d0001               SUB       #1       
+0001B      1f2059               SUB       IIND      
+0001E      A010                COMPR      X,A      
+00020      3b200c               JLT       CON      
+00023      032051               LDA       IIND      
+00026      190001               ADD       #1       
+00029      0f204b               STA       IIND      
+0002C      3f2fd4               J        LOOP1     
+0002F      53a04b      CON       LDCH       STR,X     
+00032      572051               STCH       CH1      
+00035      032042               LDA       JIND      
+00038      190001               ADD       #1       
+0003B      0f203c               STA       JIND      
+0003E      072039               LDX       JIND      
+00041      53a039               LDCH       STR,X     
+00044      572040               STCH       CH2      
+00047      53203c               LDCH       CH1      
+0004A      AC04                RMO       A,S      
+0004C      532038               LDCH       CH2      
+0004F      A040                COMPR      S,A      
+00051      372003               JGT       SWAPIT     
+00054      3f2fbb               J        LOOP2     
+00057      072020      SWAPIT      LDX       JIND      
+0005A      6b2020               LDB       STR      
+0005D      532026               LDCH       CH1      
+00060      57a01a               STCH       STR,X     
+00063      6b2017               LDB       STR      
+00066      9451                SUBR       T,X      
+00068      53201c               LDCH       CH2      
+0006B      57a00f               STCH       STR,X     
+0006E      6b200c               LDB       STR      
+00071      3f2f9e               J        LOOP2     
+00074      3f2ffd      EXIT       J        *       
+00077      0        IIND       WORD       0       
+0007A      0        JIND       WORD       0       
+0007D      203534333231   STR       BYTE       C' 54321'   
+00083      5        LEN       WORD       5       
+00086      20        CH1       BYTE       C' '      
+00087      20        CH2       BYTE       C' '      
+00088                        END               
+00088                        END               
 
 >>    S U C C E S S F U L    A S S E M B L Y
 
